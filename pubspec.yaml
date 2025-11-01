@@ -36,9 +36,6 @@ dependencies:
   image_picker: ^1.0.7 # Pick images from gallery/camera
   cached_network_image: ^3.3.1 # Cache network images efficiently
 
-  # File Handling
-  file_picker: ^6.1.1 # Pick files (CV, documents, etc.)
-
   # HTTP & API
   http: ^1.2.0 # HTTP client for API calls
 
@@ -49,6 +46,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0 # Linting rules for code quality
+  flutter_native_splash: ^2.3.10
 
 flutter:
   uses-material-design: true
@@ -61,9 +59,6 @@ flutter:
     - assets/images/placeholders/
     - assets/images/illustrations/
     - assets/images/backgrounds/
-
-    # Mock Data (for frontend development)
-    - assets/mock/team/
 
     # Icons
     - assets/icons/
@@ -91,3 +86,27 @@ flutter:
   #         weight: 600
   #       - asset: assets/fonts/Cairo-Bold.ttf
   #         weight: 700
+
+  fonts:
+    - family: Aclonica
+      fonts:
+        - asset: assets/fonts/Aclonica-Regular.ttf
+
+flutter_native_splash:
+  # Splash screen background color (electric lime!)
+  color: "#D2FF1F"
+
+  # You can add a logo image (optional for now)
+  # image: assets/images/logo.png
+
+  # For now, just solid color is fine
+  # Later you can add your logo when you have it
+
+  # Android 12+ specific settings
+  android_12:
+    color: "#D2FF1F"
+
+  # iOS specific
+  ios: true
+  android: true
+  web: false

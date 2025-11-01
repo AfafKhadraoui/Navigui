@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/auth/login_screen.dart';
 import '../views/screens/auth/register_screen.dart';
 import '../views/screens/onboarding/welcome_screen.dart';
@@ -14,7 +15,7 @@ import '../views/widgets/navigation/bottom_nav_bar.dart';
 /// App Router Configuration
 ///
 /// Two types of routes:
-/// 1. Public routes (welcome, login, register) - NO bottom bar
+/// 1. Public routes (splash, welcome, login, register) - NO bottom bar
 /// 2. Protected routes (home, jobs, tasks, learn, profile) - WITH bottom bar
 ///
 /// Navigation Structure (5 tabs):
@@ -29,7 +30,8 @@ import '../views/widgets/navigation/bottom_nav_bar.dart';
 /// - Public pages are outside ShellRoute (no bottom bar)
 class AppRouter {
   // Route names as constants
-  static const String welcome = '/';
+  static const String splash = '/splash';
+  static const String welcome = '/welcome';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
@@ -42,11 +44,19 @@ class AppRouter {
   static const String profile = '/profile';
 
   static final GoRouter router = GoRouter(
-    initialLocation: welcome, // Start at welcome screen
+    initialLocation: splash, // Start at splash screen
+    restorationScopeId:
+        null, // Disable state restoration to always start at splash
     routes: [
       // ============================================
       // PUBLIC ROUTES (No Bottom Bar)
       // ============================================
+
+      GoRoute(
+        path: splash,
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
 
       GoRoute(
         path: welcome,

@@ -82,6 +82,16 @@ class AppColors {
   static const Color primaryDark = electricLime2;
   static const Color primaryLight = electricLime3;
 
+  // Backwards-compatible aliases (used across the codebase)
+  static const Color secondary =
+      Color(0xFFE168FF); // Pink/purple accent (alias)
+  static const Color accent = green1; // Accent green (alias)
+
+  // Common grey aliases expected by existing code
+  static const Color grey600 = grey6;
+  static const Color grey700 = grey5;
+  static const Color grey400 = grey7;
+
   // Surface/Background
   static const Color surface = grey4;
   static const Color surfaceLight = grey5;
