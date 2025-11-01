@@ -46,10 +46,10 @@ class LoginScreen extends StatelessWidget {
               onPressed: () => context.go(AppRouter.register),
               child: const Text('Register instead'),
             ),
-            TextButton(
-              onPressed: () => context.go(AppRouter.welcome),
-              child: const Text('Back to Welcome'),
-            ),
+            // TextButton(
+            //   onPressed: () => context.go(AppRouter.welcome),
+            //   child: const Text('Back to Welcome'),
+            // ),
           ],
         ),
       ),

@@ -1,48 +1,57 @@
 import 'package:flutter/material.dart';
-import '../../../commons/themes/style_simple/colors.dart';
-import '../../../commons/themes/style_simple/styles.dart';
+import 'package:go_router/go_router.dart';
+import 'package:navigui/commons/themes/style_simple/colors.dart';
+import 'package:navigui/views/widgets/cards/education_card.dart';
+import 'package:navigui/views/widgets/cards/section_header.dart';
+import 'package:navigui/routes/app_router.dart';
 
-/// Educational Content Section Widget
-/// Purpose: Display learning resources and career tips for students
-///
-/// Features to implement:
-/// - Can use static articles list or create EducationArticle model
-/// - Display in horizontal scrolling cards (280px wide)
-/// - Show: article icon, title, description, read time
-/// - Navigate to article details on card tap
-/// - Topics: CV writing, interview tips, time management, professional skills
-/// - "See All" button to navigate to learning center
-///
-/// UI Requirements:
-/// - Card with left side colored icon panel (100px wide)
-/// - Article icon with accent color
-/// - Title, description, and read time
-/// - 180px card height
-/// - Icon with accent color background
-///
-/// Note: You can create sample articles or extend to load from mock data
 class EducationalContentSection extends StatelessWidget {
   const EducationalContentSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Create articles list (static or from mock data)
-    // Sample structure:
-    // final articles = [
-    //   {'title': '...', 'description': '...', 'readTime': '5 min', 'icon': Icons.description},
-    // ];
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // TODO: Add section header with "Learn & Grow" title and "See All" button
-
-        // TODO: Add horizontal ListView.builder
-        // - Height: 180px
-        // - Scroll direction: Axis.horizontal
-        // - Card width: 280px
-        // - Build article cards with icon panel on left and content on right
-        // - Show icon, title, description, read time
+        SectionHeader(
+          title: 'Learn&Grow',
+          onExploreTap: () {
+            context.go(AppRouter.learn);
+          },
+        ),
+        const SizedBox(height: 15),
+        SizedBox(
+          height: 158,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            itemCount: 2,
+            separatorBuilder: (context, index) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return EducationCard(
+                  title: 'Your first \njob',
+                  badge1: '10min',
+                  badge2: 'New',
+                  badge3: 'Must-read',
+                  backgroundColor: AppColors.orange1,
+                  imagePath: 'assets/images/education/course1.png',
+                  isLiked: true,
+                );
+              } else {
+                return EducationCard(
+                  title: 'Know your rights',
+                  badge1: '5min',
+                  badge2: 'Popular',
+                  badge3: '',
+                  backgroundColor: AppColors.electricLime3,
+                  imagePath: 'assets/images/education/course2.png',
+                  isLiked: false,
+                );
+              }
+            },
+          ),
+        ),
       ],
     );
   }

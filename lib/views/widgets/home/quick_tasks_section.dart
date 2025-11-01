@@ -1,45 +1,55 @@
 import 'package:flutter/material.dart';
-import '../../../commons/themes/style_simple/colors.dart';
-import '../../../commons/themes/style_simple/styles.dart';
-import '../../../utils/mock_data.dart';
-import '../../../logic/models/job_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:navigui/commons/themes/style_simple/colors.dart';
+import 'package:navigui/views/widgets/job/job_card.dart';
+import 'package:navigui/views/widgets/cards/section_header.dart';
+import 'package:navigui/routes/app_router.dart';
 
-/// Quick Tasks Section Widget
-/// Purpose: Display one-time tasks that can be completed quickly
-/// Note: Tasks use JobModel but with jobType = 'task' or 'one_time'
-///
-/// Features to implement:
-/// - Load tasks from MockData.loadJobs()
-/// - Filter jobs where jobType == 'task' or jobType == 'one_time'
-/// - Display in horizontal scrolling cards (250px wide)
-/// - Show: task icon, title, brief description, pay, location
-/// - Navigate to task details on card tap
-/// - "See All" button to navigate to all quick tasks
-///
-/// UI Requirements:
-/// - Colored icon background (secondary color)
-/// - Task icon (Icons.task_alt)
-/// - 150px card height
-/// - Show pay and location at bottom
-/// - Loading state with CircularProgressIndicator
-/// - Empty state message if no tasks
 class QuickTasksSection extends StatelessWidget {
   const QuickTasksSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // TODO: Add section header with "Quick Tasks" title and "See All" button
-
-        // TODO: Add horizontal ListView.builder
-        // - Height: 150px
-        // - Scroll direction: Axis.horizontal
-        // - Card width: 250px
-        // - Load and filter tasks from MockData
-        // - Show loading/empty states
-        // - Build task cards with icon, title, description, pay, location
+        SectionHeader(
+          title: 'Quick Tasks',
+          onExploreTap: () {
+            context.go(AppRouter.jobs);
+          },
+        ),
+        const SizedBox(height: 15),
+        SizedBox(
+          height: 158,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            itemCount: 2,
+            separatorBuilder: (context, index) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return JobCard(
+                  title: 'English\nTranslation',
+                  location: 'Remote',
+                  salary: '5000 DZD',
+                  backgroundColor: AppColors.purple2,
+                  imagePath: 'assets/images/tasks/task1.png',
+                  isLiked: true,
+                );
+              } else {
+                return JobCard(
+                  title: 'Voice Over\nRecording',
+                  location: 'Remote',
+                  salary: '2000 DZD',
+                  backgroundColor: AppColors.yellow2,
+                  imagePath: 'assets/images/tasks/task2.png',
+                  isLiked: false,
+                );
+              }
+            },
+          ),
+        ),
       ],
     );
   }

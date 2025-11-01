@@ -9,6 +9,7 @@ import '../views/screens/jobs/jobs_page.dart';
 import '../views/screens/tasks/my_tasks_screen.dart';
 import '../views/screens/education/education_list_screen.dart';
 import '../views/screens/profile/my_profile_screen.dart';
+import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
 
 /// App Router Configuration
@@ -41,6 +42,9 @@ class AppRouter {
   static const String learn = '/learn';
   static const String profile = '/profile';
 
+  // Additional routes
+  static const String notifications = '/notifications';
+
   static final GoRouter router = GoRouter(
     initialLocation: splash, // Start at splash screen
     restorationScopeId:
@@ -55,8 +59,6 @@ class AppRouter {
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
-
-      
 
       GoRoute(
         path: onboarding,
@@ -74,6 +76,12 @@ class AppRouter {
         path: register,
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+
+      GoRoute(
+        path: notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
       ),
 
       // ============================================

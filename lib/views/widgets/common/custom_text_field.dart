@@ -31,11 +31,20 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      style: TextStyle(
+        fontFamily: 'Acme',
+      ),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        labelStyle: TextStyle(
+          fontFamily: 'Acme',
+        ),
+        hintStyle: TextStyle(
+          fontFamily: 'Acme',
+        ),
       ),
     );
   }

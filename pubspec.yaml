@@ -56,9 +56,12 @@ flutter:
     # Images
     - assets/images/
     - assets/images/onboarding/
-    - assets/images/placeholders/
     - assets/images/illustrations/
     - assets/images/backgrounds/
+    - assets/images/jobs/
+    - assets/images/tasks/
+    - assets/images/education/
+    - assets/images/profile/
 
     # Icons
     - assets/icons/
@@ -91,6 +94,9 @@ flutter:
     - family: Aclonica
       fonts:
         - asset: assets/fonts/Aclonica-Regular.ttf
+    - family: Acme
+      fonts:
+        - asset: assets/fonts/Acme-Regular.ttf
 
 flutter_native_splash:
   # Splash screen background color (electric lime!)
