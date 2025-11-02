@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../commons/themes/style_simple/colors.dart';
 import 'step5Student.dart';
 
 class Step4StudentScreen extends StatefulWidget {
@@ -34,13 +35,13 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
           label,
           style: GoogleFonts.aclonica(
             fontSize: 16,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(25),
           ),
           child: TextField(
@@ -49,15 +50,32 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
             maxLines: maxLines,
             style: GoogleFonts.aclonica(
               fontSize: 14,
-              color: Colors.black,
+              color: AppColors.white,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.aclonica(
-                color: Colors.grey,
+                color: AppColors.grey6,
                 fontSize: 14,
               ),
-              border: InputBorder.none,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(
+                  color: Colors.transparent,
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(
+                  color: Color(0xFF9288EE),
+                  width: 1.5,
+                ),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: maxLines > 1 ? 16 : 16,
@@ -88,19 +106,19 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
                   Text(
                     'Student Sign Up',
                     style: GoogleFonts.aclonica(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       Text(
-                        'step 4 out of 6',
+                        'step 4 out of 5',
                         style: GoogleFonts.aclonica(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: AppColors.grey6,
                         ),
                       ),
                     ],
@@ -110,7 +128,7 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      value: 4 / 6,
+                      value: 4 / 5,
                       minHeight: 6,
                       backgroundColor: Colors.grey[800],
                       valueColor: const AlwaysStoppedAnimation<Color>(
@@ -129,7 +147,7 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.aclonica(
                   fontSize: 32,
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -165,22 +183,22 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
+                          foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(
-                          color: Colors.white,
-                          width: 2,
-                        ),
+                          side: const BorderSide(
+                            color: Color(0xFF9288EE),
+                            width: 2,
+                          ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
                       ),
                       child: Text(
                         'Back',
-                        style: GoogleFonts.aclonica(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          style: GoogleFonts.aclonica(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                       ),
                     ),
                   ),
@@ -200,7 +218,7 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9288EE),
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),

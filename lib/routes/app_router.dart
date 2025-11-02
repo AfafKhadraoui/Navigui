@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/auth/login.dart';
-import '../views/screens/auth/register_screen.dart';
-import '../views/screens/auth/choose_account_type_screen.dart';
+import '../views/screens/auth/AccountType.dart';
 import '../views/screens/auth/step1Student.dart';
 import '../views/screens/auth/step2Student.dart';
 import '../views/screens/auth/step3Student.dart';
@@ -46,7 +45,6 @@ class AppRouter {
   static const String splash = '/splash';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
-  static const String register = '/register';
   static const String accountType = '/account-type';
   
   // Student signup steps
@@ -105,9 +103,9 @@ class AppRouter {
       ),
 
       GoRoute(
-        path: register,
-        name: 'register',
-        builder: (context, state) => const RegisterScreen(),
+        path: accountType,
+        name: 'account-type',
+        builder: (context, state) => const AccountTypeScreen(),
       ),
 
       GoRoute(

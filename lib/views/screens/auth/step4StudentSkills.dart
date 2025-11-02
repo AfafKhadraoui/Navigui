@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
-import '../../widgets/common/custom_button.dart';
+// using inline buttons here to avoid importing shared custom_button
 import '../../widgets/common/signup_success_dialog.dart';
 
 class Step4StudentSkillsScreen extends StatefulWidget {
@@ -193,7 +193,7 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
               Row(
                 children: [
                   Text(
-                    'Step 4 of 6',
+                    'Step 4 of 5',
                     style: GoogleFonts.aclonica(
                       fontSize: 12,
                       color: Colors.grey,
@@ -205,7 +205,7 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
-                  value: 4 / 6,
+                  value: 4 / 5,
                   minHeight: 6,
                   backgroundColor: Colors.grey[800],
                   valueColor: AlwaysStoppedAnimation<Color>(
@@ -282,13 +282,61 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
                 ),
               ),
               
-              // Buttons Row
-              SignupButtonRow(
-                isStudent: true,
-                onBack: () {
-                  Navigator.pop(context);
-                },
-                onContinue: _handleContinue,
+              // Buttons Row (copied inline from step3 style)
+              Row(
+                children: [
+                  // Back Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.purple6,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: BorderSide(
+                          color: AppColors.purple6,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: Text(
+                        'Back',
+                        style: GoogleFonts.aclonica(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  // Continue Button
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _handleContinue,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.purple6,
+                        foregroundColor: AppColors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Continue',
+                        style: GoogleFonts.aclonica(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               
               const SizedBox(height: 16),

@@ -24,7 +24,7 @@ class AccountTypeScreen extends StatelessWidget {
                 'Join us',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.aclonica(
-                  fontSize: 42,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -66,12 +66,11 @@ class AccountTypeScreen extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      // Student Image
+                      // Student Image (slightly larger)
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 96,
+                        height: 96,
                         decoration: BoxDecoration(
-                          
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ClipRRect(
@@ -138,12 +137,11 @@ class AccountTypeScreen extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      // Employer Image
+                      // Employer Image (slightly larger)
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 96,
+                        height: 96,
                         decoration: BoxDecoration(
-                         
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ClipRRect(

@@ -40,7 +40,7 @@ class SignupSuccessDialog extends StatelessWidget {
                 ),
                 child: Icon(
                   Icons.check,
-                  color: isStudent ? Colors.white : Colors.black,
+                  color: isStudent ? AppColors.white : AppColors.black,
                   size: 60,
                 ),
               ),
@@ -49,11 +49,11 @@ class SignupSuccessDialog extends StatelessWidget {
             
             // Welcome message
             Text(
-              'Welcome, $userName! 🎉',
+              'Welcome, $userName!',
               textAlign: TextAlign.center,
               style: GoogleFonts.aclonica(
                 fontSize: 24,
-                color: Colors.white,
+                color: AppColors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -66,7 +66,7 @@ class SignupSuccessDialog extends StatelessWidget {
               textAlign: TextAlign.center,
               style: GoogleFonts.aclonica(
                 fontSize: 14,
-                color: Colors.grey[400],
+                color: AppColors.grey6,
               ),
             ),
             
@@ -80,82 +80,36 @@ class SignupSuccessDialog extends StatelessWidget {
               textAlign: TextAlign.center,
               style: GoogleFonts.aclonica(
                 fontSize: 12,
-                color: Colors.grey[500],
+                color: AppColors.grey6,
               ),
             ),
             
             const SizedBox(height: 32),
             
-            // Go to Dashboard button
+            // Primary action only: full-width button (Start Finding Jobs / Post Your First Job)
             SizedBox(
               width: double.infinity,
+              height: 64,
               child: ElevatedButton(
                 onPressed: onGoToDashboard,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: themeColor,
                   foregroundColor: buttonTextColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
                   elevation: 0,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      isStudent ? Icons.school : Icons.business_center,
-                      color: buttonTextColor,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isStudent ? 'Start Finding Jobs' : 'Post Your First Job',
-                      style: GoogleFonts.aclonica(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Go to Dashboard alternative button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: onGoToDashboard,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(
-                    color: Colors.white,
-                    width: 1.5,
+                child: Text(
+                  isStudent ? 'Start Finding Jobs' : 'Post Your First Job',
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  softWrap: true,
+                  style: GoogleFonts.aclonica(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.home,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Go to Dashboard',
-                      style: GoogleFonts.aclonica(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
@@ -166,7 +120,7 @@ class SignupSuccessDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.grey[900],
+                color: const Color(0xFF121212),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -174,9 +128,9 @@ class SignupSuccessDialog extends StatelessWidget {
                 children: [
                   Text(
                     "What's Next?",
-                    style: GoogleFonts.aclonica(
+                      style: GoogleFonts.aclonica(
                       fontSize: 16,
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -200,7 +154,7 @@ class SignupSuccessDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.grey[900],
+                color: const Color(0xFF121212),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -210,7 +164,7 @@ class SignupSuccessDialog extends StatelessWidget {
                     'Demo Mode - Testing the flow?',
                     style: GoogleFonts.aclonica(
                       fontSize: 11,
-                      color: Colors.grey[600],
+                      color: const Color(0xFF9E9E9E),
                     ),
                   ),
                 ],
@@ -219,29 +173,7 @@ class SignupSuccessDialog extends StatelessWidget {
             
             const SizedBox(height: 8),
             
-            // Start Over button
-            TextButton(
-              onPressed: onStartOver,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.refresh,
-                    color: Colors.grey[600],
-                    size: 16,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Start Over',
-                    style: GoogleFonts.aclonica(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
+            // (Removed duplicate small "Start Over" button — primary actions are in the button row above)
             const SizedBox(height: 20),
           ],
         ),
@@ -268,12 +200,12 @@ class SignupSuccessDialog extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              text,
-              style: GoogleFonts.aclonica(
-                fontSize: 12,
-                color: Colors.grey[400],
+                text,
+                style: GoogleFonts.aclonica(
+                  fontSize: 12,
+                  color: AppColors.grey6,
+                ),
               ),
-            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../commons/themes/style_simple/colors.dart';
 import 'step2Employer.dart';
 
 class Step1EmployerScreen extends StatefulWidget {
@@ -49,7 +50,7 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                   Row(
                     children: [
                       Text(
-                        'step 1 out of 6',
+                        'Step 1 of 4',
                         style: GoogleFonts.aclonica(
                           fontSize: 12,
                           color: Colors.grey,
@@ -62,7 +63,7 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      value: 1 / 6,
+                      value: 1 / 4,
                       minHeight: 6,
                       backgroundColor: Colors.grey[800],
                       valueColor: const AlwaysStoppedAnimation<Color>(
@@ -98,10 +99,10 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
               
               const SizedBox(height: 8),
               
-              // Email TextField
+              // Email TextField (dark surface + white text)
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
@@ -109,12 +110,12 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                   keyboardType: TextInputType.emailAddress,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
-                    color: Colors.black,
+                    color: AppColors.white,
                   ),
                   decoration: InputDecoration(
                     hintText: 'careerplace@gmail.com',
                     hintStyle: GoogleFonts.aclonica(
-                      color: Colors.grey,
+                      color: AppColors.grey6,
                       fontSize: 14,
                     ),
                     border: InputBorder.none,
@@ -139,10 +140,10 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
               
               const SizedBox(height: 8),
               
-              // Password TextField
+              // Password TextField (dark surface + white text)
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
@@ -150,12 +151,12 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                   obscureText: _obscurePassword,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
-                    color: Colors.black,
+                    color: AppColors.white,
                   ),
                   decoration: InputDecoration(
                     hintText: '••••••••',
                     hintStyle: GoogleFonts.aclonica(
-                      color: Colors.grey,
+                      color: AppColors.grey6,
                       fontSize: 14,
                     ),
                     border: InputBorder.none,
@@ -168,7 +169,7 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                         _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.grey,
+                        color: AppColors.grey6,
                       ),
                       onPressed: () {
                         setState(() {

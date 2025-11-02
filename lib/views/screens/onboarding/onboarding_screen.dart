@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _goToSignUp() {
-    context.go(AppRouter.register);
+    context.go(AppRouter.accountType);
   }
 
   @override

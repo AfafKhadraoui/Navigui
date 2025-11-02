@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../commons/themes/style_simple/colors.dart';
 import 'step3Employer.dart';
 
 class Step2EmployerScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(25),
           ),
           child: TextField(
@@ -67,12 +68,12 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
             maxLines: maxLines,
             style: GoogleFonts.aclonica(
               fontSize: 14,
-              color: Colors.black,
+              color: AppColors.white,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.aclonica(
-                color: Colors.grey,
+                color: AppColors.grey6,
                 fontSize: 14,
               ),
               border: InputBorder.none,
@@ -116,7 +117,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                     Row(
                       children: [
                         Text(
-                          'step 2 out of 6',
+                          'Step 2 of 4',
                           style: GoogleFonts.aclonica(
                             fontSize: 12,
                             color: Colors.grey,
@@ -129,7 +130,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(
-                        value: 2 / 6,
+                        value: 2 / 4,
                         minHeight: 6,
                         backgroundColor: Colors.grey[800],
                         valueColor: const AlwaysStoppedAnimation<Color>(
@@ -184,7 +185,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -195,7 +196,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                           hint: Text(
                             'Select Type',
                             style: GoogleFonts.aclonica(
-                              color: Colors.grey,
+                              color: AppColors.grey6,
                               fontSize: 14,
                             ),
                           ),
@@ -205,13 +206,13 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                           ),
                           style: GoogleFonts.aclonica(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: AppColors.white,
                           ),
-                          dropdownColor: Colors.white,
+                          dropdownColor: AppColors.surface,
                           items: _typeOptions.map((String type) {
                             return DropdownMenuItem<String>(
                               value: type,
-                              child: Text(type),
+                              child: Text(type, style: TextStyle(color: AppColors.white)),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {

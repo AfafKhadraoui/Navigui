@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../commons/themes/style_simple/colors.dart';
 import 'package:go_router/go_router.dart'       ;
 import '../../../routes/app_router.dart';
 import 'AccountType.dart';  
@@ -59,10 +60,10 @@ class _LoginScreen2State extends State<LoginScreen2> {
               
               const SizedBox(height: 8),
               
-              // Email TextField
+              // Email TextField (dark surface + white text)
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
@@ -70,11 +71,12 @@ class _LoginScreen2State extends State<LoginScreen2> {
                   keyboardType: TextInputType.emailAddress,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
+                    color: AppColors.white,
                   ),
                   decoration: InputDecoration(
                     hintText: 'careerplace@gmail.com',
                     hintStyle: GoogleFonts.aclonica(
-                      color: Colors.grey,
+                      color: AppColors.grey6,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -98,10 +100,10 @@ class _LoginScreen2State extends State<LoginScreen2> {
               
               const SizedBox(height: 8),
               
-              // Password TextField
+              // Password TextField (dark surface + white text)
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
@@ -109,11 +111,12 @@ class _LoginScreen2State extends State<LoginScreen2> {
                   obscureText: _obscurePassword,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
+                    color: AppColors.white,
                   ),
                   decoration: InputDecoration(
                     hintText: '••••••••••',
                     hintStyle: GoogleFonts.aclonica(
-                      color: Colors.grey,
+                      color: AppColors.grey6,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -125,7 +128,7 @@ class _LoginScreen2State extends State<LoginScreen2> {
                         _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.grey,
+                        color: AppColors.grey6,
                       ),
                       onPressed: () {
                         setState(() {

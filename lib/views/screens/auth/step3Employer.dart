@@ -41,7 +41,7 @@ class _Step3EmployerScreenState extends State<Step3EmployerScreen> {
                   Row(
                     children: [
                       Text(
-                        'step 3 out of 5',
+                        'Step 3 of 4',
                         style: GoogleFonts.aclonica(
                           fontSize: 12,
                           color: Colors.grey,
@@ -54,7 +54,7 @@ class _Step3EmployerScreenState extends State<Step3EmployerScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      value: 3 / 5,
+                      value: 3 / 4,
                       minHeight: 6,
                       backgroundColor: Colors.grey[800],
                       valueColor: const AlwaysStoppedAnimation<Color>(

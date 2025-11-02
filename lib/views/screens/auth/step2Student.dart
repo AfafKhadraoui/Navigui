@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../commons/themes/style_simple/colors.dart';
 import 'step3Student.dart';
 
 class Step2StudentScreen extends StatefulWidget {
@@ -63,7 +64,7 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(25),
           ),
           child: TextField(
@@ -72,15 +73,32 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
             obscureText: obscureText,
             style: GoogleFonts.aclonica(
               fontSize: 14,
-              color: Colors.black,
+              color: AppColors.white,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.aclonica(
-                color: Colors.grey,
+                color: AppColors.grey6,
                 fontSize: 14,
               ),
-              border: InputBorder.none,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(
+                  color: Colors.transparent,
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(
+                  color: Color(0xFF9288EE),
+                  width: 1.5,
+                ),
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
@@ -121,7 +139,7 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                     Row(
                       children: [
                         Text(
-                          'step 2 out of 6',
+                          'Step 2 of 5',
                           style: GoogleFonts.aclonica(
                             fontSize: 12,
                             color: Colors.grey,
@@ -134,7 +152,7 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(
-                        value: 2 / 6,
+                        value: 2 / 5,
                         minHeight: 6,
                         backgroundColor: Colors.grey[800],
                         valueColor: const AlwaysStoppedAnimation<Color>(
@@ -207,7 +225,7 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(25),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -218,7 +236,7 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                           hint: Text(
                             'Select your year',
                             style: GoogleFonts.aclonica(
-                              color: Colors.grey,
+                              color: AppColors.grey6,
                               fontSize: 14,
                             ),
                           ),
@@ -228,13 +246,13 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                           ),
                           style: GoogleFonts.aclonica(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: AppColors.white,
                           ),
-                          dropdownColor: Colors.white,
+                          dropdownColor: AppColors.surface,
                           items: _yearOptions.map((String year) {
                             return DropdownMenuItem<String>(
                               value: year,
-                              child: Text(year),
+                              child: Text(year, style: TextStyle(color: AppColors.white)),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {
@@ -260,10 +278,10 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                           Navigator.pop(context);
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
+                          foregroundColor: Color(0xFF9288EE),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: const BorderSide(
-                            color: Colors.white,
+                            color: Color(0xFF9288EE),
                             width: 2,
                           ),
                           shape: RoundedRectangleBorder(

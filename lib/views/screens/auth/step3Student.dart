@@ -41,7 +41,7 @@ class _Step3StudentScreenState extends State<Step3StudentScreen> {
                   Row(
                     children: [
                       Text(
-                        'step 3 out of 5',
+                        'Step 3 of 5',
                         style: GoogleFonts.aclonica(
                           fontSize: 12,
                           color: Colors.grey,

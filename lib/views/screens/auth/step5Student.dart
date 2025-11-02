@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../commons/themes/style_simple/colors.dart';
 
 class Step5StudentScreen extends StatefulWidget {
   const Step5StudentScreen({super.key});
@@ -38,7 +39,7 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(25),
           ),
           child: TextField(
@@ -46,15 +47,32 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
             keyboardType: keyboardType,
             style: GoogleFonts.aclonica(
               fontSize: 14,
-              color: Colors.black,
+              color: AppColors.white,
             ),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: GoogleFonts.aclonica(
-                color: Colors.grey,
+                color: AppColors.grey6,
                 fontSize: 14,
               ),
-              border: InputBorder.none,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(
+                  color: Colors.transparent,
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+                borderSide: const BorderSide(
+                  color: Color(0xFF9288EE),
+                  width: 1.5,
+                ),
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 24,
                 vertical: 16,
@@ -94,7 +112,7 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
                   Row(
                     children: [
                       Text(
-                        'step 5 out of 6',
+                        'Step 5 of 5',
                         style: GoogleFonts.aclonica(
                           fontSize: 12,
                           color: Colors.grey,
@@ -107,7 +125,7 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
-                      value: 5 / 6,
+                      value: 5 / 5,
                       minHeight: 6,
                       backgroundColor: Colors.grey[800],
                       valueColor: const AlwaysStoppedAnimation<Color>(
