@@ -37,6 +37,9 @@ class EducationalContentSection extends StatelessWidget {
                   backgroundColor: AppColors.orange1,
                   imagePath: 'assets/images/education/course1.png',
                   isLiked: true,
+                  onTap: () {
+                    context.go('/learn/article/your-first-job');
+                  },
                 );
               } else {
                 return EducationCard(
@@ -47,6 +50,9 @@ class EducationalContentSection extends StatelessWidget {
                   backgroundColor: AppColors.electricLime3,
                   imagePath: 'assets/images/education/course2.png',
                   isLiked: false,
+                  onTap: () {
+                    context.go('/learn/article/know-your-rights');
+                  },
                 );
               }
             },

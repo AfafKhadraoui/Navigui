@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../logic/services/auth_service.dart';
 
 /// Bottom Navigation Bar
 /// 5 tabs: Home, Browse Jobs, My Tasks, Learn, Profile
@@ -22,6 +24,11 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = context.watch<AuthService>();
+    final isEmployer = authService.isEmployer;
+    final selectedColor =
+        isEmployer ? AppColors.electricLime : AppColors.purple6;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
@@ -33,51 +40,61 @@ class BottomNavBar extends StatelessWidget {
           ),
         ],
       ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent, // Remove splash effect
-          highlightColor: Colors.transparent, // Remove highlight effect
-        ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: onTap,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: AppColors.background,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.grey2,
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          elevation: 0,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          enableFeedback: false, // Disable haptic feedback
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.work_outline),
-              activeIcon: Icon(Icons.work),
-              label: 'Browse',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.task_alt_outlined),
-              activeIcon: Icon(Icons.task_alt),
-              label: 'My Tasks',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.school_outlined),
-              activeIcon: Icon(Icons.school),
-              label: 'Learn',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
+      child: Material(
+        color: AppColors.background,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            splashFactory: NoSplash.splashFactory,
+          ),
+          child: BottomNavigationBar(
+            currentIndex: currentIndex,
+            onTap: onTap,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            selectedItemColor: selectedColor,
+            unselectedItemColor: AppColors.grey2,
+            selectedFontSize: 11,
+            unselectedFontSize: 11,
+            elevation: 0,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            enableFeedback: false,
+            items: [
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.home_outlined),
+                activeIcon: const Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                    isEmployer ? Icons.business_outlined : Icons.work_outline),
+                activeIcon: Icon(isEmployer ? Icons.business : Icons.work),
+                label: isEmployer ? 'My Jobs' : 'Browse',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(isEmployer
+                    ? Icons.assignment_outlined
+                    : Icons.task_alt_outlined),
+                activeIcon:
+                    Icon(isEmployer ? Icons.assignment : Icons.task_alt),
+                label: isEmployer ? 'Applications' : 'My Tasks',
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.school_outlined),
+                activeIcon: const Icon(Icons.school),
+                label: 'Learn',
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.person_outline),
+                activeIcon: const Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -18,12 +18,14 @@ import '../views/screens/jobs/jobs_page.dart';
 import '../views/screens/tasks/my_tasks_screen.dart';
 import '../views/screens/education/education_list_screen.dart';
 import '../views/screens/profile/my_profile_screen.dart';
+import '../logic/services/role_based_navigation.dart';
 import '../views/screens/profile/edit_student_profile_screen2.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
 import '../views/screens/employer/edit_employer_profile_screen2.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
 import '../views/screens/jobs/job_detail_screen.dart';
+import '../views/screens/education/article_detail_screen.dart';
 
 /// App Router Configuration
 ///
@@ -204,8 +206,8 @@ class AppRouter {
           GoRoute(
             path: home,
             name: 'home',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeScreen(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: RoleBasedNavigation.getHomeScreen(),
             ),
           ),
 
@@ -213,8 +215,8 @@ class AppRouter {
           GoRoute(
             path: jobs,
             name: 'jobs',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: JobsPage(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: RoleBasedNavigation.getBrowseScreen(),
             ),
             routes: [
               GoRoute(
@@ -231,22 +233,32 @@ class AppRouter {
           GoRoute(
             path: tasks,
             name: 'tasks',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: MyTasksScreen(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: RoleBasedNavigation.getTasksScreen(),
             ),
           ),
           GoRoute(
             path: learn,
             name: 'learn',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: EducationListScreen(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: RoleBasedNavigation.getLearnScreen(),
             ),
+            routes: [
+              GoRoute(
+                path: 'article/:id',
+                name: 'article',
+                builder: (context, state) {
+                  final articleId = state.pathParameters['id'] ?? '';
+                  return EducationArticleScreen(articleId: articleId);
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: profile,
             name: 'profile',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: MyProfileScreen(),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: RoleBasedNavigation.getProfileScreen(),
             ),
           ),
         ],

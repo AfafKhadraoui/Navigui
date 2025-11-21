@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import 'package:go_router/go_router.dart';
 import '../../../routes/app_router.dart';
+import '../../../logic/services/auth_service.dart';
 
 class LoginScreen2 extends StatefulWidget {
   const LoginScreen2({super.key});
@@ -143,10 +145,22 @@ class _LoginScreen2State extends State<LoginScreen2> {
 
               // Login Button
               ElevatedButton(
-                onPressed: () {
-                  print('Login with: ${_emailController.text}');
-                  // After login success:
-                  context.go(AppRouter.home); // Goes to home WITH bottom bar!
+                onPressed: () async {
+                  // DEMO: Login with role based on email
+                  // If email contains 'employer' -> employer role
+                  // Otherwise -> student role
+                  final email = _emailController.text.trim();
+
+                  final authService = context.read<AuthService>();
+                  final success = await authService.login(
+                    email,
+                    _passwordController.text,
+                  );
+
+                  if (success && mounted) {
+                    // Navigate to home - it will show correct interface based on role
+                    context.go(AppRouter.home);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD2FF1F),

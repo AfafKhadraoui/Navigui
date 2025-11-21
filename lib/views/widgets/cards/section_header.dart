@@ -30,12 +30,14 @@ class SectionHeader extends StatelessWidget {
           GestureDetector(
             onTap: onExploreTap,
             child: Text(
-              'explore more →',
+              'explore more',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.47),
+                color: AppColors.electricLime,
                 fontSize: 14,
                 fontFamily: 'Acme',
                 letterSpacing: -0.5,
+                decoration: TextDecoration.underline,
+                decorationColor: AppColors.electricLime,
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 
-class JobCard extends StatelessWidget {
+class JobCard extends StatefulWidget {
   final String title;
   final String location;
   final String salary;
@@ -22,25 +22,38 @@ class JobCard extends StatelessWidget {
   });
 
   @override
+  State<JobCard> createState() => _JobCardState();
+}
+
+class _JobCardState extends State<JobCard> {
+  late bool _isLiked;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLiked = widget.isLiked;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         width: 224,
         height: 158,
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(15),
         ),
         child: Stack(
           children: [
             // Image
-            if (imagePath != null)
+            if (widget.imagePath != null)
               Positioned(
                 right: 10,
                 top: 10,
                 child: Image.asset(
-                  imagePath!,
+                  widget.imagePath!,
                   width: 121,
                   height: 120,
                   fit: BoxFit.contain,
@@ -64,7 +77,7 @@ class JobCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    widget.title,
                     style: TextStyle(
                       color: AppColors.black,
                       fontSize: 16,
@@ -77,7 +90,7 @@ class JobCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    location,
+                    widget.location,
                     style: TextStyle(
                       color: AppColors.black,
                       fontSize: 11,
@@ -87,7 +100,7 @@ class JobCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    salary,
+                    widget.salary,
                     style: TextStyle(
                       color: AppColors.black,
                       fontSize: 11,
@@ -103,17 +116,24 @@ class JobCard extends StatelessWidget {
             Positioned(
               right: 9,
               top: 7,
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: AppColors.black,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isLiked ? Icons.favorite : Icons.favorite_border,
-                  color: isLiked ? AppColors.red1 : AppColors.white,
-                  size: 16,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isLiked = !_isLiked;
+                  });
+                },
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.black,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: _isLiked ? AppColors.red1 : AppColors.white,
+                    size: 16,
+                  ),
                 ),
               ),
             ),
@@ -125,9 +145,9 @@ class JobCard extends StatelessWidget {
               bottom: 14,
               child: Row(
                 children: [
-                  _buildButton('Read more', backgroundColor),
+                  _buildButton('Read more', widget.backgroundColor),
                   const SizedBox(width: 3),
-                  _buildButton('Apply Now', backgroundColor),
+                  _buildButton('Apply Now', widget.backgroundColor),
                 ],
               ),
             ),

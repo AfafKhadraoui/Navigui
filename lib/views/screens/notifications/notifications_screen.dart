@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
+import 'package:provider/provider.dart';
+import '../../../logic/services/auth_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -9,30 +11,81 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  // Sample notification data
-  final List<Map<String, dynamic>> _notifications = [
-    {
-      'title': 'Your application was accepted!',
-      'subtitle':
-          'Café Littéraire accepted your application for Weekend Waiter.',
-      'highlightColor': Color(0xFFD2FF1F), // Electric lime - yellow highlight
-      'isRead': false,
-    },
-    {
-      'title':
-          'The Social Media Manager position you saved expires in 2 days. Apply now!',
-      'subtitle': '',
-      'highlightColor': null, // No highlight
-      'isRead': false,
-    },
-    {
-      'title':
-          'You completed a job with QuickBox Delivery. Rate your experience to help other students.',
-      'subtitle': '',
-      'highlightColor': null, // No highlight
-      'isRead': false,
-    },
-  ];
+  List<Map<String, dynamic>> _getNotifications(bool isEmployer) {
+    if (isEmployer) {
+      // Employer notifications
+      return [
+        {
+          'title': 'New application received!',
+          'subtitle': 'Ahmed Benali applied for your Waiter Needed position.',
+          'highlightColor': Color(0xFFD2FF1F), // Electric lime highlight
+          'isRead': false,
+        },
+        {
+          'title':
+              'Your job post "Delivery Driver" expires in 2 days. Renew now to keep it active!',
+          'subtitle': '',
+          'highlightColor': null,
+          'isRead': false,
+        },
+        {
+          'title':
+              'Fatima Kader completed the job. Rate their performance to help other employers.',
+          'subtitle': '',
+          'highlightColor': null,
+          'isRead': false,
+        },
+      ];
+    } else {
+      // Student notifications
+      return [
+        {
+          'title': 'Your application was accepted!',
+          'subtitle':
+              'Café Littéraire accepted your application for Weekend Waiter.',
+          'highlightColor': Color(0xFFD2FF1F),
+          'isRead': false,
+        },
+        {
+          'title':
+              'The Social Media Manager position you saved expires in 2 days. Apply now!',
+          'subtitle': '',
+          'highlightColor': null,
+          'isRead': false,
+        },
+        {
+          'title':
+              'You completed a job with QuickBox Delivery. Rate your experience to help other students.',
+          'subtitle': '',
+          'highlightColor': null,
+          'isRead': false,
+        },
+      ];
+    }
+  }
+
+  late List<Map<String, dynamic>> _notifications;
+  late bool _isEmployer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize in initState to avoid resetting on rebuild
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Get role from provider and initialize notifications once
+    final authService = context.read<AuthService>();
+    _isEmployer = authService.isEmployer;
+    if (!_notificationsInitialized) {
+      _notifications = _getNotifications(_isEmployer);
+      _notificationsInitialized = true;
+    }
+  }
+
+  bool _notificationsInitialized = false;
 
   void _removeNotification(int index) {
     setState(() {
@@ -57,26 +110,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           icon: Icon(Icons.arrow_back_ios, color: AppColors.white, size: 20),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Notifications',
-          style: TextStyle(
-            color: AppColors.white,
-            fontSize: 28,
-            fontFamily: 'Aclonica',
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.5,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(
+            'Notifications',
+            style: TextStyle(
+              color: AppColors.white,
+              fontSize: 28,
+              fontFamily: 'Aclonica',
+              fontWeight: FontWeight.w400,
+              letterSpacing: -0.5,
+            ),
           ),
         ),
         centerTitle: true,
         actions: [
           if (_notifications.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 16, top: 8),
               child: GestureDetector(
                 onTap: _clearAllNotifications,
                 child: Icon(
                   Icons.delete_outline,
-                  color: AppColors.electricLime, // Yellow trash icon
+                  color: AppColors.electricLime,
                   size: 28,
                 ),
               ),

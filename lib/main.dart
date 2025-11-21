@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'views/screens/auth/logIn.dart';
+import 'package:provider/provider.dart';
 import 'commons/themes/style_simple/theme.dart';
 import 'routes/app_router.dart';
+import 'logic/services/auth_service.dart';
 
 void main() {
-  runApp(const NaviguiApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: const NaviguiApp(),
+    ),
+  );
 }
 
 class NaviguiApp extends StatelessWidget {
