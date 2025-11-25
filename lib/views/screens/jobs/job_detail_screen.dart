@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
+import 'apply_job_screen.dart';
+import 'saved_jobs_screen.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> job;
@@ -25,6 +27,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () => Navigator.pop(context),
@@ -32,6 +35,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         title: const Text(
           'Job Details',
           style: TextStyle(
+            fontFamily: 'Aclonica', // Title font
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.white,
@@ -71,6 +75,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Text(
                     widget.job['title'],
                     style: const TextStyle(
+                      fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -82,16 +87,19 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       Text(
                         widget.job['company'],
                         style: const TextStyle(
+                          fontFamily: 'Acme', // Text font
                           color: AppColors.grey6,
                           fontSize: 16,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.star, color: AppColors.yellow1, size: 16),
+                      const Icon(Icons.star,
+                          color: AppColors.yellow1, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         widget.job['rating'].toString(),
                         style: const TextStyle(
+                          fontFamily: 'Acme', // Text font
                           color: AppColors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -129,11 +137,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   // Salary
                   Row(
                     children: [
-                      const Icon(Icons.payments_outlined, color: AppColors.lavenderPurple, size: 20),
+                      const Icon(Icons.payments_outlined,
+                          color: AppColors.lavenderPurple, size: 20),
                       const SizedBox(width: 8),
                       Text(
                         widget.job['salary'],
                         style: const TextStyle(
+                          fontFamily: 'Aclonica', // Title font for emphasis
                           color: AppColors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -150,15 +160,18 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.urgentRed.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.urgentRed.withOpacity(0.3)),
+                      border: Border.all(
+                          color: AppColors.urgentRed.withOpacity(0.3)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.event, color: AppColors.urgentRed, size: 20),
+                        const Icon(Icons.event,
+                            color: AppColors.urgentRed, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           'Deadline: ${widget.job['deadline']}',
                           style: const TextStyle(
+                            fontFamily: 'Acme', // Text font
                             color: AppColors.urgentRed,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -185,6 +198,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Contact Information',
                     style: TextStyle(
+                      fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -193,11 +207,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Icon(Icons.phone_outlined, color: AppColors.lavenderPurple, size: 20),
+                      const Icon(Icons.phone_outlined,
+                          color: AppColors.lavenderPurple, size: 20),
                       const SizedBox(width: 12),
                       Text(
                         widget.job['phone'],
                         style: const TextStyle(
+                          fontFamily: 'Acme', // Text font
                           color: AppColors.white,
                           fontSize: 14,
                         ),
@@ -207,11 +223,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.email_outlined, color: AppColors.lavenderPurple, size: 20),
+                      const Icon(Icons.email_outlined,
+                          color: AppColors.lavenderPurple, size: 20),
                       const SizedBox(width: 12),
                       Text(
                         widget.job['email'],
                         style: const TextStyle(
+                          fontFamily: 'Acme', // Text font
                           color: AppColors.white,
                           fontSize: 14,
                         ),
@@ -233,6 +251,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Description',
                     style: TextStyle(
+                      fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -242,6 +261,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Text(
                     widget.job['fullDescription'],
                     style: const TextStyle(
+                      fontFamily: 'Acme', // Text font
                       color: AppColors.grey7,
                       fontSize: 14,
                       height: 1.6,
@@ -262,6 +282,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Requirements',
                     style: TextStyle(
+                      fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -272,6 +293,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Skills Required',
                     style: TextStyle(
+                      fontFamily: 'Acme', // Text font
                       color: AppColors.grey6,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -281,9 +303,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: (widget.job['requirements']['skills'] as List<String>)
-                        .map((skill) => _buildSkillChip(skill))
-                        .toList(),
+                    children:
+                        (widget.job['requirements']['skills'] as List<String>)
+                            .map((skill) => _buildSkillChip(skill))
+                            .toList(),
                   ),
 
                   const SizedBox(height: 16),
@@ -292,6 +315,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Experience',
                     style: TextStyle(
+                      fontFamily: 'Acme', // Text font
                       color: AppColors.grey6,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -301,6 +325,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Text(
                     widget.job['requirements']['experience'],
                     style: const TextStyle(
+                      fontFamily: 'Acme', // Text font
                       color: AppColors.white,
                       fontSize: 14,
                     ),
@@ -312,6 +337,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Languages',
                     style: TextStyle(
+                      fontFamily: 'Acme', // Text font
                       color: AppColors.grey6,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -321,7 +347,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: (widget.job['requirements']['languages'] as List<String>)
+                    children: (widget.job['requirements']['languages']
+                            as List<String>)
                         .map((lang) => _buildLanguageChip(lang))
                         .toList(),
                   ),
@@ -340,6 +367,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const Text(
                     'Time Commitment',
                     style: TextStyle(
+                      fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -348,11 +376,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.access_time_outlined, color: AppColors.lavenderPurple, size: 20),
+                      const Icon(Icons.access_time_outlined,
+                          color: AppColors.lavenderPurple, size: 20),
                       const SizedBox(width: 8),
                       Text(
                         widget.job['requirements']['timeCommitment'],
                         style: const TextStyle(
+                          fontFamily: 'Acme', // Text font
                           color: AppColors.white,
                           fontSize: 14,
                         ),
@@ -363,7 +393,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: (widget.job['requirements']['availability'] as List<String>)
+                    children: (widget.job['requirements']['availability']
+                            as List<String>)
                         .map((day) => _buildAvailabilityChip(day))
                         .toList(),
                   ),
@@ -384,7 +415,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         // Share functionality
                       },
                       icon: const Icon(Icons.share_outlined, size: 20),
-                      label: const Text('Share'),
+                      label: const Text(
+                        'Share',
+                        style: TextStyle(fontFamily: 'Acme'), // Text font
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.white,
                         side: const BorderSide(color: AppColors.grey5),
@@ -403,7 +437,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         // Contact functionality
                       },
                       icon: const Icon(Icons.message_outlined, size: 20),
-                      label: const Text('Contact'),
+                      label: const Text(
+                        'Contact',
+                        style: TextStyle(fontFamily: 'Acme'), // Text font
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.white,
                         side: const BorderSide(color: AppColors.grey5),
@@ -422,7 +459,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         // Report functionality
                       },
                       icon: const Icon(Icons.flag_outlined, size: 20),
-                      label: const Text('Report'),
+                      label: const Text(
+                        'Report',
+                        style: TextStyle(fontFamily: 'Acme'), // Text font
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.white,
                         side: const BorderSide(color: AppColors.grey5),
@@ -443,28 +483,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Apply functionality
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        backgroundColor: AppColors.grey4,
-                        title: const Text(
-                          'Application Submitted',
-                          style: TextStyle(color: AppColors.white),
-                        ),
-                        content: const Text(
-                          'Your application has been sent successfully!',
-                          style: TextStyle(color: AppColors.grey7),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              'OK',
-                              style: TextStyle(color: AppColors.lavenderPurple),
-                            ),
-                          ),
-                        ],
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ApplyJobScreen(job: widget.job),
                       ),
                     );
                   },
@@ -479,6 +501,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   child: const Text(
                     'Apply Now',
                     style: TextStyle(
+                      fontFamily: 'Aclonica', // Title font for buttons
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -507,6 +530,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
           Text(
             label,
             style: const TextStyle(
+              fontFamily: 'Acme', // Text font
               color: AppColors.white,
               fontSize: 12,
             ),
@@ -527,6 +551,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       child: Text(
         skill,
         style: const TextStyle(
+          fontFamily: 'Acme', // Text font
           color: AppColors.lavenderPurple,
           fontSize: 12,
           fontWeight: FontWeight.w500,
@@ -545,6 +570,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       child: Text(
         language,
         style: const TextStyle(
+          fontFamily: 'Acme', // Text font
           color: AppColors.white,
           fontSize: 12,
           fontWeight: FontWeight.w500,
@@ -552,6 +578,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       ),
     );
   }
+
   Widget _buildAvailabilityChip(String day) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -562,6 +589,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       child: Text(
         day,
         style: const TextStyle(
+          fontFamily: 'Acme', // Text font
           color: AppColors.white,
           fontSize: 12,
           fontWeight: FontWeight.w500,
