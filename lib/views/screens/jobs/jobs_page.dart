@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
+import 'saved_jobs_screen.dart';
+import 'job_detail_screen.dart';
+import 'apply_job_screen.dart';
 
 class JobsPage extends StatefulWidget {
   const JobsPage({super.key});
@@ -13,6 +16,9 @@ class JobsPage extends StatefulWidget {
 class _JobsPageState extends State<JobsPage> {
   String selectedFilter = 'All';
   String sortBy = 'Most Recent';
+  
+  // Track favorited jobs
+  Set<String> favoritedJobIds = {};
 
   // Sample job data
   final List<Map<String, dynamic>> jobs = [
@@ -150,18 +156,30 @@ class _JobsPageState extends State<JobsPage> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         title: const Text(
           'Career',
           style: TextStyle(
-            fontSize: 24,
             fontFamily: 'Aclonica',
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
             color: AppColors.white,
-            letterSpacing: -0.5,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.favorite_border, color: AppColors.white),
-          onPressed: () {},
+          icon: Icon(
+            favoritedJobIds.isEmpty ? Icons.favorite_border : Icons.favorite,
+            color: favoritedJobIds.isEmpty ? AppColors.white : AppColors.urgentRed,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SavedJobsScreen(),
+              ),
+            );
+          },
         ),
         actions: [
           IconButton(
@@ -170,67 +188,72 @@ class _JobsPageState extends State<JobsPage> {
           ),
         ],
       ),
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          overscroll: false,
-        ),
-        child: Column(
-          children: [
-            // Filters and Sort
-            Padding(
-              padding: const EdgeInsets.all(AppStyles.spacingMD),
-              child: Row(
-                children: [
-                  // Filter Button
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+      body: Column(
+        children: [
+          // Filters and Sort
+          Padding(
+            padding: const EdgeInsets.all(AppStyles.spacingMD),
+            child: Row(
+              children: [
+                // Filter Button
+                Expanded(
+                  child: Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
                       color: AppColors.grey4,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(25),
                       border: Border.all(color: AppColors.grey5),
                     ),
                     child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.filter_list,
-                            color: AppColors.white, size: 18),
-                        SizedBox(width: 4),
+                        Icon(Icons.filter_list, color: AppColors.white, size: 18),
+                        SizedBox(width: 8),
                         Text(
                           'Filters',
                           style: TextStyle(
+                            fontFamily: 'Aclonica',
                             color: AppColors.white,
-                            fontSize: 14,
-                            fontFamily: 'Acme',
-                            letterSpacing: -0.5,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Spacer(),
-                  // Sort Dropdown
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                ),
+                
+                const SizedBox(width: 16),
+                
+                // Sort Dropdown
+                Expanded(
+                  child: Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
                       color: AppColors.grey4,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(25),
                       border: Border.all(color: AppColors.grey5),
                     ),
                     child: DropdownButton<String>(
                       value: sortBy,
                       dropdownColor: AppColors.grey4,
                       underline: const SizedBox(),
+                      isExpanded: true,
+                      isDense: true,
                       style: const TextStyle(
+                        fontFamily: 'Aclonica',
                         color: AppColors.white,
-                        fontSize: 14,
-                        fontFamily: 'Acme',
-                        letterSpacing: -0.5,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
-                      icon: const Icon(Icons.keyboard_arrow_down,
-                          color: AppColors.white, size: 20),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: AppColors.white,
+                        size: 20,
+                      ),
                       items: ['Most Recent', 'Highest Pay', 'Closest Deadline']
                           .map((value) => DropdownMenuItem(
                                 value: value,
@@ -244,65 +267,57 @@ class _JobsPageState extends State<JobsPage> {
                       },
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
 
-            // Filter Tabs
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
-              child: Row(
-                children: [
-                  _buildFilterChip('All'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Part Time'),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Tasks'),
-                ],
-              ),
+          // Filter Tabs
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
+            child: Row(
+              children: [
+                _buildFilterChip('All'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Part Time'),
+                const SizedBox(width: 8),
+                _buildFilterChip('Tasks'),
+              ],
             ),
+          ),
 
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
-            // Job Count
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '${filteredJobs.length} jobs found',
-                  style: const TextStyle(
-                    color: AppColors.grey6,
-                    fontSize: 14,
-                    fontFamily: 'Acme',
-                    letterSpacing: -0.5,
-                  ),
+          // Job Count
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '${filteredJobs.length} jobs found',
+                style: const TextStyle(
+                  fontFamily: 'Acme',
+                  color: AppColors.grey6,
+                  fontSize: 14,
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-            // Jobs List
-            Expanded(
-              child: Container(
-                color: AppColors.background,
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppStyles.spacingMD),
-                  itemCount: filteredJobs.length,
-                  itemBuilder: (context, index) {
-                    final job = filteredJobs[index];
-                    return _buildJobCard(context, job);
-                  },
-                ),
-              ),
+          // Jobs List
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
+              itemCount: filteredJobs.length,
+              itemBuilder: (context, index) {
+                final job = filteredJobs[index];
+                return _buildJobCard(context, job);
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -327,10 +342,10 @@ class _JobsPageState extends State<JobsPage> {
         child: Text(
           label,
           style: TextStyle(
+            fontFamily: 'Acme',
             color: isSelected ? AppColors.black : AppColors.white,
             fontSize: 14,
-            fontFamily: 'Acme',
-            letterSpacing: -0.5,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -338,240 +353,276 @@ class _JobsPageState extends State<JobsPage> {
   }
 
   Widget _buildJobCard(BuildContext context, Map<String, dynamic> job) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: job['isUrgent'] ? const Color(0xFF2D1B3D) : AppColors.grey4,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: job['isUrgent'] ? const Color(0xFF4A2D5C) : AppColors.grey5,
+    final isFavorited = favoritedJobIds.contains(job['id']);
+    
+    return GestureDetector(
+      onTap: () {
+        // Navigate to Job Details when card is tapped
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => JobDetailsScreen(job: job),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: job['isUrgent'] ? const Color(0xFF2D1B3D) : AppColors.grey4,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: job['isUrgent'] ? const Color(0xFF4A2D5C) : AppColors.grey5,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      job['title'],
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: 18,
-                        fontFamily: 'Aclonica',
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      job['company'],
-                      style: const TextStyle(
-                        color: AppColors.grey6,
-                        fontSize: 14,
-                        fontFamily: 'Acme',
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (job['isUrgent'])
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.urgentRed,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.warning_rounded,
-                          color: AppColors.white, size: 14),
-                      SizedBox(width: 4),
                       Text(
-                        'Urgent',
-                        style: TextStyle(
+                        job['title'],
+                        style: const TextStyle(
+                          fontFamily: 'Aclonica',
                           color: AppColors.white,
-                          fontSize: 12,
-                          fontFamily: 'Acme',
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        job['company'],
+                        style: const TextStyle(
+                          fontFamily: 'Acme',
+                          color: AppColors.grey6,
+                          fontSize: 14,
                         ),
                       ),
                     ],
                   ),
                 ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Description
-          Text(
-            job['description'],
-            style: const TextStyle(
-              color: AppColors.grey7,
-              fontSize: 14,
-              fontFamily: 'Acme',
-              height: 1.4,
-              letterSpacing: -0.5,
+                if (job['isUrgent'])
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.urgentRed,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.warning_rounded,
+                            color: AppColors.white, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'Urgent',
+                          style: TextStyle(
+                            fontFamily: 'Acme',
+                            color: AppColors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
 
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          // Location and Time
-          Row(
-            children: [
-              const Icon(Icons.location_on_outlined,
-                  color: AppColors.grey6, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                job['location'],
-                style: const TextStyle(
-                  color: AppColors.grey6,
-                  fontSize: 12,
-                  fontFamily: 'Acme',
-                  letterSpacing: -0.5,
-                ),
+            // Description
+            Text(
+              job['description'],
+              style: const TextStyle(
+                fontFamily: 'Acme',
+                color: AppColors.grey7,
+                fontSize: 14,
+                height: 1.4,
               ),
-              const SizedBox(width: 16),
-              const Icon(Icons.access_time, color: AppColors.grey6, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                job['postedTime'],
-                style: const TextStyle(
-                  color: AppColors.grey6,
-                  fontSize: 12,
-                  fontFamily: 'Acme',
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ],
-          ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
 
-          const SizedBox(height: 8),
-          // Phone and Deadline
-          Row(
-            children: [
-              const Icon(Icons.phone_outlined,
-                  color: AppColors.grey6, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                job['phone'],
-                style: const TextStyle(
-                  color: AppColors.grey6,
-                  fontSize: 12,
-                  fontFamily: 'Acme',
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Icon(Icons.calendar_today_outlined,
-                  color: AppColors.grey6, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                job['deadline'],
-                style: const TextStyle(
-                  color: AppColors.grey6,
-                  fontSize: 12,
-                  fontFamily: 'Acme',
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ],
-          ),
+            const SizedBox(height: 12),
 
-          const SizedBox(height: 16),
-
-          // Salary and Actions
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                job['salary'],
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 20,
-                  fontFamily: 'Aclonica',
-                  letterSpacing: -0.5,
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.grey5,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  job['type'],
+            // Location and Time
+            Row(
+              children: [
+                const Icon(Icons.location_on_outlined,
+                    color: AppColors.grey6, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  job['location'],
                   style: const TextStyle(
-                    color: AppColors.grey7,
-                    fontSize: 12,
                     fontFamily: 'Acme',
-                    letterSpacing: -0.5,
+                    color: AppColors.grey6,
+                    fontSize: 12,
                   ),
                 ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Action Buttons
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.favorite_border),
-                color: AppColors.grey6,
-                style: IconButton.styleFrom(
-                  backgroundColor: AppColors.grey5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                const SizedBox(width: 16),
+                const Icon(Icons.access_time, color: AppColors.grey6, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  job['postedTime'],
+                  style: const TextStyle(
+                    fontFamily: 'Acme',
+                    color: AppColors.grey6,
+                    fontSize: 12,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.go(
-                      '/jobs/details/${job['id']}',
-                      extra: job,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.lavenderPurple,
-                    foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+            // Phone and Deadline
+            Row(
+              children: [
+                const Icon(Icons.phone_outlined,
+                    color: AppColors.grey6, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  job['phone'],
+                  style: const TextStyle(
+                    fontFamily: 'Acme',
+                    color: AppColors.grey6,
+                    fontSize: 12,
                   ),
-                  child: const Text(
-                    'Apply Now',
-                    style: TextStyle(
-                      fontSize: 14,
+                ),
+                const SizedBox(width: 16),
+                const Icon(Icons.calendar_today_outlined,
+                    color: AppColors.grey6, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  job['deadline'],
+                  style: const TextStyle(
+                    fontFamily: 'Acme',
+                    color: AppColors.grey6,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Salary and Type
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  job['salary'],
+                  style: const TextStyle(
+                    fontFamily: 'Aclonica',
+                    color: AppColors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.lavenderPurple,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    job['type'],
+                    style: const TextStyle(
                       fontFamily: 'Acme',
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
+                      color: AppColors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Action Buttons
+            Row(
+              children: [
+                // Heart/Favorite Button
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey5,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (isFavorited) {
+                          favoritedJobIds.remove(job['id']);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Job removed from saved',style: TextStyle(fontFamily: 'Aclonica'),),
+                              backgroundColor:  AppColors.lavenderPurple,
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        } else {
+                          favoritedJobIds.add(job['id']);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Job saved successfully',style: TextStyle(fontFamily: 'Aclonica'),),
+                              backgroundColor:  AppColors.lavenderPurple,
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    icon: Icon(
+                      isFavorited ? Icons.favorite : Icons.favorite_border,
+                    ),
+                    color: isFavorited ? AppColors.urgentRed : AppColors.white,
+                    iconSize: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Apply Now Button
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ApplyJobScreen(job: job),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppColors.lavenderPurple,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Apply Now',
+                          style: TextStyle(
+                            fontFamily: 'Aclonica',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
