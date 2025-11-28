@@ -26,6 +26,14 @@ import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
 import '../views/screens/jobs/job_detail_screen.dart';
 import '../views/screens/education/article_detail_screen.dart';
+import '../views/screens/employer/my_job_posts_screen.dart';
+import '../views/screens/employer/job_post_form_screen.dart';
+import '../views/screens/employer/job_post_detail_screen.dart';
+import '../views/screens/employer/student_requests_screen.dart';
+import '../views/screens/employer/job_applications_screen.dart';
+import '../views/screens/employer/student_request_detail_screen.dart';
+import '../models/job_post.dart';
+import '../models/application.dart';
 
 /// App Router Configuration
 ///
@@ -79,15 +87,19 @@ class AppRouter {
   static const String createEmployerProfile = '/profile/create-employer';
   static const String editEmployerProfile = '/profile/edit-employer';
 
-  static final GoRouter router = GoRouter(
-    initialLocation: splash, // Start at splash screen
-    restorationScopeId:
-        null, // Disable state restoration to always start at splash
-    routes: [
-      // ============================================
-      // PUBLIC ROUTES (No Bottom Bar)
-      // ============================================
+  // Job board sub-routes (nested under /tasks for employer)
+  static const String myJobPosts = '/tasks/my-posts';
+  static const String jobPostForm = '/tasks/post-form';
+  static const String jobPostDetail = '/tasks/job';
+  static const String jobApplications = '/job-applications';
+  static const String studentRequests = '/tasks/requests';
+  static const String studentRequestDetail = '/tasks/request';
 
+  static final GoRouter router = GoRouter(
+    initialLocation: splash,
+    restorationScopeId: null,
+    routes: [
+      // PUBLIC ROUTES (No Bottom Bar)
       GoRoute(
         path: splash,
         name: 'splash',
@@ -193,13 +205,9 @@ class AppRouter {
         builder: (context, state) => const EditEmployerProfileScreen2(),
       ),
 
-      // ============================================
       // PROTECTED ROUTES (With Bottom Bar)
-      // ============================================
-
       ShellRoute(
         builder: (context, state, child) {
-          // This wraps all child routes with the bottom navigation bar
           return RootScaffold(child: child);
         },
         routes: [
@@ -236,7 +244,67 @@ class AppRouter {
             pageBuilder: (context, state) => NoTransitionPage(
               child: RoleBasedNavigation.getTasksScreen(),
             ),
+            routes: [
+              // My Job Posts List (employer)
+              GoRoute(
+                path: 'my-posts',
+                name: 'my-job-posts',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: MyJobPostsScreen(),
+                ),
+              ),
+
+              // Job Post Form (Create/Edit)
+              GoRoute(
+                path: 'post-form',
+                name: 'job-post-form',
+                builder: (context, state) {
+                  final job = state.extra as JobPost?;
+                  return JobPostFormScreen(job: job);
+                },
+              ),
+
+              // Job Post Detail
+              GoRoute(
+                path: 'job/:id',
+                name: 'job-post-detail',
+                builder: (context, state) {
+                  final job = state.extra as JobPost;
+                  return JobPostDetailScreen(job: job);
+                },
+              ),
+
+//applications for specific job
+GoRoute(
+  path: '/job-applications/:jobId',
+  name: 'jobApplications',
+  builder: (context, state) {
+    final jobPost = state.extra as JobPost;
+    return JobApplicationsScreen(jobPost: jobPost);
+  },
+),
+
+              // Student Requests List (employer)
+              GoRoute(
+                path: 'requests',
+                name: 'student-requests',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: StudentRequestsScreen(),
+                ),
+              ),
+
+              // Student Request Detail
+              GoRoute(
+                path: 'request/:id',
+                name: 'student-request-detail',
+                builder: (context, state) {
+                  final application = state.extra as Application;
+                  return StudentRequestDetailScreen(application: application);
+                },
+              ),
+            ],
           ),
+
           GoRoute(
             path: learn,
             name: 'learn',
@@ -254,6 +322,7 @@ class AppRouter {
               ),
             ],
           ),
+
           GoRoute(
             path: profile,
             name: 'profile',
