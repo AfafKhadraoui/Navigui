@@ -1,5 +1,7 @@
+// lib/routes/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/auth/login.dart';
 import '../views/screens/auth/AccountType.dart';
@@ -13,19 +15,31 @@ import '../views/screens/auth/step2Employer.dart';
 import '../views/screens/auth/step3Employer.dart';
 import '../views/screens/auth/step4Employer.dart';
 import '../views/screens/onboarding/onboarding_screen.dart';
-import '../views/screens/homescreen/home_screen.dart';
-import '../views/screens/jobs/jobs_page.dart';
-import '../views/screens/tasks/my_tasks_screen.dart';
-import '../views/screens/education/education_list_screen.dart';
-import '../views/screens/profile/my_profile_screen.dart';
+import '../views/screens/notifications/notifications_screen.dart';
+import '../views/widgets/navigation/bottom_nav_bar.dart';
+
+// Job board screens
+import '../views/screens/tasks/employer/employer_dashboard_screen.dart';
+import '../views/screens/tasks/employer/create_job_screen.dart';
+import '../views/screens/tasks/employer/job_detail_employer_screen.dart';
+import '../views/screens/tasks/employer/job_requests_screen.dart';
+import '../views/screens/tasks/employer/request_detail_screen.dart';
+
+import '../logic/models/job_post.dart';
+import '../logic/models/application.dart';
+import '../logic/services/auth_service.dart';
 import '../logic/services/role_based_navigation.dart';
 import '../views/screens/profile/edit_student_profile_screen2.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
 import '../views/screens/employer/edit_employer_profile_screen2.dart';
-import '../views/screens/notifications/notifications_screen.dart';
-import '../views/widgets/navigation/bottom_nav_bar.dart';
 import '../views/screens/jobs/job_detail_screen.dart';
 import '../views/screens/education/article_detail_screen.dart';
+
+// Admin screens
+import '../views/screens/admin/admin_users_screen.dart';
+import '../views/screens/admin/admin_jobs_screen.dart';
+import '../views/screens/admin/admin_reports_screen.dart';
+import '../views/screens/admin/admin_settings_screen.dart';
 
 /// App Router Configuration
 ///
@@ -74,6 +88,13 @@ class AppRouter {
   // Additional routes
   static const String notifications = '/notifications';
 
+
+  // Job board sub-routes (nested under /tasks)
+  static const String myJobPosts = '/tasks/my-posts';
+  static const String jobPostForm = '/tasks/post-form';
+  static const String jobPostDetail = '/tasks/job';
+  static const String studentRequests = '/tasks/requests';
+  static const String studentRequestDetail = '/tasks/request';
   // Profile routes
   static const String editStudentProfile = '/profile/edit-student';
   static const String createEmployerProfile = '/profile/create-employer';
@@ -174,7 +195,7 @@ class AppRouter {
         builder: (context, state) => const NotificationsScreen(),
       ),
 
-      // Profile management routes (outside bottom nav)
+ // Profile management routes (outside bottom nav)
       GoRoute(
         path: editStudentProfile,
         name: 'edit-student-profile',
@@ -261,6 +282,94 @@ class AppRouter {
               child: RoleBasedNavigation.getProfileScreen(),
             ),
           ),
+
+          // ============================================
+          // ADMIN ROUTES (Admin Dashboard Navigation)
+          // ============================================
+          
+          GoRoute(
+            path: '/admin/users',
+            name: 'admin-users',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: AdminUsersScreen(),
+            ),
+          ),
+
+          GoRoute(
+            path: '/admin/jobs',
+            name: 'admin-jobs',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: AdminJobsScreen(),
+            ),
+          ),
+
+          GoRoute(
+            path: '/admin/reports',
+            name: 'admin-reports',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: AdminReportsScreen(),
+            ),
+          ),
+
+          GoRoute(
+            path: '/admin/settings',
+            name: 'admin-settings',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: AdminSettingsScreen(),
+            ),
+          ),
+
+          // ============================================
+          // JOB BOARD SUB-ROUTES (Nested under tasks)
+          // ============================================
+
+          // My Job Posts List
+          GoRoute(
+            path: myJobPosts,
+            name: 'my-job-posts',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: EmployerDashboardScreen(),
+            ),
+          ),
+
+          // Job Post Form (Create/Edit)
+          GoRoute(
+            path: jobPostForm,
+            name: 'job-post-form',
+            builder: (context, state) {
+              final job = state.extra as JobPost?;
+              return CreateJobScreen(job: job);
+            },
+          ),
+
+          // Job Post Detail
+          GoRoute(
+            path: '$jobPostDetail/:id',
+            name: 'job-post-detail',
+            builder: (context, state) {
+              final job = state.extra as JobPost;
+              return JobDetailEmployerScreen(job: job);
+            },
+          ),
+
+          // Student Requests List
+          GoRoute(
+            path: studentRequests,
+            name: 'student-requests',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: JobRequestsScreen(),
+            ),
+          ),
+
+          // Student Request Detail
+          GoRoute(
+            path: '$studentRequestDetail/:id',
+            name: 'student-request-detail',
+            builder: (context, state) {
+              final application = state.extra as Application;
+              return RequestDetailScreen(application: application);
+            },
+          ),
         ],
       ),
     ],
@@ -284,33 +393,66 @@ class RootScaffold extends StatefulWidget {
 class _RootScaffoldState extends State<RootScaffold> {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
+    final authService = context.watch<AuthService>();
+    final isAdmin = authService.currentUser?.accountType == 'admin';
 
-    if (location.startsWith(AppRouter.home)) return 0;
-    if (location.startsWith(AppRouter.jobs)) return 1;
-    if (location.startsWith(AppRouter.tasks)) return 2;
-    if (location.startsWith(AppRouter.learn)) return 3;
-    if (location.startsWith(AppRouter.profile)) return 4;
-
-    return 0;
+    if (isAdmin) {
+      // Admin has 4 tabs: Dashboard (0), Users (1), Jobs (2), Settings (3)
+      if (location.startsWith(AppRouter.home)) return 0;
+      if (location.startsWith('/admin/users')) return 1;
+      if (location.startsWith('/admin/jobs')) return 2;
+      if (location.startsWith('/admin/settings')) return 3;
+      return 0;
+    } else {
+      // Student/Employer have 5 tabs
+      if (location.startsWith(AppRouter.home)) return 0;
+      if (location.startsWith(AppRouter.jobs)) return 1;
+      if (location.startsWith(AppRouter.tasks)) return 2;
+      if (location.startsWith(AppRouter.learn)) return 3;
+      if (location.startsWith(AppRouter.profile)) return 4;
+      return 0;
+    }
   }
 
   void _onItemTapped(int index) {
-    switch (index) {
-      case 0:
-        context.go(AppRouter.home);
-        break;
-      case 1:
-        context.go(AppRouter.jobs);
-        break;
-      case 2:
-        context.go(AppRouter.tasks);
-        break;
-      case 3:
-        context.go(AppRouter.learn);
-        break;
-      case 4:
-        context.go(AppRouter.profile);
-        break;
+    final authService = context.read<AuthService>();
+    final isAdmin = authService.currentUser?.accountType == 'admin';
+
+    if (isAdmin) {
+      // Admin navigation: Dashboard, Users, Jobs, Settings
+      switch (index) {
+        case 0:
+          context.go(AppRouter.home); // Admin Dashboard
+          break;
+        case 1:
+          context.go('/admin/users'); // Admin Users
+          break;
+        case 2:
+          context.go('/admin/jobs'); // Admin Jobs
+          break;
+        case 3:
+          context.go('/admin/settings'); // Admin Settings
+          break;
+      }
+    } else {
+      // Student/Employer navigation: Home, Jobs, Tasks, Learn, Profile
+      switch (index) {
+        case 0:
+          context.go(AppRouter.home);
+          break;
+        case 1:
+          context.go(AppRouter.jobs);
+          break;
+        case 2:
+          context.go(AppRouter.tasks);
+          break;
+        case 3:
+          context.go(AppRouter.learn);
+          break;
+        case 4:
+          context.go(AppRouter.profile);
+          break;
+      }
     }
   }
 

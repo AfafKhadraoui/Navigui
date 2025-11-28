@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../commons/themes/style_simple/colors.dart';
+import '../../../../commons/themes/style_simple/colors.dart';
 
 /// Employer Profile Creation Screen
 /// Lime green theme (#D2FF1F) for employer
