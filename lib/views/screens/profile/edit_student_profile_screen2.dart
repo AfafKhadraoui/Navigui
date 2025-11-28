@@ -36,6 +36,10 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
     'PhD',
   ];
 
+  // CV file state
+  String? _cvFileName;
+  String? _cvFilePath;
+
   @override
   void dispose() {
     _fullNameController.dispose();
@@ -47,6 +51,37 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
     _skillsController.dispose();
     _portfolioController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickCVFile() async {
+    try {
+      // TODO: Implement file picker functionality
+      // You need to add file_picker package to pubspec.yaml
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'File picker not implemented. Add file_picker package to use this feature.',
+              style: GoogleFonts.aclonica(),
+            ),
+            backgroundColor: AppColors.purple6,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error picking file: $e',
+              style: GoogleFonts.aclonica(),
+            ),
+            backgroundColor: AppColors.red1,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -228,6 +263,85 @@ class _EditStudentProfileScreenState extends State<EditStudentProfileScreen> {
                   hint: 'https://your-portfolio.com',
                   icon: Icons.link,
                   keyboardType: TextInputType.url,
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // CV Upload Section
+                _buildSectionTitle('Resume/CV'),
+                const SizedBox(height: 16),
+                
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.grey4,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.grey5,
+                      width: 1,
+                    ),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _pickCVFile,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: AppColors.purple6.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.upload_file,
+                                color: AppColors.purple6,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _cvFileName ?? 'Upload CV',
+                                    style: GoogleFonts.aclonica(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _cvFileName != null 
+                                        ? 'Tap to change file'
+                                        : 'PDF, DOC, or DOCX (Max 5MB)',
+                                    style: GoogleFonts.aclonica(
+                                      fontSize: 12,
+                                      color: AppColors.grey6,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              _cvFileName != null 
+                                  ? Icons.check_circle
+                                  : Icons.arrow_forward_ios,
+                              color: _cvFileName != null 
+                                  ? AppColors.purple6
+                                  : AppColors.grey6,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 
                 const SizedBox(height: 32),

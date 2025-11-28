@@ -39,47 +39,37 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(25),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          style: GoogleFonts.aclonica(
+            fontSize: 14,
+            color: Colors.black,
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            maxLines: maxLines,
-            style: GoogleFonts.aclonica(
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            hintText: hint,
+            hintStyle: GoogleFonts.aclonica(
+              color: Colors.grey,
               fontSize: 14,
-              color: AppColors.white,
             ),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: GoogleFonts.aclonica(
-                color: AppColors.grey6,
-                fontSize: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25),
-                borderSide: const BorderSide(
-                  color: Colors.transparent,
-                  width: 1.5,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25),
-                borderSide: const BorderSide(
-                  color: Color(0xFF9288EE),
-                  width: 1.5,
-                ),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: maxLines > 1 ? 16 : 16,
-              ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: maxLines > 1 ? 16 : 16,
             ),
           ),
         ),

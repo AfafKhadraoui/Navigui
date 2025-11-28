@@ -13,6 +13,12 @@ import '../../views/screens/employer/employer_jobs_screen.dart';
 import '../../views/screens/employer/employer_applications_screen.dart';
 import '../../views/screens/profile/employer_profile_screen.dart';
 
+// Admin screens
+import '../../views/screens/admin/admin_dashboard_screen.dart';
+import '../../views/screens/admin/admin_users_screen.dart';
+import '../../views/screens/admin/admin_jobs_screen.dart';
+import '../../views/screens/admin/admin_settings_screen.dart';
+
 /// Role-Based Navigation Helper
 /// Returns the correct screen based on user role
 class RoleBasedNavigation {
@@ -20,7 +26,10 @@ class RoleBasedNavigation {
   static Widget getHomeScreen() {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        if (authService.isEmployer) {
+        final accountType = authService.currentUser?.accountType;
+        if (accountType == 'admin') {
+          return const AdminDashboardScreen(); // Admin dashboard
+        } else if (authService.isEmployer) {
           return const EmployerHomeScreen(); // Employer dashboard with statistics
         }
         return const HomeScreen(); // Student home
@@ -32,7 +41,10 @@ class RoleBasedNavigation {
   static Widget getBrowseScreen() {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        if (authService.isEmployer) {
+        final accountType = authService.currentUser?.accountType;
+        if (accountType == 'admin') {
+          return const AdminUsersScreen(); // Admin users management (not used in nav)
+        } else if (authService.isEmployer) {
           return const EmployerJobsScreen(); // Employer's posted jobs + post new job
         }
         return const JobsPage(); // Student job listings
@@ -44,7 +56,10 @@ class RoleBasedNavigation {
   static Widget getTasksScreen() {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        if (authService.isEmployer) {
+        final accountType = authService.currentUser?.accountType;
+        if (accountType == 'admin') {
+          return const AdminJobsScreen(); // Admin jobs management (not used in nav)
+        } else if (authService.isEmployer) {
           return const EmployerApplicationsScreen(); // View applications received
         }
         return const MyTasksScreen(); // Student tasks/schedule
@@ -63,7 +78,10 @@ class RoleBasedNavigation {
   static Widget getProfileScreen() {
     return Consumer<AuthService>(
       builder: (context, authService, _) {
-        if (authService.isEmployer) {
+        final accountType = authService.currentUser?.accountType;
+        if (accountType == 'admin') {
+          return const AdminSettingsScreen(); // Admin settings (not used in nav)
+        } else if (authService.isEmployer) {
           return const EmployerProfileScreen(); // Employer profile
         }
         return const MyProfileScreen(); // Student profile

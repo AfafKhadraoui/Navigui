@@ -27,139 +27,156 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 40),
-              
-              // Header with progress indicator
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Employer Sign Up',
-                    style: GoogleFonts.aclonica(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 40),
+                
+                // Header with progress indicator
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Employer Sign Up',
+                      style: GoogleFonts.aclonica(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        'Step 1 of 4',
-                        style: GoogleFonts.aclonica(
-                          fontSize: 12,
-                          color: Colors.grey,
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Text(
+                          'Step 1 of 4',
+                          style: GoogleFonts.aclonica(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Progress bar
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: 1 / 4,
+                        minHeight: 6,
+                        backgroundColor: Colors.grey[800],
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFFD2FF1F),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Progress bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: 1 / 4,
-                      minHeight: 6,
-                      backgroundColor: Colors.grey[800],
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        Color(0xFFD2FF1F),
-                      ),
                     ),
+                  ],
+                ),
+                
+                const Spacer(),
+                
+                // Title
+                Text(
+                  'get ready for the gag',
+                  style: GoogleFonts.aclonica(
+                    fontSize: 28,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
-              
-              const Spacer(),
-              
-              // Title
-              Text(
-                'get ready for the gag',
-                style: GoogleFonts.aclonica(
-                  fontSize: 28,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Email Address Label
-              Text(
-                'Email Address',
-                style: GoogleFonts.aclonica(
-                  fontSize: 16,
-                  color: Colors.white,
+                
+                const SizedBox(height: 40),
+                
+                // Email Address Label
+                Text(
+                  'Email Address',
+                  style: GoogleFonts.aclonica(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              
-              const SizedBox(height: 8),
-              
-              // Email TextField (dark surface + white text)
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: TextField(
+                
+                const SizedBox(height: 8),
+                
+                // Email TextField (white background + black text)
+                TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
-                    color: AppColors.white,
+                    color: Colors.black,
                   ),
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: 'careerplace@gmail.com',
                     hintStyle: GoogleFonts.aclonica(
-                      color: AppColors.grey6,
+                      color: Colors.grey,
                       fontSize: 14,
                     ),
-                    border: InputBorder.none,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 16,
                     ),
                   ),
                 ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Password Label
-              Text(
-                'Password',
-                style: GoogleFonts.aclonica(
-                  fontSize: 16,
-                  color: Colors.white,
+                
+                const SizedBox(height: 24),
+                
+                // Password Label
+                Text(
+                  'Password',
+                  style: GoogleFonts.aclonica(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              
-              const SizedBox(height: 8),
-              
-              // Password TextField (dark surface + white text)
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: TextField(
+                
+                const SizedBox(height: 8),
+                
+                // Password TextField (white background + black text)
+                TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
-                    color: AppColors.white,
+                    color: Colors.black,
                   ),
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: '••••••••',
                     hintStyle: GoogleFonts.aclonica(
-                      color: AppColors.grey6,
+                      color: Colors.grey,
                       fontSize: 14,
                     ),
-                    border: InputBorder.none,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide.none,
+                    ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 16,
@@ -169,7 +186,7 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                         _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: AppColors.grey6,
+                        color: Colors.grey,
                       ),
                       onPressed: () {
                         setState(() {
@@ -179,73 +196,73 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                     ),
                   ),
                 ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Continue Button
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Step2EmployerScreen(),
+                
+                const SizedBox(height: 40),
+                
+                // Continue Button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Step2EmployerScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD2FF1F),
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD2FF1F),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'Continue',
-                  style: GoogleFonts.aclonica(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Terms and Privacy
-              Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
+                  child: Text(
+                    'Continue',
                     style: GoogleFonts.aclonica(
-                      fontSize: 12,
-                      color: Colors.grey,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    children: const [
-                      TextSpan(text: 'By signing up, you agree to our '),
-                      TextSpan(
-                        text: 'Terms',
-                        style: TextStyle(
-                          color: Color(0xFFD2FF1F),
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      TextSpan(text: ' and '),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(
-                          color: Color(0xFFD2FF1F),
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
-              ),
-              
-              const Spacer(),
-            ],
+                
+                const SizedBox(height: 24),
+                
+                // Terms and Privacy
+                Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: GoogleFonts.aclonica(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                      children: const [
+                        TextSpan(text: 'By signing up, you agree to our '),
+                        TextSpan(
+                          text: 'Terms',
+                          style: TextStyle(
+                            color: Color(0xFFD2FF1F),
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        TextSpan(text: ' and '),
+                        TextSpan(
+                          text: 'Privacy Policy',
+                          style: TextStyle(
+                            color: Color(0xFFD2FF1F),
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),
