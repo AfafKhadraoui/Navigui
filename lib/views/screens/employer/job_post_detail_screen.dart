@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../models/job_post.dart';
+import '../../../logic/models/job_post.dart';
 import '../../../mock/mock_data.dart';
 import 'job_post_form_screen.dart';
 

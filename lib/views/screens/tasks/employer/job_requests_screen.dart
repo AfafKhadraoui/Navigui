@@ -1,32 +1,30 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/application.dart';
-import '../../../mock/mock_data.dart';
-import 'student_request_detail_screen.dart';
+import '../../../../logic/models/application.dart';
+import 'request_detail_screen.dart';
 
-class StudentRequestsScreen extends StatefulWidget {
-  const StudentRequestsScreen({super.key});
+class JobRequestsScreen extends StatefulWidget {
+  const JobRequestsScreen({super.key});
 
   @override
-  State<StudentRequestsScreen> createState() => _StudentRequestsScreenState();
+  State<JobRequestsScreen> createState() => _JobRequestsScreenState();
 }
 
-class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
-  final MockData _mockData = MockData();
+class _JobRequestsScreenState extends State<JobRequestsScreen> {
   List<Application> _applications = [];
   ApplicationStatus? _filterStatus;
   String _searchTerm = '';
-  bool _sortByDate = true; // true = date, false = name
+  bool _sortByDate = true;
 
   @override
   void initState() {
     super.initState();
-    _mockData.initializeSampleData();
     _loadApplications();
   }
 
   void _loadApplications() {
+    // TODO: Load applications from backend
     setState(() {
-      _applications = _mockData.getAllApplications();
+      _applications = [];
     });
   }
 
@@ -72,7 +70,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => StudentRequestDetailScreen(application: application),
+        builder: (context) => RequestDetailScreen(application: application),
       ),
     );
 
@@ -98,7 +96,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
               const Text(
                 'Filter Applications',
                 style: TextStyle(
-                  fontFamily: 'Aclonica',
+                  fontWeight: FontWeight.bold,
                   fontSize: 20,
                   color: Colors.white,
                 ),
@@ -107,7 +105,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
               const Text(
                 'Select a status to filter the applications list',
                 style: TextStyle(
-                  fontFamily: 'Acme',
+                
                   fontSize: 14,
                   color: Color(0xFF6C6C6C),
                 ),
@@ -149,7 +147,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
       countTextColor = const Color(0xFF1A1A1A);
     } else if (status == ApplicationStatus.rejected) {
       countBgColor = const Color(0xFFC63F47);
-      countTextColor = Colors.black;
+      countTextColor = Colors.white;
     } else {
       countBgColor = const Color(0xFF3D3D3D);
       countTextColor = Colors.white;
@@ -175,7 +173,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Acme',
+            
                 fontSize: 16,
                 color: textColor,
               ),
@@ -190,7 +188,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                 child: Text(
                   '$count',
                   style: TextStyle(
-                    fontFamily: 'Acme',
+             
                     fontSize: 12,
                     color: countTextColor,
                   ),
@@ -219,7 +217,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                 child: Text(
                   'Student Applications',
                   style: TextStyle(
-                    fontFamily: 'Aclonica',
+                    fontWeight: FontWeight.bold,
                     fontSize: 24,
                     color: Colors.white,
                   ),
@@ -266,14 +264,14 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
               child: TextField(
                 onChanged: (value) => setState(() => _searchTerm = value),
                 style: const TextStyle(
-                  fontFamily: 'Acme',
+                
                   fontSize: 16,
                   color: Colors.white,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Search by name or job title...',
                   hintStyle: TextStyle(
-                    fontFamily: 'Acme',
+                  
                     fontSize: 16,
                     color: Colors.grey[700],
                   ),
@@ -326,7 +324,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                           Text(
                             _sortByDate ? 'Date' : 'Name',
                             style: const TextStyle(
-                              fontFamily: 'Acme',
+                       
                               fontSize: 14,
                               color: Colors.white,
                             ),
@@ -381,7 +379,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                                     const Text(
                                       'Filter',
                                       style: TextStyle(
-                                        fontFamily: 'Acme',
+                                     
                                         fontSize: 14,
                                         color: Colors.white,
                                       ),
@@ -399,7 +397,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                                           child: Text(
                                             '1',
                                             style: TextStyle(
-                                              fontFamily: 'Acme',
+                                          
                                               fontSize: 10,
                                               color: Color(0xFF1A1A1A),
                                             ),
@@ -428,7 +426,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
                       child: Text(
                         'No applications found',
                         style: TextStyle(
-                          fontFamily: 'Acme',
+                         
                           fontSize: 16,
                           color: Colors.grey[600],
                         ),
@@ -465,7 +463,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
           Text(
             value,
             style: TextStyle(
-              fontFamily: 'Acme',
+            
               fontSize: 24,
               color: color,
             ),
@@ -474,7 +472,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
           Text(
             label,
             style: const TextStyle(
-              fontFamily: 'Acme',
+             
               fontSize: 12,
               color: Color(0xFF6C6C6C),
             ),
@@ -505,7 +503,7 @@ class _StudentRequestsScreenState extends State<StudentRequestsScreen> {
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'Acme',
+         
               fontSize: 14,
               color: isSelected 
                   ? const Color(0xFF1A1A1A) 
@@ -586,7 +584,7 @@ class _ApplicationCard extends StatelessWidget {
                     child: Text(
                       _getInitials(application.studentName),
                       style: const TextStyle(
-                        fontFamily: 'Acme',
+                      
                         fontSize: 18,
                         color: Color(0xFF1A1A1A),
                       ),
@@ -603,7 +601,7 @@ class _ApplicationCard extends StatelessWidget {
                       Text(
                         application.studentName,
                         style: const TextStyle(
-                          fontFamily: 'Acme',
+                      
                           fontSize: 16,
                           color: Colors.white,
                         ),
@@ -612,7 +610,7 @@ class _ApplicationCard extends StatelessWidget {
                       Text(
                         application.jobTitle,
                         style: const TextStyle(
-                          fontFamily: 'Acme',
+                       
                           fontSize: 14,
                           color: Color(0xFF6C6C6C),
                         ),
@@ -634,7 +632,7 @@ class _ApplicationCard extends StatelessWidget {
                   child: Text(
                     application.status.label,
                     style: TextStyle(
-                      fontFamily: 'Acme',
+                   
                       fontSize: 12,
                       color: statusTextColor,
                     ),
@@ -651,15 +649,15 @@ class _ApplicationCard extends StatelessWidget {
                 Text(
                   'Applied: ${application.appliedDate.day}/${application.appliedDate.month}/${application.appliedDate.year}',
                   style: const TextStyle(
-                    fontFamily: 'Acme',
+                
                     fontSize: 12,
                     color: Color(0xFF6C6C6C),
                   ),
                 ),
                 Text(
-                  '${application.university}, ${application.major}',
+                  '${application.experience} experience',
                   style: const TextStyle(
-                    fontFamily: 'Acme',
+                
                     fontSize: 12,
                     color: Color(0xFF6C6C6C),
                   ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
+import '../../../logic/services/auth_service.dart';
 // using inline buttons here to avoid importing shared custom_button
 import '../../widgets/common/signup_success_dialog.dart';
 
@@ -73,6 +75,19 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
   }
 
   void _handleContinue() {
+    // Set student account type in AuthService
+    final authService = context.read<AuthService>();
+    // Quick fix: Manually create student user
+    // TODO: Replace with proper data from all registration steps
+    authService.signup(
+      email: 'student@temp.com',
+      password: 'temp123',
+      name: 'Student User',
+      phoneNumber: '+213XXXXXXXXX',
+      location: 'Alger',
+      accountType: 'student',
+    );
+    
     // Navigate to success screen
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
@@ -80,7 +95,7 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
           userName: 'Student', // TODO: Get actual name from signup data
           isStudent: true,
           onGoToDashboard: () {
-            context.go(AppRouter.home); // Navigate to home
+            context.go(AppRouter.home); // Navigate to home (will show student interface)
           },
           onStartOver: () {
             context.go(AppRouter.accountType); // Go back to account type

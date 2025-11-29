@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../models/job_post.dart';
+import '../../../logic/models/job_post.dart';
 import '../../../mock/mock_data.dart';
 import '../../../routes/app_router.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../commons/themes/style_simple/colors.dart';
+import '../../../../commons/themes/style_simple/colors.dart';
 
 /// Employer Applications Screen
 /// View all applications received for posted jobs

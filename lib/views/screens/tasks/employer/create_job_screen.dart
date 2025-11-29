@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/job_post.dart';
-import '../../../mock/mock_data.dart';
+import '../../../../logic/models/job_post.dart';
 
-class JobPostFormScreen extends StatefulWidget {
+class CreateJobScreen extends StatefulWidget {
   final JobPost? job; // If provided, we're editing
 
-  const JobPostFormScreen({super.key, this.job});
+  const CreateJobScreen({super.key, this.job});
 
   @override
-  State<JobPostFormScreen> createState() => _JobPostFormScreenState();
+  State<CreateJobScreen> createState() => _CreateJobScreenState();
 }
 
-class _JobPostFormScreenState extends State<JobPostFormScreen> {
+class _CreateJobScreenState extends State<CreateJobScreen> {
   final _formKey = GlobalKey<FormState>();
-  final MockData _mockData = MockData();
   
   // Form controllers
   late final TextEditingController _titleController;
@@ -34,6 +32,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   late bool _isRecurring;
   late JobStatus _selectedStatus;
   DateTime? _specificDate;
+  // TimeOfDay? _specificTime; // TODO: Implement time picker
   List<String> _selectedDays = [];
 
   @override
@@ -83,7 +82,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
 
   void _saveJobPost() {
     if (_formKey.currentState!.validate()) {
-      final newJob = JobPost(
+      // Create job post object
+      final _ = JobPost(
         id: widget.job?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text,
         company: _companyController.text,
@@ -115,11 +115,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
         createdDate: widget.job?.createdDate ?? DateTime.now(),
       );
 
-      if (widget.job != null) {
-        _mockData.updateJob(newJob);
-      } else {
-        _mockData.addJob(newJob);
-      }
+      // TODO: Save job to backend/database
 
       Navigator.pop(context, true);
     }
@@ -145,7 +141,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
         title: Text(
           widget.job != null ? 'Edit Job Post' : 'Create Job Post',
           style: const TextStyle(
-            fontFamily: 'Aclonica',
+            fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Colors.white,
           ),
@@ -156,7 +152,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
             child: const Text(
               'Save',
               style: TextStyle(
-                fontFamily: 'Acme',
+               
                 fontSize: 16,
                 color: Color(0xFFABD600),
               ),
@@ -332,7 +328,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
     return Text(
       title,
       style: const TextStyle(
-        fontFamily: 'Aclonica',
+        fontWeight: FontWeight.bold,
         fontSize: 16,
         color: Colors.white,
       ),
@@ -353,7 +349,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontFamily: 'Acme',
+         
             fontSize: 14,
             color: Color(0xFF6C6C6C),
           ),
@@ -364,14 +360,14 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
           maxLines: maxLines,
           keyboardType: keyboardType,
           style: const TextStyle(
-            fontFamily: 'Acme',
+        
             fontSize: 16,
             color: Colors.white,
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              fontFamily: 'Acme',
+             
               fontSize: 16,
               color: Colors.grey[700],
             ),
@@ -402,7 +398,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontFamily: 'Acme',
+        
             fontSize: 14,
             color: Color(0xFF6C6C6C),
           ),
@@ -420,7 +416,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               isExpanded: true,
               dropdownColor: const Color(0xFF2F2F2F),
               style: const TextStyle(
-                fontFamily: 'Acme',
+       
                 fontSize: 16,
                 color: Colors.white,
               ),
@@ -459,7 +455,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
                   child: Text(
                     type.label,
                     style: TextStyle(
-                      fontFamily: 'Acme',
+              
                       fontSize: 14,
                       color: isSelected 
                           ? const Color(0xFF1A1A1A) 
@@ -502,7 +498,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
             child: Text(
               category.label,
               style: TextStyle(
-                fontFamily: 'Acme',
+             
                 fontSize: 13,
                 color: isSelected ? const Color(0xFF1A1A1A) : Colors.white,
               ),
@@ -541,7 +537,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
             child: Text(
               language,
               style: TextStyle(
-                fontFamily: 'Acme',
+               
                 fontSize: 13,
                 color: isSelected ? const Color(0xFF1A1A1A) : Colors.white,
               ),
@@ -580,7 +576,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
             child: Text(
               day.substring(0, 3),
               style: TextStyle(
-                fontFamily: 'Acme',
+              
+            
                 fontSize: 13,
                 color: isSelected ? const Color(0xFF1A1A1A) : Colors.white,
               ),
@@ -618,7 +615,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
                   ? '${_specificDate!.day}/${_specificDate!.month}/${_specificDate!.year}'
                   : 'Select Date',
               style: TextStyle(
-                fontFamily: 'Acme',
+              
                 fontSize: 16,
                 color: _specificDate != null ? Colors.white : Colors.grey[700],
               ),
@@ -648,7 +645,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
           Text(
             label,
             style: const TextStyle(
-              fontFamily: 'Acme',
+             
               fontSize: 16,
               color: Colors.white,
             ),

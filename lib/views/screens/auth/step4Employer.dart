@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
+import '../../../logic/services/auth_service.dart';
 // copied buttons from step3 instead of using custom_button
 import '../../widgets/common/signup_success_dialog.dart';
 
@@ -25,6 +27,19 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
   }
 
   void _handleContinue() {
+    // Set employer account type in AuthService
+    final authService = context.read<AuthService>();
+    // Quick fix: Manually create employer user
+    // TODO: Replace with proper data from all registration steps
+    authService.signup(
+      email: 'employer@temp.com',
+      password: 'temp123',
+      name: 'Employer User',
+      phoneNumber: '+213XXXXXXXXX',
+      location: 'Alger',
+      accountType: 'employer',
+    );
+    
     // Navigate to success screen
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
@@ -32,7 +47,7 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
           userName: 'kjhl', // TODO: Get actual name from signup data
           isStudent: false,
           onGoToDashboard: () {
-            context.go(AppRouter.home); // Navigate to home
+            context.go(AppRouter.home); // Navigate to home (will show employer interface)
           },
           onStartOver: () {
             context.go(AppRouter.accountType); // Go back to account type
@@ -59,29 +74,36 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(25),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          style: GoogleFonts.aclonica(
+            fontSize: 14,
+            color: Colors.black,
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            style: GoogleFonts.aclonica(
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            hintText: hint,
+            hintStyle: GoogleFonts.aclonica(
+              color: Colors.grey,
               fontSize: 14,
-              color: AppColors.white,
             ),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: GoogleFonts.aclonica(
-                color: AppColors.grey6,
-                fontSize: 14,
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 16,
             ),
           ),
         ),

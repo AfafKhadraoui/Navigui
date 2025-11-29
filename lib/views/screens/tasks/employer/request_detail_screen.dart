@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/application.dart';
-import '../../../mock/mock_data.dart';
+import '../../../../logic/models/application.dart';
 
-class StudentRequestDetailScreen extends StatefulWidget {
+class RequestDetailScreen extends StatefulWidget {
   final Application application;
 
-  const StudentRequestDetailScreen({super.key, required this.application});
+  const RequestDetailScreen({super.key, required this.application});
 
   @override
-  State<StudentRequestDetailScreen> createState() =>
-      _StudentRequestDetailScreenState();
+  State<RequestDetailScreen> createState() =>
+      _RequestDetailScreenState();
 }
 
-class _StudentRequestDetailScreenState
-    extends State<StudentRequestDetailScreen> {
-  final MockData _mockData = MockData();
+class _RequestDetailScreenState
+    extends State<RequestDetailScreen> {
   late Application _application;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -44,14 +43,14 @@ class _StudentRequestDetailScreenState
         title: Text(
           '${newStatus.label} Application',
           style: const TextStyle(
-            fontFamily: 'Aclonica',
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         content: Text(
           'Are you sure you want to ${newStatus.label.toLowerCase()} ${_application.studentName}\'s application?',
           style: const TextStyle(
-            fontFamily: 'Acme',
+        
             color: Color(0xFFBFBFBF),
           ),
         ),
@@ -61,7 +60,7 @@ class _StudentRequestDetailScreenState
             child: const Text(
               'Cancel',
               style: TextStyle(
-                fontFamily: 'Acme',
+           
                 color: Color(0xFF6C6C6C),
               ),
             ),
@@ -71,9 +70,9 @@ class _StudentRequestDetailScreenState
             child: Text(
               newStatus.label,
               style: TextStyle(
-                fontFamily: 'Acme',
+       
                 color: newStatus == ApplicationStatus.accepted
-                    ? const Color(0xFFAB93E0)
+                    ? const Color(0xFFD2FF1F)
                     : const Color(0xFFC63F47),
               ),
             ),
@@ -83,22 +82,10 @@ class _StudentRequestDetailScreenState
     );
 
     if (confirmed == true) {
-      _mockData.updateApplicationStatus(_application.id, newStatus);
+      // TODO: Update application status in backend
       setState(() {
         _application = _application.copyWith(status: newStatus);
       });
-    }
-  }
-
-  Color _getAccentColor() {
-    switch (_application.status) {
-      case ApplicationStatus.accepted:
-        return const Color(0xFFD2FF1F); // Green
-      case ApplicationStatus.rejected:
-        return const Color(0xFFC63F47); // Red
-      case ApplicationStatus.pending:
-      default:
-        return const Color(0xFFAB93E0); // Purple (default)
     }
   }
 
@@ -116,35 +103,24 @@ class _StudentRequestDetailScreenState
         title: const Text(
           'Application Details',
           style: TextStyle(
-            fontFamily: 'Aclonica',
+            fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Colors.white,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          24,
-          0,
-          24,
-          _application.status == ApplicationStatus.pending ? 120 : 24,
-        ),
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Student Profile Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2F2F2F),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Row(
+            // Student Profile Header
+            Center(
+              child: Column(
                 children: [
-                  // Avatar
                   Container(
-                    width: 70,
-                    height: 70,
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
                       color: _getAvatarColor(_application.avatar),
                       shape: BoxShape.circle,
@@ -153,59 +129,79 @@ class _StudentRequestDetailScreenState
                       child: Text(
                         _getInitials(_application.studentName),
                         style: const TextStyle(
-                          fontFamily: 'Acme',
-                          fontSize: 28,
+                    
+                          fontSize: 32,
                           color: Color(0xFF1A1A1A),
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  // Name and Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _application.studentName,
-                          style: const TextStyle(
-                            fontFamily: 'Aclonica',
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _application.university,
-                          style: const TextStyle(
-                            fontFamily: 'Acme',
-                            fontSize: 13,
-                            color: Color(0xFFBFBFBF),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _application.major,
-                          style: const TextStyle(
-                            fontFamily: 'Acme',
-                            fontSize: 13,
-                            color: Color(0xFFAB93E0),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 16),
+                  Text(
+                    _application.studentName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.white,
                     ),
                   ),
-                  // Status Badge
+                  const SizedBox(height: 4),
+                  Text(
+                    _application.jobTitle,
+                    style: const TextStyle(
+                    
+                      fontSize: 16,
+                      color: Color(0xFF6C6C6C),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   _buildStatusBadge(),
                 ],
               ),
             ),
+            const SizedBox(height: 32),
+
+            // Contact Information
+            _buildSectionTitle('Contact Information'),
+            const SizedBox(height: 12),
+            _buildInfoCard(
+              Icons.email_outlined,
+              'Email',
+              _application.email,
+              const Color(0xFFAB93E0),
+            ),
+            const SizedBox(height: 12),
+            _buildInfoCard(
+              Icons.phone_outlined,
+              'Phone',
+              _application.phone,
+              const Color(0xFFAB93E0),
+            ),
             const SizedBox(height: 24),
 
+            // Experience
+            _buildSectionTitle('Experience'),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2F2F2F),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Text(
+                _application.experience,
+                style: const TextStyle(
+              
+                  fontSize: 16,
+                  color: Color(0xFFAB93E0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
 
-            // Skills Section
-            _buildSectionTitle('Skills', _getAccentColor()),
+            // Skills
+            _buildSectionTitle('Skills'),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -213,19 +209,23 @@ class _StudentRequestDetailScreenState
               children: _application.skills.map((skill) {
                 return Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
+                    horizontal: 12,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF3D3D3D),
+                    color: const Color(0xFFAB93E0).withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFFAB93E0),
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     skill,
                     style: const TextStyle(
-                      fontFamily: 'Acme',
+                
                       fontSize: 13,
-                      color: Colors.white,
+                      color: Color(0xFFAB93E0),
                     ),
                   ),
                 );
@@ -233,8 +233,8 @@ class _StudentRequestDetailScreenState
             ),
             const SizedBox(height: 24),
 
-            // Cover Letter Section
-            _buildSectionTitle('Cover Letter', _getAccentColor()),
+            // Cover Letter
+            _buildSectionTitle('Cover Letter'),
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
@@ -246,53 +246,48 @@ class _StudentRequestDetailScreenState
               child: Text(
                 _application.coverLetter,
                 style: const TextStyle(
-                  fontFamily: 'Acme',
+               
                   fontSize: 15,
-                  color: Colors.white,
+                  color: Color(0xFFBFBFBF),
                   height: 1.5,
                 ),
               ),
             ),
             const SizedBox(height: 24),
 
-            // Contact Information Section
-            _buildSectionTitle('Contact Information', _getAccentColor()),
+            // Application Date
+            _buildSectionTitle('Application Date'),
             const SizedBox(height: 12),
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF2F2F2F),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  _buildContactRow(
-                    Icons.email_outlined,
-                    'Email',
-                    _application.email,
+                  const Icon(
+                    Icons.calendar_today_outlined,
+                    color: Color(0xFF6C6C6C),
+                    size: 20,
                   ),
-                  const SizedBox(height: 16),
-                  _buildContactRow(
-                    Icons.phone_outlined,
-                    'Phone',
-                    _application.phone,
+                  const SizedBox(width: 12),
+                  Text(
+                    '${_application.appliedDate.day}/${_application.appliedDate.month}/${_application.appliedDate.year}',
+                    style: const TextStyle(
+                  
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                _buildContactRow(
-  Icons.description_outlined,
-  'CV Attached',
-  'Download CV',
-  isDownload: true,
-  downloadUrl: _application.cvUrl,
-)
-
                 ],
               ),
             ),
           ],
         ),
       ),
-      // Action Buttons (Fixed at bottom) - Only for pending applications
+      // Action Buttons (Fixed at bottom)
       bottomSheet: _application.status == ApplicationStatus.pending
           ? Container(
               color: const Color(0xFF1A1A1A),
@@ -307,19 +302,19 @@ class _StudentRequestDetailScreenState
                         backgroundColor: const Color(0xFFC63F47),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         elevation: 0,
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.close, color: Colors.white, size: 20),
+                          Icon(Icons.close, color: Colors.white),
                           SizedBox(width: 8),
                           Text(
                             'Reject',
                             style: TextStyle(
-                              fontFamily: 'Acme',
+                          
                               fontSize: 16,
                               color: Colors.white,
                             ),
@@ -334,24 +329,24 @@ class _StudentRequestDetailScreenState
                       onPressed: () =>
                           _updateStatus(ApplicationStatus.accepted),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFAB93E0),
+                        backgroundColor: const Color(0xFFD2FF1F),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         elevation: 0,
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.check, color: Colors.white, size: 20),
+                          Icon(Icons.check, color: Color(0xFF1A1A1A)),
                           SizedBox(width: 8),
                           Text(
                             'Accept',
                             style: TextStyle(
-                              fontFamily: 'Acme',
+                            
                               fontSize: 16,
-                              color: Colors.white,
+                              color: Color(0xFF1A1A1A),
                             ),
                           ),
                         ],
@@ -365,97 +360,112 @@ class _StudentRequestDetailScreenState
     );
   }
 
-  Widget _buildSectionTitle(String title, Color accentColor) {
+  Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
-        fontFamily: 'Aclonica',
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
         fontSize: 16,
-        color: accentColor,
+        color: Colors.white,
       ),
     );
   }
 
-  Widget _buildContactRow(
+  Widget _buildInfoCard(
     IconData icon,
     String label,
-    String value, {
-    bool isDownload = false,
-    String? downloadUrl,
-  }) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: const Color(0xFFBFBFBF),
-          size: 20,
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontFamily: 'Acme',
-                  fontSize: 12,
-                  color: Color(0xFF6C6C6C),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontFamily: 'Acme',
-                  fontSize: 14,
-                  color: isDownload
-                      ? const Color(0xFFAB93E0)
-                      : Colors.white,
-                  decoration: isDownload
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                ),
-              ),
-            ],
+    String value,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2F2F2F),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-        ),
-      ],
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                   
+                    fontSize: 12,
+                    color: Color(0xFF6C6C6C),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                  
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildStatusBadge() {
     Color backgroundColor;
     Color textColor;
+    IconData icon;
 
     switch (_application.status) {
       case ApplicationStatus.pending:
-        backgroundColor = const Color(0xFF6C6C6C);
-        textColor = Colors.white;
+        backgroundColor = const Color(0xFFFFE078);
+        textColor = const Color(0xFF1A1A1A);
+        icon = Icons.schedule;
         break;
       case ApplicationStatus.accepted:
         backgroundColor = const Color(0xFFD2FF1F);
-        textColor = Colors.black;
+        textColor = const Color(0xFF1A1A1A);
+        icon = Icons.check_circle;
         break;
       case ApplicationStatus.rejected:
         backgroundColor = const Color(0xFFC63F47);
-        textColor = Colors.black;
+        textColor = Colors.white;
+        icon = Icons.cancel;
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(99),
       ),
-      child: Text(
-        _application.status.label,
-        style: TextStyle(
-          fontFamily: 'Acme',
-          fontSize: 12,
-          color: textColor,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: textColor, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            _application.status.label,
+            style: TextStyle(
+        
+              fontSize: 14,
+              color: textColor,
+            ),
+          ),
+        ],
       ),
     );
   }

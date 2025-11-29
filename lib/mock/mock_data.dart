@@ -1,5 +1,5 @@
-import '../models/job_post.dart';
-import '../models/application.dart';
+import '../logic/models/job_post.dart';
+import '../logic/models/application.dart';
 
 /// Mock data storage and CRUD operations
 class MockData {

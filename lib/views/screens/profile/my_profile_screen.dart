@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
+import 'public_student_profile_screen.dart';
+import 'public_employer_profile_screen.dart';
+import '../jobs/saved_jobs_screen.dart';
 
 /// My Profile Screen
 /// Shows user profile with edit button
@@ -118,6 +121,58 @@ class MyProfileScreen extends StatelessWidget {
                 ),
               ),
               
+              const SizedBox(height: 12),
+              
+              // View Public Profile Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // Navigate to public profile view - using root navigator to bypass bottom nav
+                    if (isStudent) {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) => const PublicStudentProfileScreen(
+                            studentId: 'current_user', // TODO: Use actual user ID
+                            studentName: 'Student Name',
+                          ),
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) => const PublicEmployerProfileScreen(
+                            employerId: 'current_user', // TODO: Use actual user ID
+                            companyName: 'Company Name',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.visibility_outlined),
+                  label: Text(
+                    'View Public Profile',
+                    style: GoogleFonts.aclonica(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: isStudent ? AppColors.purple6 : AppColors.electricLime,
+                    side: BorderSide(
+                      color: isStudent ? AppColors.purple6 : AppColors.electricLime,
+                      width: 2,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              
               const SizedBox(height: 32),
               
               // Profile Stats (for students)
@@ -132,17 +187,310 @@ class MyProfileScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 32),
+                
+                // Analytics Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.grey4,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.grey5),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Analytics',
+                            style: GoogleFonts.aclonica(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.white,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFAB93E0),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Last 10 Days',
+                                  style: GoogleFonts.aclonica(
+                                    fontSize: 12,
+                                    color: AppColors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_drop_down,
+                                  color: AppColors.black,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Bar Chart
+                      SizedBox(
+                        height: 250,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildBarWithLabel('15', 65, '12 Jan, 2024'),
+                            _buildBarWithLabel('16', 80, 'Jan 16'),
+                            _buildBarWithLabel('17', 100, 'Jan 17'),
+                            _buildBarWithLabel('18', 75, 'Jan 18'),
+                            _buildBarWithLabel('19', 85, 'Jan 19'),
+                            _buildBarWithLabel('20', 90, 'Jan 20'),
+                            // _buildBarWithLabel('21', 95, 'Jan 21', showTooltip: true, tooltipValue: '65 Views'),
+                            _buildBarWithLabel('21', 95, 'Jan 21'),
+                            _buildBarWithLabel('22', 70, 'Jan 22'),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Total Views Summary
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.grey5,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Total Profile Views',
+                                  style: GoogleFonts.aclonica(
+                                    fontSize: 12,
+                                    color: AppColors.grey6,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '635',
+                                  style: GoogleFonts.aclonica(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFFAB93E0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFAB93E0).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.trending_up,
+                                    color: Color(0xFFAB93E0),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '+12.5%',
+                                    style: GoogleFonts.aclonica(
+                                      fontSize: 12,
+                                      color: const Color(0xFFAB93E0),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+              
+              // Profile Stats & Analytics (for employers)
+              if (!isStudent) ...[
+                Row(
+                  children: [
+                    Expanded(child: _buildStatCard('25', 'Active Jobs', isEmployer: true)),
+                    const SizedBox(width: 8),
+                    Expanded(child: _buildStatCard('150', 'Applications', isEmployer: true)),
+                    const SizedBox(width: 8),
+                    Expanded(child: _buildStatCard('32', 'Hired', isEmployer: true)),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                
+                // Analytics Section for Employers
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.grey4,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.grey5),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Analytics',
+                            style: GoogleFonts.aclonica(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.white,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.electricLime,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Last 10 Days',
+                                  style: GoogleFonts.aclonica(
+                                    fontSize: 12,
+                                    color: AppColors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_drop_down,
+                                  color: AppColors.black,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Bar Chart
+                      SizedBox(
+                        height: 250,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildBarWithLabel('15', 70, '12 Jan, 2024', isEmployer: true),
+                            _buildBarWithLabel('16', 85, 'Jan 16', isEmployer: true),
+                            _buildBarWithLabel('17', 95, 'Jan 17', isEmployer: true),
+                            _buildBarWithLabel('18', 80, 'Jan 18', isEmployer: true),
+                            _buildBarWithLabel('19', 90, 'Jan 19', isEmployer: true),
+                            _buildBarWithLabel('20', 100, 'Jan 20', isEmployer: true),
+                            _buildBarWithLabel('21', 88, 'Jan 21', isEmployer: true),
+                            _buildBarWithLabel('22', 75, 'Jan 22', isEmployer: true),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Total Views Summary
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.grey5,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Total Job Views',
+                                  style: GoogleFonts.aclonica(
+                                    fontSize: 12,
+                                    color: AppColors.grey6,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '1,247',
+                                  style: GoogleFonts.aclonica(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.electricLime,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.electricLime.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.trending_up,
+                                    color: AppColors.electricLime,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '+18.3%',
+                                    style: GoogleFonts.aclonica(
+                                      fontSize: 12,
+                                      color: AppColors.electricLime,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
               ],
               
               // Menu Options
-              _buildMenuOption(
-                icon: Icons.person,
-                title: 'View Public Profile',
-                onTap: () {
-                  // TODO: Navigate to public profile view
-                },
-              ),
-              
               _buildMenuOption(
                 icon: Icons.work,
                 title: isStudent ? 'My Applications' : 'My Job Posts',
@@ -155,7 +503,12 @@ class MyProfileScreen extends StatelessWidget {
                 icon: Icons.favorite,
                 title: 'Saved Items',
                 onTap: () {
-                  // TODO: Navigate to saved items
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SavedJobsScreen(),
+                    ),
+                  );
                 },
               ),
               
@@ -260,13 +613,15 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
   
-  Widget _buildStatCard(String value, String label) {
+  Widget _buildStatCard(String value, String label, {bool isEmployer = false}) {
+    final accentColor = isEmployer ? AppColors.electricLime : AppColors.purple6;
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: AppColors.grey4,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.purple6, width: 1),
+        border: Border.all(color: accentColor, width: 1),
       ),
       child: Column(
         children: [
@@ -275,7 +630,7 @@ class MyProfileScreen extends StatelessWidget {
             style: GoogleFonts.aclonica(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.purple6,
+              color: accentColor,
             ),
           ),
           const SizedBox(height: 4),
@@ -331,6 +686,87 @@ class MyProfileScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+  
+  Widget _buildBarWithLabel(
+    String day,
+    double heightPercent,
+    String date, {
+    bool showTooltip = false,
+    String tooltipValue = '',
+    bool isEmployer = false,
+  }) {
+    final barHeight = (heightPercent / 100) * 150; // Max height is 150
+    final barColor = isEmployer ? AppColors.electricLime : const Color(0xFFAB93E0);
+    
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (showTooltip)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: barColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    tooltipValue,
+                    style: GoogleFonts.aclonica(
+                      fontSize: 10,
+                      color: AppColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    date,
+                    style: GoogleFonts.aclonica(
+                      fontSize: 8,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            const SizedBox(height: 40),
+          
+          const SizedBox(height: 8),
+          
+          // The actual bar
+          Container(
+            width: 20,
+            height: barHeight,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  barColor.withOpacity(0.5),
+                  barColor,
+                ],
+              ),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(4),
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 8),
+          
+          // Day label
+          Text(
+            day,
+            style: GoogleFonts.aclonica(
+              fontSize: 10,
+              color: AppColors.grey6,
+            ),
+          ),
+        ],
       ),
     );
   }

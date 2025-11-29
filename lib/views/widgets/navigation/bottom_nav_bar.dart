@@ -26,8 +26,77 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
     final isEmployer = authService.isEmployer;
-    final selectedColor =
-        isEmployer ? AppColors.electricLime : AppColors.purple6;
+    final isAdmin = authService.currentUser?.accountType == 'admin';
+    
+    // Set colors based on role
+    final Color selectedColor;
+    if (isAdmin) {
+      selectedColor = AppColors.orange2;
+    } else if (isEmployer) {
+      selectedColor = AppColors.electricLime;
+    } else {
+      selectedColor = AppColors.purple6;
+    }
+
+    // Admin has 4 tabs: Dashboard, Users, Jobs, Settings
+    final List<BottomNavigationBarItem> navItems;
+    if (isAdmin) {
+      navItems = [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard_outlined),
+          activeIcon: Icon(Icons.dashboard),
+          label: 'Dashboard',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.people_outline),
+          activeIcon: Icon(Icons.people),
+          label: 'Users',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.work_outline),
+          activeIcon: Icon(Icons.work),
+          label: 'Jobs',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.settings_outlined),
+          activeIcon: Icon(Icons.settings),
+          label: 'Settings',
+        ),
+      ];
+    } else {
+      // Student/Employer have 5 tabs
+      navItems = [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+              isEmployer ? Icons.business_outlined : Icons.work_outline),
+          activeIcon: Icon(isEmployer ? Icons.business : Icons.work),
+          label: isEmployer ? 'My Jobs' : 'Browse',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(isEmployer
+              ? Icons.assignment_outlined
+              : Icons.task_alt_outlined),
+          activeIcon:
+              Icon(isEmployer ? Icons.assignment : Icons.task_alt),
+          label: isEmployer ? 'Applications' : 'My Tasks',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.school_outlined),
+          activeIcon: Icon(Icons.school),
+          label: 'Learn',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          activeIcon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ];
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -63,37 +132,7 @@ class BottomNavBar extends StatelessWidget {
             showSelectedLabels: true,
             showUnselectedLabels: true,
             enableFeedback: false,
-            items: [
-              BottomNavigationBarItem(
-                icon: const Icon(Icons.home_outlined),
-                activeIcon: const Icon(Icons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                    isEmployer ? Icons.business_outlined : Icons.work_outline),
-                activeIcon: Icon(isEmployer ? Icons.business : Icons.work),
-                label: isEmployer ? 'My Jobs' : 'Browse',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(isEmployer
-                    ? Icons.assignment_outlined
-                    : Icons.task_alt_outlined),
-                activeIcon:
-                    Icon(isEmployer ? Icons.assignment : Icons.task_alt),
-                label: isEmployer ? 'Applications' : 'My Tasks',
-              ),
-              BottomNavigationBarItem(
-                icon: const Icon(Icons.school_outlined),
-                activeIcon: const Icon(Icons.school),
-                label: 'Learn',
-              ),
-              BottomNavigationBarItem(
-                icon: const Icon(Icons.person_outline),
-                activeIcon: const Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
+            items: navItems,
           ),
         ),
       ),

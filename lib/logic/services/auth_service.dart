@@ -25,8 +25,15 @@ class AuthService extends ChangeNotifier {
           const Duration(seconds: 1)); // Simulate network delay
 
       // Mock user - In production, get this from your backend
-      // For now, determine role from email domain or stored data
-      final accountType = email.contains('employer') ? 'employer' : 'student';
+      // Determine role from email: admin > employer > student
+      final String accountType;
+      if (email.toLowerCase().contains('admin')) {
+        accountType = 'admin';
+      } else if (email.contains('employer')) {
+        accountType = 'employer';
+      } else {
+        accountType = 'student';
+      }
 
       _currentUser = UserModel(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
