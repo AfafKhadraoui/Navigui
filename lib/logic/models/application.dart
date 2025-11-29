@@ -16,8 +16,8 @@ class Application {
   final String avatar;
   
   // Additional fields from detailed structure
-  final String? university;
-  final String? major;
+  final String university;
+  final String major;
   final bool cvAttached;
   final String? cvUrl;
 
@@ -34,8 +34,8 @@ class Application {
     required this.coverLetter,
     required this.skills,
     required this.avatar,
-    this.university,
-    this.major,
+    required this.university,
+    required this.major,
     this.cvAttached = false,
     this.cvUrl,
   });
