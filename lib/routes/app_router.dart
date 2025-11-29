@@ -52,6 +52,12 @@ import '../views/screens/admin/admin_jobs_screen.dart';
 import '../views/screens/admin/admin_reports_screen.dart';
 import '../views/screens/admin/admin_settings_screen.dart';
 
+// Admin screens
+import '../views/screens/admin/admin_users_screen.dart';
+import '../views/screens/admin/admin_jobs_screen.dart';
+import '../views/screens/admin/admin_reports_screen.dart';
+import '../views/screens/admin/admin_settings_screen.dart';
+
 /// App Router Configuration
 ///
 /// Two types of routes:
