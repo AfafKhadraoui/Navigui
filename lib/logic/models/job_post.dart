@@ -7,22 +7,22 @@ class JobPost {
   final String location;
   final String description;
   final String salary;
-  final bool saved;
   final int applications;
-  
+  final int saves;
+
   // Job classification
   final JobType jobType;
   final List<JobCategory>? categories;
-  
+
   // Requirements
   final JobRequirements? requirements;
-  
+
   // Time commitment
   final TimeCommitment? timeCommitment;
-  
+
   // Payment details
   final PaymentInfo? payment;
-  
+
   // Additional fields
   final bool isRecurring;
   final bool isUrgent;
@@ -39,7 +39,7 @@ class JobPost {
     required this.location,
     required this.description,
     required this.salary,
-    this.saved = false,
+    this.saves = 0,
     this.applications = 0,
     required this.jobType,
     this.categories,
@@ -64,6 +64,7 @@ class JobPost {
     String? salary,
     bool? saved,
     int? applications,
+    int? saves,
     JobType? jobType,
     List<JobCategory>? categories,
     JobRequirements? requirements,
@@ -84,7 +85,7 @@ class JobPost {
       location: location ?? this.location,
       description: description ?? this.description,
       salary: salary ?? this.salary,
-      saved: saved ?? this.saved,
+      saves: saves ?? this.saves,
       applications: applications ?? this.applications,
       jobType: jobType ?? this.jobType,
       categories: categories ?? this.categories,
@@ -109,7 +110,7 @@ class JobPost {
       'location': location,
       'description': description,
       'salary': salary,
-      'saved': saved,
+      'saves': saves,
       'applications': applications,
       'jobType': jobType.name,
       'categories': categories?.map((c) => c.name).toList(),
@@ -127,44 +128,79 @@ class JobPost {
   }
 
   factory JobPost.fromJson(Map<String, dynamic> json) {
+    // Helper to parse ints from dynamic input (int, String)
+    int _parseInt(dynamic v, {int fallback = 0}) {
+      if (v == null) return fallback;
+      if (v is int) return v;
+      final s = v.toString();
+      return int.tryParse(s) ?? fallback;
+    }
+
+    // Helper to parse DateTime from dynamic input (ISO string or epoch ms)
+   DateTime parseDate(dynamic v, {DateTime? fallback}) {
+  final fb = fallback ?? DateTime.now();
+
+  if (v == null) return fb;
+  if (v is DateTime) return v;
+  if (v is int) {
+    return DateTime.fromMillisecondsSinceEpoch(v);
+  }
+
+  try {
+    return DateTime.parse(v.toString());
+  } catch (_) {
+    return fb;
+  }
+}
+
     return JobPost(
-      id: json['id'],
-      title: json['title'],
-      company: json['company'],
-      location: json['location'],
-      description: json['description'],
-      salary: json['salary'],
-      saved: json['saved'] ?? false,
-      applications: json['applications'] ?? 0,
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      company: json['company']?.toString() ?? '',
+      location: json['location']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      salary: json['salary']?.toString() ?? '',
+      saves: _parseInt(json['saves'], fallback: 0),
+      applications: _parseInt(json['applications'], fallback: 0),
       jobType: JobType.values.firstWhere(
         (e) => e.name == json['jobType'],
-        orElse: () => JobType.partTime,
+        orElse: () {
+          // try to match labels too (in case source used label)
+          final source = (json['jobType'] ?? '').toString().toLowerCase();
+          return JobType.values.firstWhere(
+            (e) => e.name.toLowerCase() == source || e.label.toLowerCase() == source,
+            orElse: () => JobType.partTime,
+          );
+        },
       ),
       categories: (json['categories'] as List?)
           ?.map((c) => JobCategory.values.firstWhere(
-                (e) => e.name == c,
+                (e) {
+                  final s = c?.toString() ?? '';
+                  return e.name == s || e.label == s;
+                },
                 orElse: () => JobCategory.other,
               ))
           .toList(),
       requirements: json['requirements'] != null
-          ? JobRequirements.fromJson(json['requirements'])
+          ? JobRequirements.fromJson(Map<String, dynamic>.from(json['requirements']))
           : null,
       timeCommitment: json['timeCommitment'] != null
-          ? TimeCommitment.fromJson(json['timeCommitment'])
+          ? TimeCommitment.fromJson(Map<String, dynamic>.from(json['timeCommitment']))
           : null,
       payment: json['payment'] != null
-          ? PaymentInfo.fromJson(json['payment'])
+          ? PaymentInfo.fromJson(Map<String, dynamic>.from(json['payment']))
           : null,
       isRecurring: json['isRecurring'] ?? false,
       isUrgent: json['isUrgent'] ?? false,
-      numberOfPositions: json['numberOfPositions'] ?? 1,
+      numberOfPositions: _parseInt(json['numberOfPositions'], fallback: 1),
       status: JobStatus.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => JobStatus.active,
       ),
-      createdDate: DateTime.parse(json['createdDate']),
+      createdDate: parseDate(json['createdDate'], fallback: DateTime.now()),
       applicationDeadline: json['applicationDeadline'] != null
-          ? DateTime.parse(json['applicationDeadline'])
+          ? DateTime.tryParse(json['applicationDeadline'].toString())
           : null,
       photos: (json['photos'] as List?)?.cast<String>(),
     );
@@ -242,7 +278,7 @@ class JobRequirements {
 
   factory JobRequirements.fromJson(Map<String, dynamic> json) {
     return JobRequirements(
-      languages: (json['languages'] as List).cast<String>(),
+      languages: (json['languages'] as List?)?.cast<String>() ?? [],
       cvRequired: json['cvRequired'] ?? false,
     );
   }
@@ -275,7 +311,7 @@ class TimeCommitment {
       hoursPerWeek: json['hoursPerWeek'],
       daysNeeded: (json['daysNeeded'] as List?)?.cast<String>(),
       specificDate: json['specificDate'] != null
-          ? DateTime.parse(json['specificDate'])
+          ? DateTime.tryParse(json['specificDate'].toString())
           : null,
       specificTime: json['specificTime'],
     );
@@ -316,12 +352,28 @@ class PaymentInfo {
   }
 
   factory PaymentInfo.fromJson(Map<String, dynamic> json) {
+    // accept int/double/string inputs
+    double _parseDouble(dynamic v, {double fallback = 0}) {
+      if (v == null) return fallback;
+      if (v is double) return v;
+      if (v is int) return v.toDouble();
+      return double.tryParse(v.toString()) ?? fallback;
+    }
+
+    final amt = _parseDouble(json['amount'], fallback: 0);
+    final typeString = json['type']?.toString() ?? '';
+    final paymentType = PaymentType.values.firstWhere(
+      (e) => e.name == typeString,
+      orElse: () {
+        return PaymentType.values.firstWhere(
+            (e) => e.label.toLowerCase() == typeString.toLowerCase(),
+            orElse: () => PaymentType.fixed);
+      },
+    );
+
     return PaymentInfo(
-      amount: json['amount'].toDouble(),
-      type: PaymentType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => PaymentType.fixed,
-      ),
+      amount: amt,
+      type: paymentType,
     );
   }
 }

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../commons/themes/style_simple/colors.dart';
+import '../../../commons/themes/style_simple/colors.dart';
+import '../../../logic/models/job_post.dart';
 
-/// Employer Jobs Screen
-/// Shows list of posted jobs + ability to post new ones
-class EmployerJobsScreen extends StatelessWidget {
-  const EmployerJobsScreen({super.key});
+class JobApplicationsScreen extends StatelessWidget {
+  final JobPost jobPost;
+
+  const JobApplicationsScreen({
+    super.key,
+    required this.jobPost,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +19,9 @@ class EmployerJobsScreen extends StatelessWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
-          'My Jobs',
+          'Applications for ${jobPost.title}',
           style: GoogleFonts.aclonica(
-            fontSize: 24,
+            fontSize: 22,
             color: AppColors.white,
           ),
         ),
@@ -26,14 +30,14 @@ class EmployerJobsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.work_outline,
+            const Icon(
+              Icons.assignment_ind_outlined,
               size: 64,
               color: AppColors.electricLime,
             ),
             const SizedBox(height: 16),
             Text(
-              'Employer Jobs Screen',
+              'Applications for ${jobPost.title}',
               style: GoogleFonts.aclonica(
                 fontSize: 20,
                 color: AppColors.white,
@@ -41,27 +45,13 @@ class EmployerJobsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'View and manage your posted jobs',
+              'List of students that applied to this job',
               style: GoogleFonts.acme(
                 fontSize: 14,
                 color: AppColors.grey6,
               ),
             ),
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _showCreateJobDialog(context);
-        },
-        backgroundColor: AppColors.electricLime,
-        icon: const Icon(Icons.add, color: Colors.black),
-        label: Text(
-          'Post Job',
-          style: GoogleFonts.aclonica(
-            color: Colors.black,
-            fontSize: 14,
-          ),
         ),
       ),
     );

@@ -9,8 +9,8 @@ import '../../views/screens/profile/my_profile_screen.dart';
 
 // Employer screens (create these as needed)
 import '../../views/screens/employer/employer_home_screen.dart';
-import '../../views/screens/employer/employer_jobs_screen.dart';
-import '../../views/screens/employer/employer_applications_screen.dart';
+import '../../views/screens/employer/my_job_posts_screen.dart';
+import '../../views/screens/employer/student_requests_screen.dart';
 import '../../views/screens/profile/employer_profile_screen.dart';
 
 // Admin screens
@@ -45,7 +45,7 @@ class RoleBasedNavigation {
         if (accountType == 'admin') {
           return const AdminUsersScreen(); // Admin users management (not used in nav)
         } else if (authService.isEmployer) {
-          return const EmployerJobsScreen(); // Employer's posted jobs + post new job
+          return const MyJobPostsScreen(); // Employer's posted jobs + post new job
         }
         return const JobsPage(); // Student job listings
       },
@@ -60,7 +60,7 @@ class RoleBasedNavigation {
         if (accountType == 'admin') {
           return const AdminJobsScreen(); // Admin jobs management (not used in nav)
         } else if (authService.isEmployer) {
-          return const EmployerApplicationsScreen(); // View applications received
+          return const StudentRequestsScreen(); // View applications received
         }
         return const MyTasksScreen(); // Student tasks/schedule
       },
