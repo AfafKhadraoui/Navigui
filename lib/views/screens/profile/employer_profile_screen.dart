@@ -293,6 +293,78 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ],
                 ),
               ),
+              
+              const SizedBox(height: 24),
+              
+              // Logout Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: AppColors.grey4,
+                          title: Text(
+                            'Logout',
+                            style: GoogleFonts.aclonica(color: AppColors.white),
+                          ),
+                          content: Text(
+                            'Are you sure you want to logout?',
+                            style: GoogleFonts.aclonica(
+                              color: AppColors.grey6,
+                              fontSize: 14,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                'Cancel',
+                                style: GoogleFonts.aclonica(
+                                  color: AppColors.electricLime,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                context.go(AppRouter.login);
+                              },
+                              child: Text(
+                                'Logout',
+                                style: GoogleFonts.aclonica(color: AppColors.red1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.logout),
+                    label: Text(
+                      'Logout',
+                      style: GoogleFonts.aclonica(
+                        fontSize: 18,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.red1,
+                      side: const BorderSide(
+                        color: AppColors.red1,
+                        width: 2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 24),
             ],
           ),
         ),
