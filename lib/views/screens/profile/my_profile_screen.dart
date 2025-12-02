@@ -6,6 +6,7 @@ import '../../../routes/app_router.dart';
 import 'public_student_profile_screen.dart';
 import 'public_employer_profile_screen.dart';
 import '../jobs/saved_jobs_screen.dart';
+import '../jobs/my_applications_screen.dart';
 
 /// My Profile Screen
 /// Shows user profile with edit button
@@ -495,7 +496,16 @@ class MyProfileScreen extends StatelessWidget {
                 icon: Icons.work,
                 title: isStudent ? 'My Applications' : 'My Job Posts',
                 onTap: () {
-                  // TODO: Navigate to applications/jobs
+                  if (isStudent) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MyApplicationsScreen(),
+                      ),
+                    );
+                  } else {
+                    // TODO: Navigate to job posts for employer
+                  }
                 },
               ),
               
@@ -530,13 +540,12 @@ class MyProfileScreen extends StatelessWidget {
               
               const SizedBox(height: 24),
               
-              // Logout Button
+              // Logout Button (Student & Employer)
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    // TODO: Implement logout
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
