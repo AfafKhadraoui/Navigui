@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../data/repositories/application_repo.dart';
+// import '../../../data/repositories/application_repo.dart'; // TODO: Update to new repo structure
 import 'employer_application_state.dart';
 
 class EmployerApplicationCubit extends Cubit<EmployerApplicationState> {

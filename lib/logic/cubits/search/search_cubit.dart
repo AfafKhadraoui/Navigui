@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../data/repositories/job_repo.dart';
+// import '../../../data/repositories/job_repo.dart'; // TODO: Update to new repo structure
 import 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
