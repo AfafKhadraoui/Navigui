@@ -1,68 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../views/screens/homescreen/home_screen.dart';
 import '../../views/screens/jobs/jobs_page.dart';
 import '../../views/screens/tasks/my_tasks_screen.dart';
 import '../../views/screens/education/education_list_screen.dart';
 import '../../views/screens/profile/my_profile_screen.dart';
-
-// Employer screens (create these as needed)
 import '../../views/screens/employer/employer_home_screen.dart';
 import '../../views/screens/employer/my_job_posts_screen.dart';
 import '../../views/screens/employer/student_requests_screen.dart';
 import '../../views/screens/profile/employer_profile_screen.dart';
-
-// Admin screens
 import '../../views/screens/admin/admin_dashboard_screen.dart';
-import '../../views/screens/admin/admin_users_screen.dart';
-import '../../views/screens/admin/admin_jobs_screen.dart';
-import '../../views/screens/admin/admin_settings_screen.dart';
 
 /// Role-Based Navigation Helper
 /// Returns the correct screen based on user role
 class RoleBasedNavigation {
   /// Get Home screen based on role
   static Widget getHomeScreen() {
-    return Consumer<AuthService>(
-      builder: (context, authService, _) {
-        final accountType = authService.currentUser?.accountType;
-        if (accountType == 'admin') {
-          return const AdminDashboardScreen(); // Admin dashboard
-        } else if (authService.isEmployer) {
-          return const EmployerHomeScreen(); // Employer dashboard with statistics
+    return FutureBuilder<String>(
+      future: _getUserRole(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
         }
-        return const HomeScreen(); // Student home
+        final role = snapshot.data!;
+        if (role == 'admin') {
+          return const AdminDashboardScreen();
+        } else if (role == 'employer') {
+          return const EmployerHomeScreen();
+        }
+        return const HomeScreen();
       },
     );
   }
 
+  /// Helper to get user role from email
+  static Future<String> _getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('user_email') ?? '';
+    final emailLower = email.toLowerCase();
+
+    if (emailLower.contains('admin')) {
+      return 'admin';
+    } else if (emailLower.contains('employer')) {
+      return 'employer';
+    }
+    return 'student';
+  }
+
   /// Get Browse/Jobs screen based on role
   static Widget getBrowseScreen() {
-    return Consumer<AuthService>(
-      builder: (context, authService, _) {
-        final accountType = authService.currentUser?.accountType;
-        if (accountType == 'admin') {
-          return const AdminUsersScreen(); // Admin users management (not used in nav)
-        } else if (authService.isEmployer) {
-          return const MyJobPostsScreen(); // Employer's posted jobs + post new job
+    return FutureBuilder<String>(
+      future: _getUserRole(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
         }
-        return const JobsPage(); // Student job listings
+        final role = snapshot.data!;
+        if (role == 'employer') {
+          return const MyJobPostsScreen();
+        }
+        return const JobsPage();
       },
     );
   }
 
   /// Get Tasks/Applications screen based on role
   static Widget getTasksScreen() {
-    return Consumer<AuthService>(
-      builder: (context, authService, _) {
-        final accountType = authService.currentUser?.accountType;
-        if (accountType == 'admin') {
-          return const AdminJobsScreen(); // Admin jobs management (not used in nav)
-        } else if (authService.isEmployer) {
-          return const StudentRequestsScreen(); // View applications received
+    return FutureBuilder<String>(
+      future: _getUserRole(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
         }
-        return const MyTasksScreen(); // Student tasks/schedule
+        final role = snapshot.data!;
+        if (role == 'employer') {
+          return const StudentRequestsScreen();
+        }
+        return const MyTasksScreen();
       },
     );
   }
@@ -76,24 +90,27 @@ class RoleBasedNavigation {
 
   /// Get Profile screen based on role
   static Widget getProfileScreen() {
-    return Consumer<AuthService>(
-      builder: (context, authService, _) {
-        final accountType = authService.currentUser?.accountType;
-        if (accountType == 'admin') {
-          return const AdminSettingsScreen(); // Admin settings (not used in nav)
-        } else if (authService.isEmployer) {
-          return const EmployerProfileScreen(); // Employer profile
+    return FutureBuilder<String>(
+      future: _getUserRole(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
         }
-        return const MyProfileScreen(); // Student profile
+        final role = snapshot.data!;
+        if (role == 'employer') {
+          return const EmployerProfileScreen();
+        }
+        return const MyProfileScreen();
       },
     );
   }
 
   /// Get bottom nav item label based on role and index
   static String getNavLabel(int index, BuildContext context) {
-    final authService = context.watch<AuthService>();
+    // Simple default for testing
+    final isEmployer = false;
 
-    if (authService.isEmployer) {
+    if (isEmployer) {
       switch (index) {
         case 0:
           return 'Home';

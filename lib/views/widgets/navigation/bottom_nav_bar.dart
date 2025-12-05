@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../commons/themes/style_simple/colors.dart';
-import '../../../logic/services/auth_service.dart';
 
 /// Bottom Navigation Bar
 /// 5 tabs: Home, Browse Jobs, My Tasks, Learn, Profile
@@ -24,10 +23,32 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = context.watch<AuthService>();
-    final isEmployer = authService.isEmployer;
-    final isAdmin = authService.currentUser?.accountType == 'admin';
-    
+    return FutureBuilder<Map<String, bool>>(
+      future: _getUserRoleFlags(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox.shrink();
+        }
+        final flags = snapshot.data!;
+        final isEmployer = flags['isEmployer'] ?? false;
+        final isAdmin = flags['isAdmin'] ?? false;
+
+        return _buildNavBar(context, isEmployer, isAdmin);
+      },
+    );
+  }
+
+  Future<Map<String, bool>> _getUserRoleFlags() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('user_email') ?? '';
+    final emailLower = email.toLowerCase();
+    return {
+      'isAdmin': emailLower.contains('admin'),
+      'isEmployer': emailLower.contains('employer'),
+    };
+  }
+
+  Widget _buildNavBar(BuildContext context, bool isEmployer, bool isAdmin) {
     // Set colors based on role
     final Color selectedColor;
     if (isAdmin) {
@@ -72,17 +93,14 @@ class BottomNavBar extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(
-              isEmployer ? Icons.business_outlined : Icons.work_outline),
+          icon: Icon(isEmployer ? Icons.business_outlined : Icons.work_outline),
           activeIcon: Icon(isEmployer ? Icons.business : Icons.work),
           label: isEmployer ? 'My Jobs' : 'Browse',
         ),
         BottomNavigationBarItem(
-          icon: Icon(isEmployer
-              ? Icons.assignment_outlined
-              : Icons.task_alt_outlined),
-          activeIcon:
-              Icon(isEmployer ? Icons.assignment : Icons.task_alt),
+          icon: Icon(
+              isEmployer ? Icons.assignment_outlined : Icons.task_alt_outlined),
+          activeIcon: Icon(isEmployer ? Icons.assignment : Icons.task_alt),
           label: isEmployer ? 'Applications' : 'My Tasks',
         ),
         const BottomNavigationBarItem(

@@ -1,7 +1,7 @@
 // lib/routes/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/auth/login.dart';
 import '../views/screens/auth/AccountType.dart';
@@ -33,6 +33,8 @@ import '../data/models/job_post.dart';
 import '../data/models/application.dart';
 import '../logic/services/auth_service.dart';
 import '../logic/services/role_based_navigation.dart';
+import '../logic/cubits/auth/auth_cubit.dart';
+import '../logic/cubits/auth/auth_state.dart';
 import '../views/screens/profile/edit_student_profile_screen2.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
 import '../views/screens/employer/edit_employer_profile_screen2.dart';
@@ -103,7 +105,6 @@ class AppRouter {
 
   // Additional routes
   static const String notifications = '/notifications';
-
 
   // Profile routes
   static const String editStudentProfile = '/profile/edit-student';
@@ -209,7 +210,7 @@ class AppRouter {
         builder: (context, state) => const NotificationsScreen(),
       ),
 
- // Profile management routes (outside bottom nav)
+      // Profile management routes (outside bottom nav)
       GoRoute(
         path: editStudentProfile,
         name: 'edit-student-profile',
@@ -298,14 +299,14 @@ class AppRouter {
               ),
 
 //applications for specific job
-GoRoute(
-  path: '/job-applications/:jobId',
-  name: 'jobApplications',
-  builder: (context, state) {
-    final jobPost = state.extra as JobPost;
-    return JobApplicationsScreen(jobPost: jobPost);
-  },
-),
+              GoRoute(
+                path: '/job-applications/:jobId',
+                name: 'jobApplications',
+                builder: (context, state) {
+                  final jobPost = state.extra as JobPost;
+                  return JobApplicationsScreen(jobPost: jobPost);
+                },
+              ),
 
               // Student Requests List (employer)
               GoRoute(
@@ -357,7 +358,7 @@ GoRoute(
           // ============================================
           // ADMIN ROUTES (Admin Dashboard Navigation)
           // ============================================
-          
+
           GoRoute(
             path: '/admin/users',
             name: 'admin-users',
@@ -389,7 +390,6 @@ GoRoute(
               child: AdminSettingsScreen(),
             ),
           ),
-
         ],
       ),
     ],
@@ -411,10 +411,30 @@ class RootScaffold extends StatefulWidget {
 }
 
 class _RootScaffoldState extends State<RootScaffold> {
+  String? _cachedEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEmail();
+  }
+
+  Future<void> _loadEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _cachedEmail = prefs.getString('user_email');
+      });
+    }
+  }
+
+  bool get _isAdmin {
+    return _cachedEmail?.toLowerCase().contains('admin') ?? false;
+  }
+
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
-    final authService = context.watch<AuthService>();
-    final isAdmin = authService.currentUser?.accountType == 'admin';
+    final isAdmin = _isAdmin;
 
     if (isAdmin) {
       // Admin has 4 tabs: Dashboard (0), Users (1), Jobs (2), Settings (3)
@@ -435,8 +455,7 @@ class _RootScaffoldState extends State<RootScaffold> {
   }
 
   void _onItemTapped(int index) {
-    final authService = context.read<AuthService>();
-    final isAdmin = authService.currentUser?.accountType == 'admin';
+    final isAdmin = _isAdmin;
 
     if (isAdmin) {
       // Admin navigation: Dashboard, Users, Jobs, Settings

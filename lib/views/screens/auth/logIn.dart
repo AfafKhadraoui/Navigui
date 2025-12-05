@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import '../../../commons/themes/style_simple/colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../routes/app_router.dart';
-import '../../../logic/services/auth_service.dart';
 
 class LoginScreen2 extends StatefulWidget {
   const LoginScreen2({super.key});
@@ -33,7 +31,8 @@ class _LoginScreen2State extends State<LoginScreen2> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: SizedBox(
-            height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+            height: MediaQuery.of(context).size.height -
+                MediaQuery.of(context).padding.top,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -175,19 +174,15 @@ class _LoginScreen2State extends State<LoginScreen2> {
                 // Login Button
                 ElevatedButton(
                   onPressed: () async {
-                    // DEMO: Login with role based on email
-                    // If email contains 'employer' -> employer role
-                    // Otherwise -> student role
                     final email = _emailController.text.trim();
+                    if (email.isEmpty) return;
 
-                    final authService = context.read<AuthService>();
-                    final success = await authService.login(
-                      email,
-                      _passwordController.text,
-                    );
+                    // Save email for role detection
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString('user_email', email);
 
-                    if (success && mounted) {
-                      // Navigate to home - it will show correct interface based on role
+                    // Simple direct navigation for testing
+                    if (mounted) {
                       context.go(AppRouter.home);
                     }
                   },

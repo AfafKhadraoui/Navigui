@@ -26,14 +26,23 @@ class AuthRepository {
         throw Exception('Email and password are required');
       }
 
-      // Mock user data
+      // Mock user data - determine role from email for testing
+      String accountType = 'student'; // default
+      if (email.toLowerCase().contains('admin')) {
+        accountType = 'admin';
+      } else if (email.toLowerCase().contains('employer')) {
+        accountType = 'employer';
+      } else if (email.toLowerCase().contains('student')) {
+        accountType = 'student';
+      }
+
       final user = UserModel(
         id: '1',
         email: email,
         name: 'Test User',
         phoneNumber: '+213555123456',
         location: 'Algiers',
-        accountType: email.contains('employer') ? 'employer' : 'student',
+        accountType: accountType,
         createdAt: DateTime.now(),
       );
 
