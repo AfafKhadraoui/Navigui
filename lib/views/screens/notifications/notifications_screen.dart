@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
-import 'package:provider/provider.dart';
-import '../../../logic/services/auth_service.dart';
+// import 'package:provider/provider.dart';
+// import '../../../logic/services/auth_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -76,9 +76,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Get role from provider and initialize notifications once
-    final authService = context.read<AuthService>();
-    _isEmployer = authService.isEmployer;
+    // TODO: Get role from AuthService once implemented
+    // For now, default to student role
+    _isEmployer = false; // Change to true to test employer notifications
     if (!_notificationsInitialized) {
       _notifications = _getNotifications(_isEmployer);
       _notificationsInitialized = true;
