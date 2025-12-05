@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/user_model.dart';
+import '../../data/models/user_model.dart';
 
 /// Auth Service - Manages user authentication state and role
 /// This is a simple in-memory service. In production, you'd use:

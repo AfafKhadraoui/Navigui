@@ -1,0 +1,10 @@
+# intl_utils configuration - Supports organized ARB structure
+arb-dir: lib/l10n
+template-arb-file: intl_en.arb
+output-localization-file: s.dart
+output-class: S
+output-dir: lib/generated
+use-deferred-loading: false
+localizely:
+  project_id: <project_id>
+  ota_enabled: false

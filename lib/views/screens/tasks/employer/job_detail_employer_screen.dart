@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../logic/models/job_post.dart';
-import 'create_job_screen.dart';
+import '../../../../data/models/job_post.dart';
+import '../../employer/create_job_screen.dart';
 
 class JobDetailEmployerScreen extends StatefulWidget {
   final JobPost job;
@@ -8,7 +8,8 @@ class JobDetailEmployerScreen extends StatefulWidget {
   const JobDetailEmployerScreen({super.key, required this.job});
 
   @override
-  State<JobDetailEmployerScreen> createState() => _JobDetailEmployerScreenState();
+  State<JobDetailEmployerScreen> createState() =>
+      _JobDetailEmployerScreenState();
 }
 
 class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
@@ -21,19 +22,11 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
   }
 
   Future<void> _navigateToEdit() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreateJobScreen(job: _job),
-      ),
+    // TODO: Implement job editing
+    // Navigate to CreateJobScreen once it's fully implemented
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Job editing coming soon')),
     );
-
-    if (result == true && mounted) {
-      // TODO: Reload job data from backend
-      setState(() {
-        // Job would be updated from backend in production
-      });
-    }
   }
 
   Future<void> _deleteJob() async {
@@ -60,7 +53,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
             child: const Text(
               'Cancel',
               style: TextStyle(
-              
                 color: Color(0xFF6C6C6C),
               ),
             ),
@@ -70,7 +62,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
             child: const Text(
               'Delete',
               style: TextStyle(
-              
                 color: Color(0xFFC63F47),
               ),
             ),
@@ -145,9 +136,8 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${_job.company} • ${_job.location}',
+                        _job.location ?? 'Location not specified',
                         style: const TextStyle(
-                        
                           fontSize: 16,
                           color: Color(0xFFBFBFBF),
                         ),
@@ -168,12 +158,12 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.error_outline, color: Colors.white, size: 16),
+                        Icon(Icons.error_outline,
+                            color: Colors.white, size: 16),
                         SizedBox(width: 4),
                         Text(
                           'Urgent',
                           style: TextStyle(
-                          
                             fontSize: 13,
                             color: Colors.white,
                           ),
@@ -192,7 +182,7 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
             // Applications Count
             _buildInfoCard(
               'Applications Received',
-              '${_job.applications} students applied',
+              '${_job.applicantsCount} students applied',
               Icons.people_outline,
               const Color(0xFFABD600),
             ),
@@ -201,7 +191,7 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
             // Salary
             _buildInfoCard(
               'Salary',
-              _job.salary,
+              '\$${_job.pay.toStringAsFixed(2)}',
               Icons.attach_money,
               const Color(0xFFABD600),
             ),
@@ -224,72 +214,49 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Categories
-            if (_job.categories != null && _job.categories!.isNotEmpty) ...[
-              _buildSectionTitle('Categories'),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _job.categories!.map((cat) =>
-                  _buildChip(
-                    cat.label,
-                    const Color(0xFF3D3D3D),
-                    Colors.white,
-                  ),
-                ).toList(),
-              ),
-              const SizedBox(height: 24),
-            ],
+            // Category
+            _buildSectionTitle('Category'),
+            const SizedBox(height: 12),
+            _buildChip(
+              _job.category,
+              const Color(0xFF3D3D3D),
+              Colors.white,
+            ),
+            const SizedBox(height: 24),
 
             // Languages Required
-            if (_job.requirements != null && 
-                _job.requirements!.languages.isNotEmpty) ...[
+            if (_job.languages.isNotEmpty) ...[
               _buildSectionTitle('Languages Required'),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _job.requirements!.languages.map((lang) =>
-                  _buildChip(
-                    lang,
-                    const Color(0xFF2F2F2F),
-                    Colors.white,
-                  ),
-                ).toList(),
+                children: _job.languages
+                    .map(
+                      (lang) => _buildChip(
+                        lang,
+                        const Color(0xFF2F2F2F),
+                        Colors.white,
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 24),
             ],
 
             // Time Commitment
-            if (_job.timeCommitment != null) ...[
-              _buildSectionTitle('Time Commitment'),
-              const SizedBox(height: 12),
-              if (_job.timeCommitment!.hoursPerWeek != null)
-                _buildDetailRow(
-                  'Hours per Week',
-                  '${_job.timeCommitment!.hoursPerWeek} hours',
-                ),
-              if (_job.timeCommitment!.daysNeeded != null &&
-                  _job.timeCommitment!.daysNeeded!.isNotEmpty)
-                _buildDetailRow(
-                  'Days Needed',
-                  _job.timeCommitment!.daysNeeded!.join(', '),
-                ),
-              if (_job.timeCommitment!.specificDate != null)
-                _buildDetailRow(
-                  'Specific Date',
-                  '${_job.timeCommitment!.specificDate!.day}/'
-                  '${_job.timeCommitment!.specificDate!.month}/'
-                  '${_job.timeCommitment!.specificDate!.year}',
-                ),
-              if (_job.timeCommitment!.specificTime != null)
-                _buildDetailRow(
-                  'Time',
-                  _job.timeCommitment!.specificTime!,
-                ),
-              const SizedBox(height: 24),
-            ],
+            _buildSectionTitle('Time Commitment'),
+            const SizedBox(height: 12),
+            _buildDetailRow(
+              'Commitment',
+              _job.timeCommitment ?? 'Not specified',
+            ),
+            if (_job.startDate != null)
+              _buildDetailRow(
+                'Start Date',
+                '${_job.startDate!.day}/${_job.startDate!.month}/${_job.startDate!.year}',
+              ),
+            const SizedBox(height: 24),
 
             // Additional Details
             _buildSectionTitle('Additional Details'),
@@ -298,10 +265,8 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
               'Number of Positions',
               '${_job.numberOfPositions}',
             ),
-            if (_job.requirements?.cvRequired ?? false)
-              _buildDetailRow('CV Required', 'Yes'),
-            if (_job.isRecurring)
-              _buildDetailRow('Recurring', 'Yes'),
+            if (_job.requiresCv) _buildDetailRow('CV Required', 'Yes'),
+            if (_job.isRecurring) _buildDetailRow('Recurring', 'Yes'),
             _buildDetailRow(
               'Posted On',
               '${_job.createdDate.day}/${_job.createdDate.month}/${_job.createdDate.year}',
@@ -350,15 +315,19 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                 backgroundColor = isSelected
                     ? const Color(0xFFC63F47)
                     : const Color(0xFFC63F47).withOpacity(0.2);
-                textColor = isSelected
-                    ? Colors.white
-                    : const Color(0xFFC63F47);
+                textColor = isSelected ? Colors.white : const Color(0xFFC63F47);
                 break;
               case JobStatus.draft:
                 backgroundColor = isSelected
                     ? const Color(0xFF6C6C6C)
                     : const Color(0xFF6C6C6C).withOpacity(0.2);
                 textColor = const Color(0xFFBFBFBF);
+                break;
+              case JobStatus.expired:
+                backgroundColor = isSelected
+                    ? const Color(0xFF6C6C6C)
+                    : const Color(0xFF6C6C6C).withOpacity(0.2);
+                textColor = const Color(0xFF6C6C6C);
                 break;
             }
 
@@ -380,7 +349,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                       child: Text(
                         status.label,
                         style: TextStyle(
-                        
                           fontSize: 13,
                           color: textColor,
                         ),
@@ -396,7 +364,8 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
     );
   }
 
-  Widget _buildInfoCard(String title, String value, IconData icon, Color color) {
+  Widget _buildInfoCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -421,7 +390,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                 Text(
                   title,
                   style: const TextStyle(
-                  
                     fontSize: 14,
                     color: Color(0xFF6C6C6C),
                   ),
@@ -430,7 +398,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                 Text(
                   value,
                   style: TextStyle(
-                  
                     fontSize: 16,
                     color: color,
                   ),
@@ -452,7 +419,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
         Text(
           content,
           style: const TextStyle(
-          
             fontSize: 15,
             color: Color(0xFFBFBFBF),
             height: 1.5,
@@ -483,7 +449,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
       child: Text(
         label,
         style: TextStyle(
-        
           fontSize: 13,
           color: textColor,
         ),
@@ -500,7 +465,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
           Text(
             label,
             style: const TextStyle(
-            
               fontSize: 14,
               color: Color(0xFF6C6C6C),
             ),
@@ -508,7 +472,6 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
           Text(
             value,
             style: const TextStyle(
-            
               fontSize: 14,
               color: Colors.white,
             ),

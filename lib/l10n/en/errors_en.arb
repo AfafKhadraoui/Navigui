@@ -1,0 +1,145 @@
+{
+  "@@locale": "en",
+  "@@context": "Error messages and validation",
+  "@@last_modified": "2025-12-04",
+  
+  "valRequired": "This field is required",
+  "@valRequired": {
+    "description": "Required field validation"
+  },
+  
+  "valEmail": "Please enter a valid email address",
+  "@valEmail": {
+    "description": "Email validation"
+  },
+  
+  "valPassword": "Password must be at least 8 characters",
+  "@valPassword": {
+    "description": "Password validation"
+  },
+  
+  "valPasswordMatch": "Passwords do not match",
+  "@valPasswordMatch": {
+    "description": "Password match validation"
+  },
+  
+  "valPhone": "Please enter a valid phone number",
+  "@valPhone": {
+    "description": "Phone validation"
+  },
+  
+  "valMinLength": "Minimum {length} characters required",
+  "@valMinLength": {
+    "description": "Min length validation",
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "valMaxLength": "Maximum {length} characters allowed",
+  "@valMaxLength": {
+    "description": "Max length validation",
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "valUrl": "Please enter a valid URL",
+  "@valUrl": {
+    "description": "URL validation"
+  },
+  
+  "valNumber": "Please enter a valid number",
+  "@valNumber": {
+    "description": "Number validation"
+  },
+  
+  "errGeneric": "Something went wrong. Please try again.",
+  "@errGeneric": {
+    "description": "Generic error"
+  },
+  
+  "errNetwork": "No internet connection. Please check your network.",
+  "@errNetwork": {
+    "description": "Network error"
+  },
+  
+  "errServer": "Server error. Please try again later.",
+  "@errServer": {
+    "description": "Server error"
+  },
+  
+  "errNotFound": "The requested resource was not found.",
+  "@errNotFound": {
+    "description": "404 error"
+  },
+  
+  "errUnauthorized": "Unauthorized access. Please login again.",
+  "@errUnauthorized": {
+    "description": "401 error"
+  },
+  
+  "errTimeout": "Request timeout. Please try again.",
+  "@errTimeout": {
+    "description": "Timeout error"
+  },
+  
+  "errInvalidCredentials": "Invalid email or password",
+  "@errInvalidCredentials": {
+    "description": "Login error"
+  },
+  
+  "errAccountExists": "An account with this email already exists",
+  "@errAccountExists": {
+    "description": "Signup error"
+  },
+  
+  "errFileUpload": "Failed to upload file. Please try again.",
+  "@errFileUpload": {
+    "description": "Upload error"
+  },
+  
+  "errPermission": "Permission denied",
+  "@errPermission": {
+    "description": "Permission error"
+  },
+  
+  "timeJustNow": "Just now",
+  "@timeJustNow": {
+    "description": "Just now timestamp"
+  },
+  
+  "timeMinutesAgo": "{count} {count, plural, =1{minute} other{minutes}} ago",
+  "@timeMinutesAgo": {
+    "description": "Minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "timeHoursAgo": "{count} {count, plural, =1{hour} other{hours}} ago",
+  "@timeHoursAgo": {
+    "description": "Hours ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "timeDaysAgo": "{count} {count, plural, =1{day} other{days}} ago",
+  "@timeDaysAgo": {
+    "description": "Days ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

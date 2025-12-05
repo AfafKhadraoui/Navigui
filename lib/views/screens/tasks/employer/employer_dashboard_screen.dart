@@ -2,14 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../commons/themes/style_simple/colors.dart';
-import '../../../../logic/models/job_post.dart';
+import '../../../../data/models/job_post.dart';
 import '../../../../routes/app_router.dart';
 
 class EmployerDashboardScreen extends StatefulWidget {
   const EmployerDashboardScreen({super.key});
 
   @override
-  State<EmployerDashboardScreen> createState() => _EmployerDashboardScreenState();
+  State<EmployerDashboardScreen> createState() =>
+      _EmployerDashboardScreenState();
 }
 
 class _EmployerDashboardScreenState extends State<EmployerDashboardScreen> {
@@ -52,7 +53,8 @@ class _EmployerDashboardScreenState extends State<EmployerDashboardScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                    icon: const Icon(Icons.arrow_back,
+                        color: AppColors.textPrimary),
                     onPressed: () => context.pop(),
                   ),
                   const SizedBox(width: 8),
@@ -79,7 +81,7 @@ class _EmployerDashboardScreenState extends State<EmployerDashboardScreen> {
                 ],
               ),
             ),
-            
+
             // Jobs List
             Expanded(
               child: _jobs.isEmpty
@@ -132,7 +134,7 @@ class _JobPostCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: job.isUrgent 
+            color: job.isUrgent
                 ? AppColors.error.withOpacity(0.3)
                 : AppColors.border,
           ),
@@ -206,7 +208,7 @@ class _JobPostCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${job.company} • ${job.location}',
+                        job.location ?? 'Location not specified',
                         style: const TextStyle(
                           fontFamily: 'Acme',
                           fontSize: 14,
@@ -219,7 +221,7 @@ class _JobPostCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Description
             Text(
               job.description,
@@ -232,7 +234,7 @@ class _JobPostCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Tags
             Wrap(
               spacing: 8,
@@ -244,22 +246,14 @@ class _JobPostCard extends StatelessWidget {
                   backgroundColor: AppColors.primaryDark,
                   textColor: AppColors.textOnPrimary,
                 ),
-                
-                // Categories
-                ...?job.categories?.take(2).map((cat) => _Tag(
-                  label: cat.label,
+
+                // Category
+                _Tag(
+                  label: job.category,
                   backgroundColor: AppColors.surfaceLight,
                   textColor: AppColors.textPrimary,
-                )),
-                
-                // More categories
-                if (job.categories != null && job.categories!.length > 2)
-                  _Tag(
-                    label: '+${job.categories!.length - 2} more',
-                    backgroundColor: AppColors.surfaceLight,
-                    textColor: AppColors.textTertiary,
-                  ),
-                
+                ),
+
                 // Recurring
                 if (job.isRecurring)
                   const _Tag(
@@ -270,7 +264,7 @@ class _JobPostCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Bottom Info
             Container(
               padding: const EdgeInsets.only(top: 12),
@@ -292,7 +286,7 @@ class _JobPostCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '${job.applications}',
+                    '${job.applicantsCount}',
                     style: const TextStyle(
                       fontFamily: 'Acme',
                       fontSize: 14,
@@ -300,10 +294,10 @@ class _JobPostCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // Salary
                   Text(
-                    job.salary,
+                    '\$${job.pay.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontFamily: 'Acme',
                       fontSize: 14,
@@ -311,7 +305,7 @@ class _JobPostCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  
+
                   // Status
                   _StatusBadge(status: job.status),
                 ],
@@ -364,7 +358,7 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     Color backgroundColor;
     Color textColor;
-    
+
     switch (status) {
       case JobStatus.active:
         backgroundColor = AppColors.primaryDark.withOpacity(0.2);
@@ -382,8 +376,12 @@ class _StatusBadge extends StatelessWidget {
         backgroundColor = AppColors.grey2.withOpacity(0.5);
         textColor = AppColors.textTertiary;
         break;
+      case JobStatus.expired:
+        backgroundColor = AppColors.grey2.withOpacity(0.3);
+        textColor = AppColors.textSecondary;
+        break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

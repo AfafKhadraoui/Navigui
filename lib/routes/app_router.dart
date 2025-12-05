@@ -25,13 +25,12 @@ import '../views/widgets/navigation/bottom_nav_bar.dart';
 
 // Job board screens
 import '../views/screens/tasks/employer/employer_dashboard_screen.dart';
-import '../views/screens/tasks/employer/create_job_screen.dart';
 import '../views/screens/tasks/employer/job_detail_employer_screen.dart';
 import '../views/screens/tasks/employer/job_requests_screen.dart';
 import '../views/screens/tasks/employer/request_detail_screen.dart';
 
-import '../logic/models/job_post.dart';
-import '../logic/models/application.dart';
+import '../data/models/job_post.dart';
+import '../data/models/application.dart';
 import '../logic/services/auth_service.dart';
 import '../logic/services/role_based_navigation.dart';
 import '../views/screens/profile/edit_student_profile_screen2.dart';

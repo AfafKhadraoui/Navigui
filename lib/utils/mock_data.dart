@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../logic/models/job_model.dart';
-import '../logic/models/student_model.dart';
-import '../logic/models/employer_model.dart';
-import '../logic/models/service_model.dart';
-import '../logic/models/application_model.dart';
-import '../logic/models/review_model.dart';
-import '../logic/models/notification_model.dart';
+import '../data/models/job_model.dart';
+import '../data/models/student_model.dart';
+import '../data/models/employer_model.dart';
+import '../data/models/service_model.dart';
+import '../data/models/application_model.dart';
+import '../data/models/review_model.dart';
+import '../data/models/notification_model.dart';
 
 /// Mock Data Loader for Frontend Development
 ///

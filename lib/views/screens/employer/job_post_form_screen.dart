@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/job_post.dart';
+import '../../../data/models/job_post.dart';
 import '../../../mock/mock_data.dart';
 
 class JobPostFormScreen extends StatefulWidget {
@@ -14,7 +14,7 @@ class JobPostFormScreen extends StatefulWidget {
 class _JobPostFormScreenState extends State<JobPostFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final MockData _mockData = MockData();
-  
+
   // Form controllers
   late final TextEditingController _titleController;
   late final TextEditingController _companyController;
@@ -23,10 +23,10 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   late final TextEditingController _paymentAmountController;
   late final TextEditingController _hoursPerWeekController;
   late final TextEditingController _numberOfPositionsController;
-  
+
   // Form state
   late JobType _selectedJobType;
-  late List<JobCategory> _selectedCategories;
+  late String _selectedCategory;
   late List<String> _selectedLanguages;
   late bool _cvRequired;
   late PaymentType _selectedPaymentType;
@@ -39,40 +39,37 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize with existing data or defaults
     final job = widget.job;
-    
+
     _titleController = TextEditingController(text: job?.title ?? '');
-    _companyController = TextEditingController(text: job?.company ?? '');
     _locationController = TextEditingController(text: job?.location ?? '');
-    _descriptionController = TextEditingController(text: job?.description ?? '');
+    _descriptionController =
+        TextEditingController(text: job?.description ?? '');
     _paymentAmountController = TextEditingController(
-      text: job?.payment?.amount.toString() ?? '',
+      text: job?.pay.toString() ?? '',
     );
-    _hoursPerWeekController = TextEditingController(
-      text: job?.timeCommitment?.hoursPerWeek?.toString() ?? '',
-    );
+    _hoursPerWeekController = TextEditingController(text: '');
     _numberOfPositionsController = TextEditingController(
       text: job?.numberOfPositions.toString() ?? '1',
     );
-    
+
     _selectedJobType = job?.jobType ?? JobType.partTime;
-    _selectedCategories = job?.categories ?? [];
-    _selectedLanguages = job?.requirements?.languages ?? [];
-    _cvRequired = job?.requirements?.cvRequired ?? false;
-    _selectedPaymentType = job?.payment?.type ?? PaymentType.monthly;
+    _selectedCategory = job?.category ?? 'Other';
+    _selectedLanguages = job?.languages ?? [];
+    _cvRequired = job?.requiresCv ?? false;
+    _selectedPaymentType = job?.paymentType ?? PaymentType.monthly;
     _isUrgent = job?.isUrgent ?? false;
     _isRecurring = job?.isRecurring ?? false;
     _selectedStatus = job?.status ?? JobStatus.active;
-    _specificDate = job?.timeCommitment?.specificDate;
-    _selectedDays = job?.timeCommitment?.daysNeeded ?? [];
+    _specificDate = job?.startDate;
+    _selectedDays = [];
   }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _companyController.dispose();
     _locationController.dispose();
     _descriptionController.dispose();
     _paymentAmountController.dispose();
@@ -85,29 +82,24 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
     if (_formKey.currentState!.validate()) {
       final newJob = JobPost(
         id: widget.job?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        employerId: '1',
         title: _titleController.text,
-        company: _companyController.text,
         location: _locationController.text,
         description: _descriptionController.text,
-        salary: _getSalaryString(),
-        applications: widget.job?.applications ?? 0,
+        category: _selectedCategory,
+        pay: double.parse(_paymentAmountController.text),
+        paymentType: _selectedPaymentType,
+        applicantsCount: widget.job?.applicantsCount ?? 0,
         jobType: _selectedJobType,
-        categories: _selectedCategories.isEmpty ? null : _selectedCategories,
-        requirements: JobRequirements(
-          languages: _selectedLanguages,
-          cvRequired: _cvRequired,
-        ),
-        timeCommitment: TimeCommitment(
-          hoursPerWeek: _hoursPerWeekController.text.isEmpty 
-              ? null 
-              : int.tryParse(_hoursPerWeekController.text),
-          daysNeeded: _selectedDays.isEmpty ? null : _selectedDays,
-          specificDate: _specificDate,
-        ),
-        payment: PaymentInfo(
-          amount: double.parse(_paymentAmountController.text),
-          type: _selectedPaymentType,
-        ),
+        requirements: _selectedLanguages.isNotEmpty
+            ? 'Languages: ${_selectedLanguages.join(", ")}${_cvRequired ? ", CV Required" : ""}'
+            : (_cvRequired ? 'CV Required' : null),
+        requiresCv: _cvRequired,
+        timeCommitment: _hoursPerWeekController.text.isNotEmpty
+            ? '${_hoursPerWeekController.text} hours/week'
+            : null,
+        startDate: _specificDate,
+        languages: _selectedLanguages,
         isRecurring: _isRecurring,
         isUrgent: _isUrgent,
         numberOfPositions: int.parse(_numberOfPositionsController.text),
@@ -127,8 +119,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
 
   String _getSalaryString() {
     final amount = double.tryParse(_paymentAmountController.text) ?? 0;
-    final paymentInfo = PaymentInfo(amount: amount, type: _selectedPaymentType);
-    return paymentInfo.formattedAmount;
+    final typeStr = _selectedPaymentType.toString().split('.').last;
+    return '\$${amount.toStringAsFixed(2)} / $typeStr';
   }
 
   @override
@@ -177,7 +169,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 16),
-            
+
             // Company
             _buildTextField(
               controller: _companyController,
@@ -186,7 +178,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 16),
-            
+
             // Location
             _buildTextField(
               controller: _locationController,
@@ -195,7 +187,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 16),
-            
+
             // Description
             _buildTextField(
               controller: _descriptionController,
@@ -205,19 +197,19 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 24),
-            
+
             // Job Type
             _buildSectionTitle('Job Type'),
             const SizedBox(height: 12),
             _buildJobTypeSelector(),
             const SizedBox(height: 24),
-            
+
             // Categories
             _buildSectionTitle('Categories (Optional)'),
             const SizedBox(height: 12),
             _buildCategoriesSelector(),
             const SizedBox(height: 24),
-            
+
             // Payment
             _buildSectionTitle('Payment'),
             const SizedBox(height: 12),
@@ -230,7 +222,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
                     label: 'Amount',
                     hint: '0',
                     keyboardType: TextInputType.number,
-                    validator: (value) => 
+                    validator: (value) =>
                         value?.isEmpty ?? true ? 'Required' : null,
                   ),
                 ),
@@ -249,13 +241,13 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            
+
             // Languages Required
             _buildSectionTitle('Languages Required'),
             const SizedBox(height: 12),
             _buildLanguagesSelector(),
             const SizedBox(height: 24),
-            
+
             // Time Commitment (for Part-Time)
             if (_selectedJobType == JobType.partTime) ...[
               _buildSectionTitle('Time Commitment'),
@@ -270,7 +262,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               _buildDaysSelector(),
               const SizedBox(height: 24),
             ],
-            
+
             // Specific Date (for Quick Task)
             if (_selectedJobType == JobType.quickTask) ...[
               _buildSectionTitle('Task Date'),
@@ -278,7 +270,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               _buildDatePicker(),
               const SizedBox(height: 24),
             ],
-            
+
             // Number of Positions
             _buildTextField(
               controller: _numberOfPositionsController,
@@ -288,7 +280,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 24),
-            
+
             // Options
             _buildSectionTitle('Options'),
             const SizedBox(height: 12),
@@ -308,7 +300,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               (value) => setState(() => _isRecurring = value),
             ),
             const SizedBox(height: 24),
-            
+
             // Status
             _buildSectionTitle('Status'),
             const SizedBox(height: 12),
@@ -450,8 +442,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? const Color(0xFFABD600) 
+                  color: isSelected
+                      ? const Color(0xFFABD600)
                       : const Color(0xFF2F2F2F),
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -461,9 +453,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
                     style: TextStyle(
                       fontFamily: 'Acme',
                       fontSize: 14,
-                      color: isSelected 
-                          ? const Color(0xFF1A1A1A) 
-                          : Colors.white,
+                      color:
+                          isSelected ? const Color(0xFF1A1A1A) : Colors.white,
                     ),
                   ),
                 ),
@@ -476,45 +467,57 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   }
 
   Widget _buildCategoriesSelector() {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: JobCategory.values.map((category) {
-        final isSelected = _selectedCategories.contains(category);
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isSelected) {
-                _selectedCategories.remove(category);
-              } else {
-                _selectedCategories.add(category);
-              }
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected 
-                  ? const Color(0xFFABD600) 
-                  : const Color(0xFF2F2F2F),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              category.label,
-              style: TextStyle(
-                fontFamily: 'Acme',
-                fontSize: 13,
-                color: isSelected ? const Color(0xFF1A1A1A) : Colors.white,
-              ),
-            ),
-          ),
+    const categories = [
+      'Photography',
+      'Translation',
+      'Graphic Design',
+      'Video Editing',
+      'Content Writing',
+      'Tutoring',
+      'Event Staff',
+      'Data Entry',
+      'Social Media',
+      'Customer Service',
+      'Sales',
+      'Marketing',
+      'IT Support',
+      'Design',
+      'Other'
+    ];
+    return DropdownButtonFormField<String>(
+      value: _selectedCategory,
+      decoration: InputDecoration(
+        labelText: 'Category',
+        filled: true,
+        fillColor: const Color(0xFF2F2F2F),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      dropdownColor: const Color(0xFF2F2F2F),
+      style: const TextStyle(color: Colors.white),
+      items: categories.map((category) {
+        return DropdownMenuItem(
+          value: category,
+          child: Text(category),
         );
       }).toList(),
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _selectedCategory = value;
+          });
+        }
+      },
     );
   }
 
   Widget _buildLanguagesSelector() {
-    final availableLanguages = ['English', 'French', 'Arabic', 'Spanish', 'German'];
+    final availableLanguages = [
+      'English',
+      'French',
+      'Arabic',
+      'Spanish',
+      'German'
+    ];
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -533,8 +536,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected 
-                  ? const Color(0xFFABD600) 
+              color: isSelected
+                  ? const Color(0xFFABD600)
                   : const Color(0xFF2F2F2F),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -553,7 +556,15 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   }
 
   Widget _buildDaysSelector() {
-    final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -572,8 +583,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected 
-                  ? const Color(0xFFABD600) 
+              color: isSelected
+                  ? const Color(0xFFABD600)
                   : const Color(0xFF2F2F2F),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -623,7 +634,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
                 color: _specificDate != null ? Colors.white : Colors.grey[700],
               ),
             ),
-            const Icon(Icons.calendar_today, color: Color(0xFFABD600), size: 20),
+            const Icon(Icons.calendar_today,
+                color: Color(0xFFABD600), size: 20),
           ],
         ),
       ),

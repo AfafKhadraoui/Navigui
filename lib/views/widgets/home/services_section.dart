@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
 import '../../../utils/mock_data.dart';
-import '../../../logic/models/service_model.dart';
+import '../../../data/models/service_model.dart';
 
 /// Services Marketplace Section Widget (Fiverr-like)
 /// Purpose: Display services offered by students (design, tutoring, etc.)

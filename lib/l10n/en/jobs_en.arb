@@ -1,0 +1,258 @@
+{
+  "@@locale": "en",
+  "@@context": "Job listings, details, and categories",
+  "@@last_modified": "2025-12-04",
+  
+  "jobsTitle": "Jobs",
+  "@jobsTitle": {
+    "description": "Jobs page title"
+  },
+  
+  "jobsFindYourJob": "Find Your Next Job",
+  "@jobsFindYourJob": {
+    "description": "Jobs page heading"
+  },
+  
+  "jobsRecommended": "Recommended for You",
+  "@jobsRecommended": {
+    "description": "Recommended jobs section"
+  },
+  
+  "jobsRecent": "Recent Jobs",
+  "@jobsRecent": {
+    "description": "Recent jobs section"
+  },
+  
+  "jobsPopular": "Popular Jobs",
+  "@jobsPopular": {
+    "description": "Popular jobs section"
+  },
+  
+  "jobsNearYou": "Jobs Near You",
+  "@jobsNearYou": {
+    "description": "Nearby jobs section"
+  },
+  
+  "jobTitle": "Job Title",
+  "@jobTitle": {
+    "description": "Job title label"
+  },
+  
+  "jobDescription": "Description",
+  "@jobDescription": {
+    "description": "Job description label"
+  },
+  
+  "jobRequirements": "Requirements",
+  "@jobRequirements": {
+    "description": "Job requirements label"
+  },
+  
+  "jobResponsibilities": "Responsibilities",
+  "@jobResponsibilities": {
+    "description": "Job responsibilities label"
+  },
+  
+  "jobCategory": "Category",
+  "@jobCategory": {
+    "description": "Job category label"
+  },
+  
+  "jobLocation": "Location",
+  "@jobLocation": {
+    "description": "Job location label"
+  },
+  
+  "jobSalary": "Salary",
+  "@jobSalary": {
+    "description": "Salary label"
+  },
+  
+  "jobSalaryRange": "{min} - {max} DZD",
+  "@jobSalaryRange": {
+    "description": "Salary range format",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "jobType": "Job Type",
+  "@jobType": {
+    "description": "Job type label"
+  },
+  
+  "jobTypePartTime": "Part-Time",
+  "@jobTypePartTime": {
+    "description": "Part-time type"
+  },
+  
+  "jobTypeFullTime": "Full-Time",
+  "@jobTypeFullTime": {
+    "description": "Full-time type"
+  },
+  
+  "jobTypeFreelance": "Freelance",
+  "@jobTypeFreelance": {
+    "description": "Freelance type"
+  },
+  
+  "jobTypeInternship": "Internship",
+  "@jobTypeInternship": {
+    "description": "Internship type"
+  },
+  
+  "jobTypeContract": "Contract",
+  "@jobTypeContract": {
+    "description": "Contract type"
+  },
+  
+  "jobTypeRemote": "Remote",
+  "@jobTypeRemote": {
+    "description": "Remote type"
+  },
+  
+  "jobDuration": "Duration",
+  "@jobDuration": {
+    "description": "Job duration label"
+  },
+  
+  "jobDeadline": "Deadline",
+  "@jobDeadline": {
+    "description": "Application deadline"
+  },
+  
+  "jobPostedDate": "Posted",
+  "@jobPostedDate": {
+    "description": "Posted date label"
+  },
+  
+  "jobPostedAgo": "Posted {time}",
+  "@jobPostedAgo": {
+    "description": "Relative posted time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "jobApplicants": "Applicants",
+  "@jobApplicants": {
+    "description": "Applicants label"
+  },
+  
+  "jobApplicantsCount": "{count} applicants",
+  "@jobApplicantsCount": {
+    "description": "Applicants count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "jobApplyNow": "Apply Now",
+  "@jobApplyNow": {
+    "description": "Apply button"
+  },
+  
+  "jobApplied": "Applied",
+  "@jobApplied": {
+    "description": "Applied status"
+  },
+  
+  "jobSave": "Save Job",
+  "@jobSave": {
+    "description": "Save job button"
+  },
+  
+  "jobSaved": "Saved",
+  "@jobSaved": {
+    "description": "Saved status"
+  },
+  
+  "jobShare": "Share Job",
+  "@jobShare": {
+    "description": "Share button"
+  },
+  
+  "jobReport": "Report Job",
+  "@jobReport": {
+    "description": "Report button"
+  },
+  
+  "jobNoJobsFound": "No jobs found",
+  "@jobNoJobsFound": {
+    "description": "Empty state message"
+  },
+  
+  "jobViewDetails": "View Details",
+  "@jobViewDetails": {
+    "description": "View details button"
+  },
+  
+  "jobAboutCompany": "About Company",
+  "@jobAboutCompany": {
+    "description": "Company section title"
+  },
+  
+  "jobContactInfo": "Contact Information",
+  "@jobContactInfo": {
+    "description": "Contact section title"
+  },
+  
+  "catEducation": "Education & Training",
+  "@catEducation": {
+    "description": "Education category"
+  },
+  
+  "catTech": "Technology & IT",
+  "@catTech": {
+    "description": "Tech category"
+  },
+  
+  "catMarketing": "Marketing & Sales",
+  "@catMarketing": {
+    "description": "Marketing category"
+  },
+  
+  "catDesign": "Design & Creative",
+  "@catDesign": {
+    "description": "Design category"
+  },
+  
+  "catHospitality": "Hospitality & Food",
+  "@catHospitality": {
+    "description": "Hospitality category"
+  },
+  
+  "catRetail": "Retail & Customer Service",
+  "@catRetail": {
+    "description": "Retail category"
+  },
+  
+  "catDelivery": "Delivery & Logistics",
+  "@catDelivery": {
+    "description": "Delivery category"
+  },
+  
+  "catWriting": "Writing & Content",
+  "@catWriting": {
+    "description": "Writing category"
+  },
+  
+  "catAdmin": "Administration",
+  "@catAdmin": {
+    "description": "Admin category"
+  },
+  
+  "catOther": "Other",
+  "@catOther": {
+    "description": "Other category"
+  }
+}

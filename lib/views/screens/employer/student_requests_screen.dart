@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/application.dart';
+import '../../../data/models/application.dart';
 import '../../../mock/mock_data.dart';
 import 'student_request_detail_screen.dart';
 

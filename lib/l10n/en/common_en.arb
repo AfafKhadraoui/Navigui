@@ -1,0 +1,235 @@
+{
+  "@@locale": "en",
+  "@@context": "Common UI elements - Buttons, labels, general strings",
+  "@@last_modified": "2025-12-04",
+  
+  "appName": "Navigui",
+  "@appName": {
+    "description": "Application name displayed in app bar and splash screen"
+  },
+  
+  "appTagline": "Your Gateway to Part-Time Jobs",
+  "@appTagline": {
+    "description": "Application tagline/slogan"
+  },
+  
+  "appDescription": "Connect Algerian students with part-time jobs and quick tasks",
+  "@appDescription": {
+    "description": "Short app description"
+  },
+  
+  "commonWelcome": "Welcome",
+  "@commonWelcome": {
+    "description": "Generic welcome greeting"
+  },
+  
+  "commonWelcomeBack": "Welcome back!",
+  "@commonWelcomeBack": {
+    "description": "Welcome message for returning users"
+  },
+  
+  "commonGetStarted": "Get Started",
+  "@commonGetStarted": {
+    "description": "Button to begin onboarding"
+  },
+  
+  "commonContinue": "Continue",
+  "@commonContinue": {
+    "description": "Button to proceed to next step"
+  },
+  
+  "commonNext": "Next",
+  "@commonNext": {
+    "description": "Next button"
+  },
+  
+  "commonPrevious": "Previous",
+  "@commonPrevious": {
+    "description": "Previous button"
+  },
+  
+  "commonSkip": "Skip",
+  "@commonSkip": {
+    "description": "Skip button"
+  },
+  
+  "commonDone": "Done",
+  "@commonDone": {
+    "description": "Done button"
+  },
+  
+  "commonSave": "Save",
+  "@commonSave": {
+    "description": "Save button"
+  },
+  
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Cancel button"
+  },
+  
+  "commonDelete": "Delete",
+  "@commonDelete": {
+    "description": "Delete button"
+  },
+  
+  "commonEdit": "Edit",
+  "@commonEdit": {
+    "description": "Edit button"
+  },
+  
+  "commonUpdate": "Update",
+  "@commonUpdate": {
+    "description": "Update button"
+  },
+  
+  "commonSubmit": "Submit",
+  "@commonSubmit": {
+    "description": "Submit button"
+  },
+  
+  "commonApply": "Apply",
+  "@commonApply": {
+    "description": "Apply button"
+  },
+  
+  "commonClose": "Close",
+  "@commonClose": {
+    "description": "Close button"
+  },
+  
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Back button"
+  },
+  
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "OK button"
+  },
+  
+  "commonYes": "Yes",
+  "@commonYes": {
+    "description": "Yes option"
+  },
+  
+  "commonNo": "No",
+  "@commonNo": {
+    "description": "No option"
+  },
+  
+  "commonConfirm": "Confirm",
+  "@commonConfirm": {
+    "description": "Confirm button"
+  },
+  
+  "commonLoading": "Loading...",
+  "@commonLoading": {
+    "description": "Loading indicator"
+  },
+  
+  "commonPleaseWait": "Please wait...",
+  "@commonPleaseWait": {
+    "description": "Please wait message"
+  },
+  
+  "commonError": "Error",
+  "@commonError": {
+    "description": "Error title"
+  },
+  
+  "commonSuccess": "Success",
+  "@commonSuccess": {
+    "description": "Success title"
+  },
+  
+  "commonWarning": "Warning",
+  "@commonWarning": {
+    "description": "Warning title"
+  },
+  
+  "commonInfo": "Information",
+  "@commonInfo": {
+    "description": "Info title"
+  },
+  
+  "commonNoData": "No data available",
+  "@commonNoData": {
+    "description": "Empty state message"
+  },
+  
+  "commonRetry": "Retry",
+  "@commonRetry": {
+    "description": "Retry button"
+  },
+  
+  "commonRefresh": "Refresh",
+  "@commonRefresh": {
+    "description": "Refresh button"
+  },
+  
+  "commonSearch": "Search",
+  "@commonSearch": {
+    "description": "Search action"
+  },
+  
+  "commonFilter": "Filter",
+  "@commonFilter": {
+    "description": "Filter button"
+  },
+  
+  "commonSort": "Sort",
+  "@commonSort": {
+    "description": "Sort button"
+  },
+  
+  "commonViewAll": "View All",
+  "@commonViewAll": {
+    "description": "View all button"
+  },
+  
+  "commonShowMore": "Show More",
+  "@commonShowMore": {
+    "description": "Show more button"
+  },
+  
+  "commonShowLess": "Show Less",
+  "@commonShowLess": {
+    "description": "Show less button"
+  },
+  
+  "commonRequired": "Required",
+  "@commonRequired": {
+    "description": "Required field indicator"
+  },
+  
+  "commonOptional": "Optional",
+  "@commonOptional": {
+    "description": "Optional field indicator"
+  },
+  
+  "commonLanguage": "Language",
+  "@commonLanguage": {
+    "description": "Language option"
+  },
+  
+  "commonSettings": "Settings",
+  "@commonSettings": {
+    "description": "Settings menu"
+  },
+  
+  "commonLogout": "Logout",
+  "@commonLogout": {
+    "description": "Logout button"
+  },
+  
+  "commonSeeAll": "See All",
+  "@commonSeeAll": {
+    "description": "See all link"
+  },
+  
+  "commonNotAvailable": "N/A",
+  "@commonNotAvailable": {
+    "description": "Not available indicator"
+  }
+}

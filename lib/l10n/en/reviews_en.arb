@@ -1,0 +1,90 @@
+{
+  "@@locale": "en",
+  "@@context": "Reviews and ratings system",
+  "@@last_modified": "2025-12-04",
+  
+  "reviewTitle": "Reviews",
+  "@reviewTitle": {
+    "description": "Reviews section title"
+  },
+  
+  "reviewWriteReview": "Write a Review",
+  "@reviewWriteReview": {
+    "description": "Write review button"
+  },
+  
+  "reviewRating": "Rating",
+  "@reviewRating": {
+    "description": "Rating label"
+  },
+  
+  "reviewYourRating": "Your Rating",
+  "@reviewYourRating": {
+    "description": "Your rating label"
+  },
+  
+  "reviewComment": "Review Comment",
+  "@reviewComment": {
+    "description": "Comment label"
+  },
+  
+  "reviewCommentPlaceholder": "Share your experience...",
+  "@reviewCommentPlaceholder": {
+    "description": "Comment placeholder"
+  },
+  
+  "reviewSubmit": "Submit Review",
+  "@reviewSubmit": {
+    "description": "Submit button"
+  },
+  
+  "reviewSubmitSuccess": "Review submitted successfully!",
+  "@reviewSubmitSuccess": {
+    "description": "Submit success message"
+  },
+  
+  "reviewNoReviews": "No reviews yet",
+  "@reviewNoReviews": {
+    "description": "Empty state"
+  },
+  
+  "reviewAverageRating": "Average Rating",
+  "@reviewAverageRating": {
+    "description": "Average rating label"
+  },
+  
+  "reviewTotalReviews": "{count} reviews",
+  "@reviewTotalReviews": {
+    "description": "Total reviews count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "savedTitle": "Saved Jobs",
+  "@savedTitle": {
+    "description": "Saved jobs title"
+  },
+  
+  "savedNoJobs": "No saved jobs yet",
+  "@savedNoJobs": {
+    "description": "Empty state"
+  },
+  
+  "savedJobSaved": "Job saved successfully",
+  "@savedJobSaved": {
+    "description": "Save success"
+  },
+  
+  "savedJobRemoved": "Job removed from saved",
+  "@savedJobRemoved": {
+    "description": "Remove success"
+  },
+  
+  "savedClearAll": "Clear All Saved Jobs",
+  "@savedClearAll": {
+    "description": "Clear all button"
+  }
+}

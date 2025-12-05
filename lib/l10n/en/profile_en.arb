@@ -1,0 +1,145 @@
+{
+  "@@locale": "en",
+  "@@context": "Student and employer profile management",
+  "@@last_modified": "2025-12-04",
+  
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Profile page title"
+  },
+  
+  "profileMyProfile": "My Profile",
+  "@profileMyProfile": {
+    "description": "My profile title"
+  },
+  
+  "profileEditProfile": "Edit Profile",
+  "@profileEditProfile": {
+    "description": "Edit profile button"
+  },
+  
+  "profileViewProfile": "View Profile",
+  "@profileViewProfile": {
+    "description": "View profile button"
+  },
+  
+  "profilePersonalInfo": "Personal Information",
+  "@profilePersonalInfo": {
+    "description": "Personal info section"
+  },
+  
+  "profileAboutMe": "About Me",
+  "@profileAboutMe": {
+    "description": "About me section"
+  },
+  
+  "profileBio": "Bio",
+  "@profileBio": {
+    "description": "Bio label"
+  },
+  
+  "profileBioPlaceholder": "Tell us about yourself...",
+  "@profileBioPlaceholder": {
+    "description": "Bio placeholder"
+  },
+  
+  "profileUniversity": "University",
+  "@profileUniversity": {
+    "description": "University label"
+  },
+  
+  "profileFaculty": "Faculty",
+  "@profileFaculty": {
+    "description": "Faculty label"
+  },
+  
+  "profileYear": "Year of Study",
+  "@profileYear": {
+    "description": "Year label"
+  },
+  
+  "profileSkills": "Skills",
+  "@profileSkills": {
+    "description": "Skills section"
+  },
+  
+  "profileAddSkill": "Add Skill",
+  "@profileAddSkill": {
+    "description": "Add skill button"
+  },
+  
+  "profileExperience": "Experience",
+  "@profileExperience": {
+    "description": "Experience section"
+  },
+  
+  "profileAddExperience": "Add Experience",
+  "@profileAddExperience": {
+    "description": "Add experience button"
+  },
+  
+  "profileEducation": "Education",
+  "@profileEducation": {
+    "description": "Education section"
+  },
+  
+  "profileLanguages": "Languages",
+  "@profileLanguages": {
+    "description": "Languages section"
+  },
+  
+  "profileAddLanguage": "Add Language",
+  "@profileAddLanguage": {
+    "description": "Add language button"
+  },
+  
+  "profileAvailability": "Availability",
+  "@profileAvailability": {
+    "description": "Availability section"
+  },
+  
+  "profileLocation": "Location",
+  "@profileLocation": {
+    "description": "Location label"
+  },
+  
+  "profilePhotoUpload": "Upload Photo",
+  "@profilePhotoUpload": {
+    "description": "Upload photo button"
+  },
+  
+  "profilePhotoChange": "Change Photo",
+  "@profilePhotoChange": {
+    "description": "Change photo button"
+  },
+  
+  "profileUpdateSuccess": "Profile updated successfully!",
+  "@profileUpdateSuccess": {
+    "description": "Update success message"
+  },
+  
+  "profileCompanyName": "Company Name",
+  "@profileCompanyName": {
+    "description": "Company name label"
+  },
+  
+  "profileCompanyDescription": "Company Description",
+  "@profileCompanyDescription": {
+    "description": "Company description label"
+  },
+  
+  "profileCompanyWebsite": "Website",
+  "@profileCompanyWebsite": {
+    "description": "Website label"
+  },
+  
+  "profileCompanySize": "Company Size",
+  "@profileCompanySize": {
+    "description": "Company size label"
+  },
+  
+  "profileIndustry": "Industry",
+  "@profileIndustry": {
+    "description": "Industry label"
+  }
+}

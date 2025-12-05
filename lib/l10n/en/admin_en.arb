@@ -1,0 +1,115 @@
+{
+  "@@locale": "en",
+  "@@context": "Admin panel and moderation",
+  "@@last_modified": "2025-12-04",
+  
+  "adminTitle": "Admin Panel",
+  "@adminTitle": {
+    "description": "Admin panel title"
+  },
+  
+  "adminDashboard": "Dashboard",
+  "@adminDashboard": {
+    "description": "Dashboard title"
+  },
+  
+  "adminUsers": "Manage Users",
+  "@adminUsers": {
+    "description": "User management"
+  },
+  
+  "adminJobs": "Manage Jobs",
+  "@adminJobs": {
+    "description": "Job management"
+  },
+  
+  "adminReports": "Reports",
+  "@adminReports": {
+    "description": "Reports section"
+  },
+  
+  "adminStatistics": "Statistics",
+  "@adminStatistics": {
+    "description": "Statistics section"
+  },
+  
+  "adminVerifyUser": "Verify User",
+  "@adminVerifyUser": {
+    "description": "Verify button"
+  },
+  
+  "adminSuspendUser": "Suspend User",
+  "@adminSuspendUser": {
+    "description": "Suspend button"
+  },
+  
+  "adminDeleteUser": "Delete User",
+  "@adminDeleteUser": {
+    "description": "Delete user button"
+  },
+  
+  "adminDeleteJob": "Delete Job",
+  "@adminDeleteJob": {
+    "description": "Delete job button"
+  },
+  
+  "empDashboard": "Dashboard",
+  "@empDashboard": {
+    "description": "Employer dashboard"
+  },
+  
+  "empPostJob": "Post a Job",
+  "@empPostJob": {
+    "description": "Post job button"
+  },
+  
+  "empMyJobs": "My Jobs",
+  "@empMyJobs": {
+    "description": "My jobs section"
+  },
+  
+  "empJobApplications": "Applications",
+  "@empJobApplications": {
+    "description": "Applications section"
+  },
+  
+  "empEditJob": "Edit Job",
+  "@empEditJob": {
+    "description": "Edit job button"
+  },
+  
+  "empDeleteJob": "Delete Job",
+  "@empDeleteJob": {
+    "description": "Delete job button"
+  },
+  
+  "empDeleteJobConfirm": "Are you sure you want to delete this job posting?",
+  "@empDeleteJobConfirm": {
+    "description": "Delete confirmation"
+  },
+  
+  "empCloseJob": "Close Job",
+  "@empCloseJob": {
+    "description": "Close job button"
+  },
+  
+  "empJobPosted": "Job posted successfully!",
+  "@empJobPosted": {
+    "description": "Post success"
+  },
+  
+  "empJobUpdated": "Job updated successfully!",
+  "@empJobUpdated": {
+    "description": "Update success"
+  },
+  
+  "empJobDeleted": "Job deleted successfully",
+  "@empJobDeleted": {
+    "description": "Delete success"
+  },
+  
+  "empNoJobs": "You haven't posted any jobs yet",
+  "@empNoJobs": {
+    "description": "Empty state"
+  }
+}

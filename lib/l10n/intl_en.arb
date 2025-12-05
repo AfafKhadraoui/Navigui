@@ -1,0 +1,67 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2025-12-04",
+  
+  "@@_SECTION_COMMON": "════════════════════════════════════════",
+  "appName": "Navigui",
+  "@appName": {
+    "description": "Application name"
+  },
+  "appTagline": "Your Gateway to Part-Time Jobs",
+  "@appTagline": {
+    "description": "Application tagline"
+  },
+  "appDescription": "Connect Algerian students with part-time jobs and quick tasks",
+  "@appDescription": {
+    "description": "Short app description"
+  },
+  "commonWelcome": "Welcome",
+  "@commonWelcome": {
+    "description": "Generic welcome greeting"
+  },
+  "commonWelcomeBack": "Welcome back!",
+  "@commonWelcomeBack": {
+    "description": "Welcome message for returning users"
+  },
+  "commonGetStarted": "Get Started",
+  "commonContinue": "Continue",
+  "commonNext": "Next",
+  "commonPrevious": "Previous",
+  "commonSkip": "Skip",
+  "commonDone": "Done",
+  "commonSave": "Save",
+  "commonCancel": "Cancel",
+  "commonDelete": "Delete",
+  "commonEdit": "Edit",
+  "commonUpdate": "Update",
+  "commonSubmit": "Submit",
+  "commonApply": "Apply",
+  "commonClose": "Close",
+  "commonBack": "Back",
+  "commonOk": "OK",
+  "commonYes": "Yes",
+  "commonNo": "No",
+  "commonConfirm": "Confirm",
+  "commonLoading": "Loading...",
+  "commonPleaseWait": "Please wait...",
+  "commonError": "Error",
+  "commonSuccess": "Success",
+  "commonWarning": "Warning",
+  "commonInfo": "Information",
+  "commonNoData": "No data available",
+  "commonRetry": "Retry",
+  "commonRefresh": "Refresh",
+  "commonSearch": "Search",
+  "commonFilter": "Filter",
+  "commonSort": "Sort",
+  "commonViewAll": "View All",
+  "commonShowMore": "Show More",
+  "commonShowLess": "Show Less",
+  "commonRequired": "Required",
+  "commonOptional": "Optional",
+  "commonLanguage": "Language",
+  "commonSettings": "Settings",
+  "commonLogout": "Logout",
+  "commonSeeAll": "See All",
+  "commonNotAvailable": "N/A"
+}

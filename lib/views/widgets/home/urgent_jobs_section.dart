@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
 import '../../../utils/mock_data.dart';
-import '../../../logic/models/job_model.dart';
+import '../../../data/models/job_model.dart';
 
 /// Urgent Jobs Section Widget
 /// Purpose: Display jobs that require immediate attention (isUrgent = true)

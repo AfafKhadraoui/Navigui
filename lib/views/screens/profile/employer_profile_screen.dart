@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
-import '../../../logic/models/job_post.dart';
+import '../../../data/models/job_post.dart';
 import '../../../utils/mock_data.dart';
 import '../../../routes/app_router.dart';
 import 'public_employer_profile_screen.dart';
@@ -17,7 +17,8 @@ class EmployerProfileScreen extends StatefulWidget {
   State<EmployerProfileScreen> createState() => _EmployerProfileScreenState();
 }
 
-class _EmployerProfileScreenState extends State<EmployerProfileScreen> with SingleTickerProviderStateMixin {
+class _EmployerProfileScreenState extends State<EmployerProfileScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<JobPost> _jobs = [];
 
@@ -71,7 +72,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 24),
-              
+
               // Company Logo
               Container(
                 width: 120,
@@ -90,9 +91,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   color: AppColors.grey6,
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Company Name
               Text(
                 'Tech Solutions Inc.',
@@ -102,9 +103,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   color: AppColors.white,
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Industry
               Text(
                 'Technology & Software Development',
@@ -113,14 +114,15 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   color: AppColors.electricLime,
                 ),
               ),
-              
+
               const SizedBox(height: 4),
-              
+
               // Location
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.location_on, color: AppColors.grey6, size: 16),
+                  const Icon(Icons.location_on,
+                      color: AppColors.grey6, size: 16),
                   const SizedBox(width: 4),
                   Text(
                     'Algiers, Algeria',
@@ -131,9 +133,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Rating
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -155,9 +157,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Stats Row
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -171,9 +173,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Edit Profile Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -203,9 +205,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // View Public Profile Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -217,8 +219,10 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           fullscreenDialog: true,
-                          builder: (context) => const PublicEmployerProfileScreen(
-                            employerId: 'current_user', // TODO: Use actual user ID
+                          builder: (context) =>
+                              const PublicEmployerProfileScreen(
+                            employerId:
+                                'current_user', // TODO: Use actual user ID
                             companyName: 'Tech Solutions Inc.',
                           ),
                         ),
@@ -245,9 +249,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Tab Bar
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -278,9 +282,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Tab Content
               SizedBox(
                 height: 500,
@@ -293,9 +297,9 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Logout Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -336,7 +340,8 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                               },
                               child: Text(
                                 'Logout',
-                                style: GoogleFonts.aclonica(color: AppColors.red1),
+                                style:
+                                    GoogleFonts.aclonica(color: AppColors.red1),
                               ),
                             ),
                           ],
@@ -363,7 +368,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
             ],
           ),
@@ -383,21 +388,15 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
           _buildInfoCard(
             'Tech Solutions Inc. is a leading technology company specializing in custom software development, mobile applications, and digital transformation services. We work with businesses of all sizes to bring their digital ideas to life.',
           ),
-          
           const SizedBox(height: 24),
-          
           _buildSectionTitle('Industry'),
           const SizedBox(height: 12),
           _buildInfoCard('Technology & Software Development'),
-          
           const SizedBox(height: 24),
-          
           _buildSectionTitle('Company Size'),
           const SizedBox(height: 12),
           _buildInfoCard('51-200 employees'),
-          
           const SizedBox(height: 24),
-          
           _buildSectionTitle('Specializations'),
           const SizedBox(height: 12),
           Wrap(
@@ -412,22 +411,17 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
               _buildChip('DevOps'),
             ],
           ),
-          
           const SizedBox(height: 24),
-          
           _buildSectionTitle('Contact Information'),
           const SizedBox(height: 12),
           _buildContactItem(Icons.email, 'contact@techsolutions.dz'),
           _buildContactItem(Icons.phone, '+213 XXX XXX XXX'),
           _buildContactItem(Icons.language, 'www.techsolutions.dz'),
           _buildContactItem(Icons.location_on, '123 Business Street, Algiers'),
-          
           const SizedBox(height: 24),
-          
           _buildSectionTitle('Founded'),
           const SizedBox(height: 12),
           _buildInfoCard('2018'),
-          
           const SizedBox(height: 24),
         ],
       ),
@@ -442,7 +436,6 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
         children: [
           _buildSectionTitle('Active Job Postings'),
           const SizedBox(height: 12),
-          
           if (_jobs.isEmpty)
             Center(
               child: Padding(
@@ -458,7 +451,6 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
             )
           else
             ..._jobs.map((job) => _buildJobCard(job)),
-          
           const SizedBox(height: 24),
         ],
       ),
@@ -475,28 +467,32 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
             role: 'Former Employee - Developer',
             rating: 5,
             date: '1 month ago',
-            review: 'Great company to work with! Professional environment, supportive team, and excellent learning opportunities. The management truly cares about employee growth.',
+            review:
+                'Great company to work with! Professional environment, supportive team, and excellent learning opportunities. The management truly cares about employee growth.',
           ),
           _buildReviewCard(
             name: 'Sarah Mansouri',
             role: 'Current Employee - Designer',
             rating: 5,
             date: '2 months ago',
-            review: 'Amazing workplace! The team is collaborative and the projects are challenging and rewarding. Work-life balance is respected.',
+            review:
+                'Amazing workplace! The team is collaborative and the projects are challenging and rewarding. Work-life balance is respected.',
           ),
           _buildReviewCard(
             name: 'Karim Djellouli',
             role: 'Former Intern',
             rating: 4,
             date: '3 months ago',
-            review: 'Had a wonderful internship experience. Learned a lot from experienced developers and got hands-on experience with real projects.',
+            review:
+                'Had a wonderful internship experience. Learned a lot from experienced developers and got hands-on experience with real projects.',
           ),
           _buildReviewCard(
             name: 'Nadia Cherif',
             role: 'Former Employee - Project Manager',
             rating: 5,
             date: '4 months ago',
-            review: 'Professional and well-organized company. The management is transparent and the work environment is very positive.',
+            review:
+                'Professional and well-organized company. The management is transparent and the work environment is very positive.',
           ),
           const SizedBox(height: 24),
         ],
@@ -649,11 +645,12 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.payments, color: AppColors.electricLime, size: 18),
+                      Icon(Icons.payments,
+                          color: AppColors.electricLime, size: 18),
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          job.salary,
+                          '\$${job.pay.toStringAsFixed(2)}',
                           style: GoogleFonts.aclonica(
                             fontSize: 13,
                             color: AppColors.electricLime,
@@ -671,7 +668,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen> with Sing
                     Icon(Icons.people, color: AppColors.grey6, size: 18),
                     const SizedBox(width: 6),
                     Text(
-                      '${job.applications} applicants',
+                      '${job.applicantsCount} applicants',
                       style: GoogleFonts.aclonica(
                         fontSize: 13,
                         color: AppColors.grey6,

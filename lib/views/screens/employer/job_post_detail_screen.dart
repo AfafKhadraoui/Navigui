@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/job_post.dart';
+import '../../../data/models/job_post.dart';
 import '../../../mock/mock_data.dart';
 import 'job_post_form_screen.dart';
 
@@ -109,6 +109,8 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
         return 'Job is no longer accepting applications';
       case JobStatus.draft:
         return 'Job is saved as draft and not visible to students';
+      case JobStatus.expired:
+        return 'Job posting has expired and is no longer visible';
     }
   }
 
@@ -150,8 +152,8 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                       ? const Color(0xFFC63F47).withValues(alpha: 0.3)
                       : const Color(0xFF3D3D3D),
                 ),
-                 gradient: _job.isUrgent
-                  ? LinearGradient(
+                gradient: _job.isUrgent
+                    ? LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
@@ -174,7 +176,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _job.company,
+                    _job.location ?? 'Location not specified',
                     style: const TextStyle(
                       fontFamily: 'Acme',
                       fontSize: 15,
@@ -191,7 +193,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _job.location,
+                        _job.location ?? '',
                         style: const TextStyle(
                           fontFamily: 'Acme',
                           fontSize: 14,
@@ -211,12 +213,11 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                         const Color(0xFFABD600),
                         const Color(0xFF1A1A1A),
                       ),
-                      if (_job.categories != null && _job.categories!.isNotEmpty)
-                        ..._job.categories!.map((cat) => _buildSmallChip(
-                              cat.label,
-                              const Color(0xFF2F2F2F),
-                              Colors.white,
-                            )),
+                      _buildSmallChip(
+                        _job.category,
+                        const Color(0xFF2F2F2F),
+                        Colors.white,
+                      ),
                       if (_job.isUrgent)
                         _buildSmallChip(
                           'Active',
@@ -257,7 +258,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          _job.salary,
+                          '\$${_job.pay.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontFamily: 'Acme',
                             fontSize: 15,
@@ -291,7 +292,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'View All Applications (${_job.applications})',
+                    'View All Applications (${_job.applicantsCount})',
                     style: const TextStyle(
                       fontFamily: 'Acme',
                       fontSize: 15,
@@ -308,7 +309,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
               children: [
                 Expanded(
                   child: _buildStatCard(
-                    '${_job.applications}',
+                    '${_job.applicantsCount}',
                     'Applications',
                     const Color(0xFF2F2F2F),
                   ),
@@ -324,7 +325,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildStatCard(
-                    '${_job.saves}',
+                    '${_job.savesCount}',
                     'Saves',
                     const Color(0xFF2F2F2F),
                   ),
@@ -355,7 +356,7 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                   _buildDetailItem(
                     Icons.location_on,
                     'Location',
-                    _job.location,
+                    _job.location ?? '',
                   ),
                   const SizedBox(height: 12),
                   _buildDetailItem(
@@ -364,38 +365,30 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
                     _job.jobType.label,
                   ),
                   const SizedBox(height: 12),
-                  if (_job.timeCommitment != null &&
-                      _job.timeCommitment!.hoursPerWeek != null)
-                    _buildDetailItem(
-                      Icons.access_time,
-                      'Time Commitment',
-                      '${_job.timeCommitment!.hoursPerWeek} hours/week - ${_job.timeCommitment!.daysNeeded?.join(", ") ?? ""}',
-                    ),
-                  if (_job.timeCommitment != null &&
-                      _job.timeCommitment!.hoursPerWeek != null)
-                    const SizedBox(height: 12),
-                  if (_job.requirements != null &&
-                      _job.requirements!.languages.isNotEmpty)
+                  _buildDetailItem(
+                    Icons.access_time,
+                    'Time Commitment',
+                    _job.timeCommitment ?? 'Not specified',
+                  ),
+                  const SizedBox(height: 12),
+                  if (_job.languages.isNotEmpty)
                     _buildDetailItem(
                       Icons.language,
                       'Languages Required',
-                      _job.requirements!.languages.join(', '),
+                      _job.languages.join(', '),
                     ),
-                  if (_job.requirements != null &&
-                      _job.requirements!.languages.isNotEmpty)
-                    const SizedBox(height: 12),
-                  if (_job.requirements?.cvRequired ?? false)
+                  if (_job.languages.isNotEmpty) const SizedBox(height: 12),
+                  if (_job.requiresCv)
                     _buildDetailItem(
                       Icons.description,
                       'Requirements',
                       'CV Required',
                     ),
-                  if (_job.requirements?.cvRequired ?? false)
-                    const SizedBox(height: 12),
+                  if (_job.requiresCv) const SizedBox(height: 12),
                   _buildDetailItem(
                     Icons.attach_money,
                     'Payment Details',
-                    _job.salary,
+                    '\$${_job.pay.toStringAsFixed(2)}',
                   ),
                 ],
               ),
@@ -476,47 +469,46 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
     );
   }
 
-void _showStatusChangeDialog() {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color(0xFF2F2F2F),
-      title: const Text(
-        'Change Job Status',
-        style: TextStyle(
-          fontFamily: 'Aclonica',
-          color: Colors.white,
+  void _showStatusChangeDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2F2F2F),
+        title: const Text(
+          'Change Job Status',
+          style: TextStyle(
+            fontFamily: 'Aclonica',
+            color: Colors.white,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: JobStatus.values.map((status) {
+            return RadioListTile<JobStatus>(
+              value: status,
+              groupValue: _job.status,
+              activeColor: const Color(0xFFABD600),
+              onChanged: (value) {
+                if (value != null) {
+                  _changeStatus(value);
+                  Navigator.pop(context);
+                }
+              },
+              title: Text(
+                status.label,
+                style: TextStyle(
+                  fontFamily: 'Acme',
+                  color: _job.status == status
+                      ? const Color(0xFFABD600)
+                      : Colors.white,
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: JobStatus.values.map((status) {
-          return RadioListTile<JobStatus>(
-            value: status,
-            groupValue: _job.status,
-            activeColor: const Color(0xFFABD600),
-            onChanged: (value) {
-              if (value != null) {
-                _changeStatus(value);
-                Navigator.pop(context);
-              }
-            },
-            title: Text(
-              status.label,
-              style: TextStyle(
-                fontFamily: 'Acme',
-                color: _job.status == status
-                    ? const Color(0xFFABD600)
-                    : Colors.white,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildStatCard(String value, String label, Color backgroundColor) {
     return Container(

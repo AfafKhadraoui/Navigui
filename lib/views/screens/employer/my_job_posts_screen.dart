@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../logic/models/job_post.dart';
+import '../../../data/models/job_post.dart';
 import '../../../mock/mock_data.dart';
 import '../../../routes/app_router.dart';
 
 class MyJobPostsScreen extends StatefulWidget {
-  
   const MyJobPostsScreen({super.key});
 
   @override
@@ -33,27 +32,23 @@ class _MyJobPostsScreenState extends State<MyJobPostsScreen> {
     super.dispose();
   }
 
- void _loadJobs() {
+  void _loadJobs() {
     setState(() {
       final allJobs = _mockData.getAllJobs();
-      
+
       if (_searchQuery.isEmpty) {
         _jobs = allJobs;
       } else {
         _jobs = allJobs.where((job) {
           final query = _searchQuery.toLowerCase();
           return job.title.toLowerCase().contains(query) ||
-                 job.company.toLowerCase().contains(query) ||
-                 job.location.toLowerCase().contains(query) ||
-                 job.description.toLowerCase().contains(query) ||
-                 (job.categories?.any((cat) => 
-                   cat.label.toLowerCase().contains(query)) ?? false);
+              (job.location?.toLowerCase().contains(query) ?? false) ||
+              job.description.toLowerCase().contains(query) ||
+              job.category.toLowerCase().contains(query);
         }).toList();
       }
     });
   }
-  
-
 
   Future<void> _navigateToAddJob() async {
     await context.push(AppRouter.jobPostForm);
@@ -65,11 +60,9 @@ class _MyJobPostsScreenState extends State<MyJobPostsScreen> {
     _loadJobs();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -220,7 +213,6 @@ class _JobPostCard extends StatelessWidget {
     required this.onTap,
   });
 
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -268,7 +260,7 @@ class _JobPostCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${job.company} • ${job.location}',
+                        job.location ?? 'Location not specified',
                         style: const TextStyle(
                           fontFamily: 'Acme',
                           fontSize: 13,
@@ -338,20 +330,12 @@ class _JobPostCard extends StatelessWidget {
                   textColor: const Color(0xFF1A1A1A),
                 ),
 
-                // Categories
-                ...?job.categories?.take(2).map((cat) => _Tag(
-                      label: cat.label,
-                      backgroundColor: const Color(0xFF3D3D3D),
-                      textColor: Colors.white,
-                    )),
-
-                // More categories
-                if (job.categories != null && job.categories!.length > 2)
-                  _Tag(
-                    label: '+${job.categories!.length - 2} more',
-                    backgroundColor: const Color(0xFF3D3D3D),
-                    textColor: const Color(0xFF6C6C6C),
-                  ),
+                // Category
+                _Tag(
+                  label: job.category,
+                  backgroundColor: const Color(0xFF3D3D3D),
+                  textColor: Colors.white,
+                ),
 
                 // Recurring
                 if (job.isRecurring)
@@ -375,7 +359,7 @@ class _JobPostCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '${job.applications}',
+                  '${job.applicantsCount}',
                   style: const TextStyle(
                     fontFamily: 'Acme',
                     fontSize: 14,
@@ -392,7 +376,7 @@ class _JobPostCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '${job.saves}',
+                  '${job.savesCount}',
                   style: const TextStyle(
                     fontFamily: 'Acme',
                     fontSize: 14,
@@ -469,6 +453,10 @@ class _StatusBadge extends StatelessWidget {
       case JobStatus.draft:
         backgroundColor = const Color(0xFF6C6C6C).withOpacity(0.5);
         textColor = const Color(0xFFBFBFBF);
+        break;
+      case JobStatus.expired:
+        backgroundColor = const Color(0xFF6C6C6C).withOpacity(0.3);
+        textColor = const Color(0xFF9E9E9E);
         break;
     }
 

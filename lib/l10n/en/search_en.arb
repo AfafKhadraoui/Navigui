@@ -1,0 +1,110 @@
+{
+  "@@locale": "en",
+  "@@context": "Search and filtering functionality",
+  "@@last_modified": "2025-12-04",
+  
+  "searchTitle": "Search",
+  "@searchTitle": {
+    "description": "Search page title"
+  },
+  
+  "searchJobs": "Search jobs...",
+  "@searchJobs": {
+    "description": "Job search placeholder"
+  },
+  
+  "searchKeywords": "Keywords",
+  "@searchKeywords": {
+    "description": "Keywords label"
+  },
+  
+  "searchLocation": "Location",
+  "@searchLocation": {
+    "description": "Location filter"
+  },
+  
+  "searchCategory": "Category",
+  "@searchCategory": {
+    "description": "Category filter"
+  },
+  
+  "searchSalaryRange": "Salary Range",
+  "@searchSalaryRange": {
+    "description": "Salary range filter"
+  },
+  
+  "searchJobType": "Job Type",
+  "@searchJobType": {
+    "description": "Job type filter"
+  },
+  
+  "searchApplyFilters": "Apply Filters",
+  "@searchApplyFilters": {
+    "description": "Apply filters button"
+  },
+  
+  "searchClearFilters": "Clear Filters",
+  "@searchClearFilters": {
+    "description": "Clear filters button"
+  },
+  
+  "searchResults": "Search Results",
+  "@searchResults": {
+    "description": "Results section title"
+  },
+  
+  "searchResultsCount": "{count} jobs found",
+  "@searchResultsCount": {
+    "description": "Results count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "searchNoResults": "No jobs match your search criteria",
+  "@searchNoResults": {
+    "description": "Empty search results"
+  },
+  
+  "searchRecentSearches": "Recent Searches",
+  "@searchRecentSearches": {
+    "description": "Recent searches section"
+  },
+  
+  "searchClearHistory": "Clear History",
+  "@searchClearHistory": {
+    "description": "Clear history button"
+  },
+  
+  "searchSortBy": "Sort By",
+  "@searchSortBy": {
+    "description": "Sort label"
+  },
+  
+  "searchSortRelevance": "Relevance",
+  "@searchSortRelevance": {
+    "description": "Sort by relevance"
+  },
+  
+  "searchSortDateNew": "Newest First",
+  "@searchSortDateNew": {
+    "description": "Sort by newest"
+  },
+  
+  "searchSortDateOld": "Oldest First",
+  "@searchSortDateOld": {
+    "description": "Sort by oldest"
+  },
+  
+  "searchSortSalaryHigh": "Salary: High to Low",
+  "@searchSortSalaryHigh": {
+    "description": "Sort by salary desc"
+  },
+  
+  "searchSortSalaryLow": "Salary: Low to High",
+  "@searchSortSalaryLow": {
+    "description": "Sort by salary asc"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "@@locale": "en",
+  "@@context": "Educational resources and career guides",
+  "@@last_modified": "2025-12-04",
+  
+  "eduTitle": "Education",
+  "@eduTitle": {
+    "description": "Education page title"
+  },
+  
+  "eduCareerGuide": "Career Guides",
+  "@eduCareerGuide": {
+    "description": "Career guides section"
+  },
+  
+  "eduResumeBuilder": "Resume Builder",
+  "@eduResumeBuilder": {
+    "description": "Resume builder section"
+  },
+  
+  "eduInterviewTips": "Interview Tips",
+  "@eduInterviewTips": {
+    "description": "Interview tips section"
+  },
+  
+  "eduJobSearchTips": "Job Search Tips",
+  "@eduJobSearchTips": {
+    "description": "Job search tips section"
+  },
+  
+  "eduArticles": "Articles",
+  "@eduArticles": {
+    "description": "Articles section"
+  },
+  
+  "eduReadMore": "Read More",
+  "@eduReadMore": {
+    "description": "Read more button"
+  }
+}

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../logic/models/application.dart';
+import '../../../data/models/application.dart';
 import '../../../mock/mock_data.dart';
 
 class StudentRequestDetailScreen extends StatefulWidget {

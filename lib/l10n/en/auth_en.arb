@@ -1,0 +1,185 @@
+{
+  "@@locale": "en",
+  "@@context": "Authentication and onboarding screens",
+  "@@last_modified": "2025-12-04",
+  
+  "authLogin": "Login",
+  "@authLogin": {
+    "description": "Login button"
+  },
+  
+  "authSignup": "Sign Up",
+  "@authSignup": {
+    "description": "Signup button"
+  },
+  
+  "authEmail": "Email",
+  "@authEmail": {
+    "description": "Email label"
+  },
+  
+  "authEmailPlaceholder": "Enter your email",
+  "@authEmailPlaceholder": {
+    "description": "Email placeholder"
+  },
+  
+  "authPassword": "Password",
+  "@authPassword": {
+    "description": "Password label"
+  },
+  
+  "authPasswordPlaceholder": "Enter your password",
+  "@authPasswordPlaceholder": {
+    "description": "Password placeholder"
+  },
+  
+  "authConfirmPassword": "Confirm Password",
+  "@authConfirmPassword": {
+    "description": "Confirm password label"
+  },
+  
+  "authConfirmPasswordPlaceholder": "Re-enter your password",
+  "@authConfirmPasswordPlaceholder": {
+    "description": "Confirm password placeholder"
+  },
+  
+  "authForgotPassword": "Forgot Password?",
+  "@authForgotPassword": {
+    "description": "Forgot password link"
+  },
+  
+  "authResetPassword": "Reset Password",
+  "@authResetPassword": {
+    "description": "Reset password button"
+  },
+  
+  "authRememberMe": "Remember me",
+  "@authRememberMe": {
+    "description": "Remember me checkbox"
+  },
+  
+  "authDontHaveAccount": "Don't have an account?",
+  "@authDontHaveAccount": {
+    "description": "Signup prompt"
+  },
+  
+  "authAlreadyHaveAccount": "Already have an account?",
+  "@authAlreadyHaveAccount": {
+    "description": "Login prompt"
+  },
+  
+  "authSignupAsStudent": "Sign up as Student",
+  "@authSignupAsStudent": {
+    "description": "Student signup button"
+  },
+  
+  "authSignupAsEmployer": "Sign up as Employer",
+  "@authSignupAsEmployer": {
+    "description": "Employer signup button"
+  },
+  
+  "authChooseRole": "Choose Your Role",
+  "@authChooseRole": {
+    "description": "Role selection title"
+  },
+  
+  "authStudentRole": "Student",
+  "@authStudentRole": {
+    "description": "Student role"
+  },
+  
+  "authEmployerRole": "Employer",
+  "@authEmployerRole": {
+    "description": "Employer role"
+  },
+  
+  "authStudentRoleDesc": "Find part-time jobs and quick tasks",
+  "@authStudentRoleDesc": {
+    "description": "Student role description"
+  },
+  
+  "authEmployerRoleDesc": "Post jobs and hire talented students",
+  "@authEmployerRoleDesc": {
+    "description": "Employer role description"
+  },
+  
+  "authFullName": "Full Name",
+  "@authFullName": {
+    "description": "Full name label"
+  },
+  
+  "authFullNamePlaceholder": "Enter your full name",
+  "@authFullNamePlaceholder": {
+    "description": "Full name placeholder"
+  },
+  
+  "authPhone": "Phone Number",
+  "@authPhone": {
+    "description": "Phone label"
+  },
+  
+  "authPhonePlaceholder": "Enter your phone number",
+  "@authPhonePlaceholder": {
+    "description": "Phone placeholder"
+  },
+  
+  "authTermsAndConditions": "I agree to the Terms and Conditions",
+  "@authTermsAndConditions": {
+    "description": "Terms checkbox"
+  },
+  
+  "authPrivacyPolicy": "Privacy Policy",
+  "@authPrivacyPolicy": {
+    "description": "Privacy policy link"
+  },
+  
+  "authLoginSuccess": "Login successful!",
+  "@authLoginSuccess": {
+    "description": "Login success message"
+  },
+  
+  "authSignupSuccess": "Account created successfully!",
+  "@authSignupSuccess": {
+    "description": "Signup success message"
+  },
+  
+  "authLogoutConfirm": "Are you sure you want to logout?",
+  "@authLogoutConfirm": {
+    "description": "Logout confirmation"
+  },
+  
+  "authLogoutSuccess": "Logged out successfully",
+  "@authLogoutSuccess": {
+    "description": "Logout success message"
+  },
+  
+  "onboardingTitle1": "Find Your Perfect Job",
+  "@onboardingTitle1": {
+    "description": "First onboarding title"
+  },
+  
+  "onboardingDesc1": "Browse hundreds of part-time jobs tailored for students",
+  "@onboardingDesc1": {
+    "description": "First onboarding description"
+  },
+  
+  "onboardingTitle2": "Easy Application",
+  "@onboardingTitle2": {
+    "description": "Second onboarding title"
+  },
+  
+  "onboardingDesc2": "Apply to jobs with just a few taps and track your applications",
+  "@onboardingDesc2": {
+    "description": "Second onboarding description"
+  },
+  
+  "onboardingTitle3": "Get Hired Fast",
+  "@onboardingTitle3": {
+    "description": "Third onboarding title"
+  },
+  
+  "onboardingDesc3": "Connect with employers and start earning while studying",
+  "@onboardingDesc3": {
+    "description": "Third onboarding description"
+  }
+}

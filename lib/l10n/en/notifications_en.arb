@@ -1,0 +1,65 @@
+{
+  "@@locale": "en",
+  "@@context": "Notification system",
+  "@@last_modified": "2025-12-04",
+  
+  "notifTitle": "Notifications",
+  "@notifTitle": {
+    "description": "Notifications page title"
+  },
+  
+  "notifMarkAllRead": "Mark All as Read",
+  "@notifMarkAllRead": {
+    "description": "Mark all read button"
+  },
+  
+  "notifClearAll": "Clear All",
+  "@notifClearAll": {
+    "description": "Clear all button"
+  },
+  
+  "notifNoNotifications": "No notifications yet",
+  "@notifNoNotifications": {
+    "description": "Empty state"
+  },
+  
+  "notifNewApplication": "New application for your job posting",
+  "@notifNewApplication": {
+    "description": "New application notification"
+  },
+  
+  "notifApplicationUpdate": "Your application status has been updated",
+  "@notifApplicationUpdate": {
+    "description": "Application update notification"
+  },
+  
+  "notifNewJob": "New job matching your interests",
+  "@notifNewJob": {
+    "description": "New job notification"
+  },
+  
+  "notifNewMessage": "You have a new message",
+  "@notifNewMessage": {
+    "description": "New message notification"
+  },
+  
+  "notifJobDeadline": "Application deadline approaching",
+  "@notifJobDeadline": {
+    "description": "Deadline notification"
+  },
+  
+  "notifSettings": "Notification Settings",
+  "@notifSettings": {
+    "description": "Settings title"
+  },
+  
+  "notifEnablePush": "Push Notifications",
+  "@notifEnablePush": {
+    "description": "Push notifications toggle"
+  },
+  
+  "notifEnableEmail": "Email Notifications",
+  "@notifEnableEmail": {
+    "description": "Email notifications toggle"
+  }
+}

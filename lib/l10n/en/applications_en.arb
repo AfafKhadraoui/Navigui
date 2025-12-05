@@ -1,0 +1,150 @@
+{
+  "@@locale": "en",
+  "@@context": "Job application management",
+  "@@last_modified": "2025-12-04",
+  
+  "appTitle": "Applications",
+  "@appTitle": {
+    "description": "Applications page title"
+  },
+  
+  "appMyApplications": "My Applications",
+  "@appMyApplications": {
+    "description": "My applications section"
+  },
+  
+  "appSubmitApplication": "Submit Application",
+  "@appSubmitApplication": {
+    "description": "Submit button"
+  },
+  
+  "appCoverLetter": "Cover Letter",
+  "@appCoverLetter": {
+    "description": "Cover letter label"
+  },
+  
+  "appCoverLetterPlaceholder": "Tell the employer why you're the best fit...",
+  "@appCoverLetterPlaceholder": {
+    "description": "Cover letter placeholder"
+  },
+  
+  "appResume": "Resume/CV",
+  "@appResume": {
+    "description": "Resume label"
+  },
+  
+  "appUploadResume": "Upload Resume",
+  "@appUploadResume": {
+    "description": "Upload button"
+  },
+  
+  "appApplicationStatus": "Status",
+  "@appApplicationStatus": {
+    "description": "Status label"
+  },
+  
+  "appStatusPending": "Pending",
+  "@appStatusPending": {
+    "description": "Pending status"
+  },
+  
+  "appStatusReviewing": "Under Review",
+  "@appStatusReviewing": {
+    "description": "Reviewing status"
+  },
+  
+  "appStatusShortlisted": "Shortlisted",
+  "@appStatusShortlisted": {
+    "description": "Shortlisted status"
+  },
+  
+  "appStatusAccepted": "Accepted",
+  "@appStatusAccepted": {
+    "description": "Accepted status"
+  },
+  
+  "appStatusRejected": "Rejected",
+  "@appStatusRejected": {
+    "description": "Rejected status"
+  },
+  
+  "appStatusWithdrawn": "Withdrawn",
+  "@appStatusWithdrawn": {
+    "description": "Withdrawn status"
+  },
+  
+  "appWithdrawApplication": "Withdraw Application",
+  "@appWithdrawApplication": {
+    "description": "Withdraw button"
+  },
+  
+  "appWithdrawConfirm": "Are you sure you want to withdraw this application?",
+  "@appWithdrawConfirm": {
+    "description": "Withdrawal confirmation"
+  },
+  
+  "appApplicationSuccess": "Application submitted successfully!",
+  "@appApplicationSuccess": {
+    "description": "Submit success message"
+  },
+  
+  "appApplicationWithdrawn": "Application withdrawn",
+  "@appApplicationWithdrawn": {
+    "description": "Withdraw success message"
+  },
+  
+  "appNoApplications": "You haven't applied to any jobs yet",
+  "@appNoApplications": {
+    "description": "Empty state message"
+  },
+  
+  "appViewApplication": "View Application",
+  "@appViewApplication": {
+    "description": "View button"
+  },
+  
+  "appAppliedDate": "Applied on {date}",
+  "@appAppliedDate": {
+    "description": "Applied date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "empViewApplications": "View Applications",
+  "@empViewApplications": {
+    "description": "View applications button"
+  },
+  
+  "empAcceptApplication": "Accept",
+  "@empAcceptApplication": {
+    "description": "Accept button"
+  },
+  
+  "empRejectApplication": "Reject",
+  "@empRejectApplication": {
+    "description": "Reject button"
+  },
+  
+  "empShortlistApplication": "Shortlist",
+  "@empShortlistApplication": {
+    "description": "Shortlist button"
+  },
+  
+  "empApplicationAccepted": "Application accepted",
+  "@empApplicationAccepted": {
+    "description": "Accept success"
+  },
+  
+  "empApplicationRejected": "Application rejected",
+  "@empApplicationRejected": {
+    "description": "Reject success"
+  },
+  
+  "empNoApplications": "No applications received yet",
+  "@empNoApplications": {
+    "description": "Empty state for employer"
+  }
+}
