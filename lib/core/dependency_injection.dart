@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 // import '../data/repositories/job_repo.dart';
 // import '../data/repositories/application_repo.dart';
 // import '../data/repositories/user_repo.dart';
-// import '../data/repositories/notification_repo.dart';
 // import '../data/repositories/review_repo.dart';
 // import '../logic/cubits/auth/auth_cubit.dart';
 // import '../logic/cubits/job/job_cubit.dart';
@@ -13,11 +12,15 @@ import 'package:get_it/get_it.dart';
 // import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
 // import '../logic/cubits/employer_job/employer_job_cubit.dart';
 // import '../logic/cubits/employer_application/employer_application_cubit.dart';
-// import '../logic/cubits/notification/notification_cubit.dart';
-// import '../logic/cubits/search/search_cubit.dart';
 // import '../logic/cubits/saved_jobs/saved_jobs_cubit.dart';
 // import '../logic/cubits/review/review_cubit.dart';
+import '../data/repositories/education/education_repo_abstract.dart';
+import '../data/repositories/education/education_repo_impl.dart';
+import '../data/repositories/notifications/notifications_repo_abstract.dart';
+import '../data/repositories/notifications/notifications_repo_impl.dart';
 import '../logic/cubits/education/education_cubit.dart';
+import '../logic/cubits/notification/notification_cubit.dart';
+import '../logic/cubits/search/search_cubit.dart';
 import '../logic/cubits/admin/admin_cubit.dart';
 
 final getIt = GetIt.instance;
@@ -46,13 +49,19 @@ Future<void> setupDependencies() async {
   //   () => UserRepository(),
   // );
 
-  // getIt.registerLazySingleton<NotificationRepository>(
-  //   () => NotificationRepository(),
-  // );
-
   // getIt.registerLazySingleton<ReviewRepository>(
   //   () => ReviewRepository(),
   // );
+
+  // Register Education Repository
+  getIt.registerLazySingleton<EducationRepositoryBase>(
+    () => EducationRepositoryImpl(),
+  );
+
+  // Register Notification Repository
+  getIt.registerLazySingleton<NotificationRepositoryBase>(
+    () => NotificationRepositoryImpl(),
+  );
 
   // ========== CUBITS ==========
   // Cubits are registered as factories
@@ -88,14 +97,6 @@ Future<void> setupDependencies() async {
   //   () => EmployerApplicationCubit(getIt<ApplicationRepository>()),
   // );
 
-  // getIt.registerFactory<NotificationCubit>(
-  //   () => NotificationCubit(getIt<NotificationRepository>()),
-  // );
-
-  // getIt.registerFactory<SearchCubit>(
-  //   () => SearchCubit(getIt<JobRepository>()),
-  // );
-
   // getIt.registerFactory<SavedJobsCubit>(
   //   () => SavedJobsCubit(getIt<JobRepository>()),
   // );
@@ -104,8 +105,22 @@ Future<void> setupDependencies() async {
   //   () => ReviewCubit(getIt<ReviewRepository>()),
   // );
 
+  // Register Education Cubit with repository
   getIt.registerFactory<EducationCubit>(
-    () => EducationCubit(),
+    () => EducationCubit(getIt<EducationRepositoryBase>()),
+  );
+
+  // Register Notification Cubit with repository
+  // Note: userId should be passed when creating the cubit, not here
+  // This is a factory method that requires userId parameter
+  getIt.registerFactoryParam<NotificationCubit, String, void>(
+    (userId, _) =>
+        NotificationCubit(getIt<NotificationRepositoryBase>(), userId),
+  );
+
+  // Register Search Cubit (currently without repository - needs job repository)
+  getIt.registerFactory<SearchCubit>(
+    () => SearchCubit(),
   );
 
   getIt.registerFactory<AdminCubit>(

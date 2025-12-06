@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
+import '../../../logic/cubits/education/education_cubit.dart';
+import '../../../logic/cubits/education/education_state.dart';
+import '../../../core/dependency_injection.dart';
+import '../../../data/models/education_article_model.dart';
 
 /// Individual Education Article Screen
 /// Displays detailed content for a specific educational article
@@ -17,106 +22,114 @@ class EducationArticleScreen extends StatefulWidget {
 }
 
 class _EducationArticleScreenState extends State<EducationArticleScreen> {
-  bool isBookmarked = false;
   bool isLiked = false;
-
-  Map<String, dynamic> _getArticleData() {
-    switch (widget.articleId) {
-      case 'your-first-job':
-        return {
-          'title': 'Your First Job',
-          'badge1': '10min',
-          'badge2': 'New',
-        };
-      case 'know-your-rights':
-        return {
-          'title': 'Know Your Rights',
-          'badge1': '5min',
-          'badge2': 'Popular',
-        };
-      case 'first-time-job-seekers':
-        return {
-          'title': 'First-Time Job Seekers',
-          'badge1': '15min',
-          'badge2': 'Complete Guide',
-        };
-      case 'application-tips':
-        return {
-          'title': 'Application Tips',
-          'badge1': '10min',
-          'badge2': 'Beginner',
-        };
-      case 'build-profile':
-        return {
-          'title': 'Build Your Profile',
-          'badge1': '8min',
-          'badge2': 'Trending',
-        };
-      case 'hiring-practices':
-        return {
-          'title': 'Hiring Best Practices',
-          'badge1': '10min',
-          'badge2': 'Must-read',
-        };
-      case 'writing-job-posts':
-        return {
-          'title': 'Writing Job Posts',
-          'badge1': '5min',
-          'badge2': 'Popular',
-        };
-      default:
-        return {
-          'title': 'Article',
-          'badge1': '10min',
-          'badge2': 'Article',
-        };
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final articleData = _getArticleData();
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(context, articleData),
+    return BlocProvider(
+      create: (context) =>
+          getIt<EducationCubit>()..loadArticleDetail(widget.articleId),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: BlocBuilder<EducationCubit, EducationState>(
+            builder: (context, state) {
+              if (state is EducationLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.electricLime,
+                  ),
+                );
+              }
 
-            // Content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              if (state is EducationError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 48,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Error loading article',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        state.message,
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.electricLime,
+                          foregroundColor: AppColors.background,
+                        ),
+                        child: const Text('Go Back'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (state is EducationArticleDetailLoaded) {
+                final article = state.article;
+                return Column(
                   children: [
-                    const SizedBox(height: 20),
+                    // Header
+                    _buildHeader(context, article),
 
-                    // Article info with tags
-                    _buildArticleInfo(articleData),
+                    // Content
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
 
-                    const SizedBox(height: 20),
+                            // Article info with tags
+                            _buildArticleInfo(article),
 
-                    // Video/Image section
-                    _buildMediaSection(),
+                            const SizedBox(height: 20),
 
-                    const SizedBox(height: 30),
+                            // Image section (if available)
+                            if (article.imageUrl != null)
+                              _buildImageSection(article),
 
-                    // Article content
-                    _buildContent(),
+                            const SizedBox(height: 30),
 
-                    const SizedBox(height: 100),
+                            // Article content
+                            _buildContent(article),
+
+                            const SizedBox(height: 100),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-              ),
-            ),
-          ],
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, Map<String, dynamic> articleData) {
+  Widget _buildHeader(BuildContext context, EducationArticleModel article) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
       child: Row(
@@ -124,7 +137,7 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
           // Back button
           GestureDetector(
             onTap: () => context.pop(),
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios,
               color: AppColors.white,
               size: 20,
@@ -136,39 +149,17 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
           // Title
           Expanded(
             child: Text(
-              articleData['title'],
-              style: TextStyle(
+              article.title,
+              style: const TextStyle(
                 color: AppColors.white,
                 fontSize: 20,
                 fontFamily: 'Aclonica',
                 letterSpacing: -0.5,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-
-          // Bookmark button (circular with black background)
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isBookmarked = !isBookmarked;
-              });
-            },
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.black,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: AppColors.white,
-                size: 18,
-              ),
-            ),
-          ),
-
-          const SizedBox(width: 10),
 
           // Like button (circular with black background)
           GestureDetector(
@@ -176,11 +167,18 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
               setState(() {
                 isLiked = !isLiked;
               });
+              // Toggle like count in backend
+              final cubit = context.read<EducationCubit>();
+              if (isLiked) {
+                cubit.incrementLikesCount(article.id);
+              } else {
+                cubit.decrementLikesCount(article.id);
+              }
             },
             child: Container(
               width: 36,
               height: 36,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.black,
                 shape: BoxShape.circle,
               ),
@@ -196,7 +194,7 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
     );
   }
 
-  Widget _buildArticleInfo(Map<String, dynamic> articleData) {
+  Widget _buildArticleInfo(EducationArticleModel article) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -213,8 +211,8 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  articleData['badge1'],
-                  style: TextStyle(
+                  '${article.readTime} min',
+                  style: const TextStyle(
                     color: AppColors.black,
                     fontSize: 11,
                     fontFamily: 'Acme',
@@ -231,8 +229,8 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  articleData['badge2'],
-                  style: TextStyle(
+                  '${article.viewsCount} views',
+                  style: const TextStyle(
                     color: AppColors.black,
                     fontSize: 11,
                     fontFamily: 'Acme',
@@ -240,236 +238,269 @@ class _EducationArticleScreenState extends State<EducationArticleScreen> {
                   ),
                 ),
               ),
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.red1.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.red1, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.favorite,
+                      color: AppColors.red1,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${article.likesCount}',
+                      style: const TextStyle(
+                        color: AppColors.red1,
+                        fontSize: 11,
+                        fontFamily: 'Acme',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
+          ),
+          const SizedBox(height: 12),
+
+          // Author and date
+          if (article.author != null)
+            Text(
+              'By ${article.author}',
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+                fontFamily: 'Acme',
+              ),
+            ),
+          if (article.author != null) const SizedBox(height: 6),
+          Text(
+            _formatDate(article.publishedAt),
+            style: const TextStyle(
+              color: Colors.white54,
+              fontSize: 12,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMediaSection() {
+  Widget _buildImageSection(EducationArticleModel article) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        width: double.infinity,
-        height: 200,
-        decoration: BoxDecoration(
-          color: AppColors.grey1.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            'assets/images/education/technology.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.purple2.withOpacity(0.2),
-                      AppColors.electricLime.withOpacity(0.15),
-                    ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: article.imageUrl!.startsWith('http')
+            ? Image.network(
+                article.imageUrl!,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 200,
+                  color: AppColors.black,
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.white54,
+                    size: 48,
                   ),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.image,
-                    color: AppColors.white.withOpacity(0.5),
-                    size: 50,
+              )
+            : Image.asset(
+                article.imageUrl!,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 200,
+                  color: AppColors.black,
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    color: Colors.white54,
+                    size: 48,
                   ),
                 ),
-              );
-            },
-          ),
-        ),
+              ),
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(EducationArticleModel article) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Main content intro
+          // Article title
           Text(
-            'Explore strategies, tools, and platforms to excel in today\'s digital landscape. From SEO and social media to email campaigns and analytics, gain practical skills for success. Perfect for beginners, getting your first job can feel overwhelming, but with the right approach, you can stand out from the crowd.',
-            style: TextStyle(
-              color: AppColors.white.withOpacity(0.85),
-              fontSize: 15,
-              fontFamily: 'Acme',
-              height: 1.6,
-              letterSpacing: 0.1,
-            ),
-          ),
-
-          const SizedBox(height: 25),
-
-          // Section 1
-          Text(
-            'Understanding What Employers Want',
-            style: TextStyle(
+            article.title,
+            style: const TextStyle(
               color: AppColors.white,
-              fontSize: 18,
+              fontSize: 24,
               fontFamily: 'Aclonica',
-              letterSpacing: -0.3,
+              fontWeight: FontWeight.bold,
+              height: 1.3,
             ),
           ),
+          const SizedBox(height: 20),
 
-          const SizedBox(height: 12),
-
-          Text(
-            'Before you start writing, take time to understand what the employer is looking for. Read the job description carefully and make a list of the key skills and qualifications they mention. This will help you tailor your application to show you\'re the right fit.\n\nEmployers want to see that you\'ve done your homework. Research the company, understand their values, and think about how your experience aligns with their mission.',
-            style: TextStyle(
-              color: AppColors.white.withOpacity(0.8),
-              fontSize: 14,
-              fontFamily: 'Acme',
-              height: 1.6,
-            ),
-          ),
-
-          const SizedBox(height: 25),
-
-          // Section 2
-          Text(
-            'Crafting Your Application',
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 18,
-              fontFamily: 'Aclonica',
-              letterSpacing: -0.3,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Text(
-            'Start with a strong opening that grabs attention. Mention the specific position you\'re applying for and briefly explain why you\'re interested. Keep it concise and genuine.\n\nIn the body, highlight 2-3 relevant experiences or skills. Use specific examples rather than generic statements. Instead of saying "I\'m a hard worker," describe a time when you went above and beyond to complete a project.\n\nEnd with a clear call to action. Express your enthusiasm for an interview and thank them for considering your application.',
-            style: TextStyle(
-              color: AppColors.white.withOpacity(0.8),
-              fontSize: 14,
-              fontFamily: 'Acme',
-              height: 1.6,
-            ),
-          ),
-
-          const SizedBox(height: 25),
-
-          // Section 3
-          Text(
-            'Common Mistakes to Avoid',
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 18,
-              fontFamily: 'Aclonica',
-              letterSpacing: -0.3,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Text(
-            'Don\'t use the same application for every job. Generic applications are easy to spot and rarely succeed. Always customize.\n\nAvoid being too formal or too casual. Find a professional but friendly tone that matches the company culture.\n\nNever submit without proofreading. Spelling and grammar mistakes can cost you the opportunity. Read it out loud, use spell check, and if possible, have someone else review it.',
-            style: TextStyle(
-              color: AppColors.white.withOpacity(0.8),
-              fontSize: 14,
-              fontFamily: 'Acme',
-              height: 1.6,
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          // Read more section
-          Text(
-            'Read more',
-            style: TextStyle(
-              color: AppColors.electricLime,
-              fontSize: 15,
-              fontFamily: 'Acme',
-              decoration: TextDecoration.underline,
-            ),
-          ),
-
-          const SizedBox(height: 35),
-
-          // Next articles
-          Text(
-            'Next in this series',
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 18,
-              fontFamily: 'Aclonica',
-              letterSpacing: -0.3,
-            ),
-          ),
-
-          const SizedBox(height: 15),
-
-          _buildNextArticleCard(
-            'Building Your Professional Profile',
-            '12 min',
-            AppColors.orange1,
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildNextArticleCard(
-            'Interview Preparation Guide',
-            '10 min',
-            AppColors.purple2,
-          ),
+          // Article content (formatted)
+          _buildFormattedContent(article.content),
         ],
       ),
     );
   }
 
-  Widget _buildNextArticleCard(String title, String duration, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
+  Widget _buildFormattedContent(String content) {
+    // Split content by lines and parse markdown-style formatting
+    final lines = content.split('\n');
+    List<Widget> contentWidgets = [];
+
+    for (var line in lines) {
+      line = line.trim();
+
+      if (line.isEmpty) {
+        contentWidgets.add(const SizedBox(height: 10));
+      } else if (line.startsWith('##')) {
+        // Heading
+        contentWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
+            child: Text(
+              line.replaceFirst('##', '').trim(),
+              style: const TextStyle(
+                color: AppColors.electricLime,
+                fontSize: 20,
+                fontFamily: 'Aclonica',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      } else if (line.startsWith('###')) {
+        // Subheading
+        contentWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 15, bottom: 8),
+            child: Text(
+              line.replaceFirst('###', '').trim(),
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 18,
+                fontFamily: 'Aclonica',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+      } else if (line.startsWith('-') || line.startsWith('•')) {
+        // Bullet point
+        contentWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 6),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
+                const Text(
+                  '• ',
                   style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 15,
-                    fontFamily: 'Aclonica',
-                    letterSpacing: -0.2,
+                    color: AppColors.electricLime,
+                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  duration,
-                  style: TextStyle(
-                    color: AppColors.white.withOpacity(0.6),
-                    fontSize: 12,
-                    fontFamily: 'Acme',
+                Expanded(
+                  child: Text(
+                    line.replaceFirst(RegExp(r'^[-•]\s*'), ''),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 15,
+                      height: 1.6,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          Icon(
-            Icons.arrow_forward_ios,
-            color: AppColors.white.withOpacity(0.6),
-            size: 16,
+        );
+      } else if (line.startsWith(RegExp(r'^\d+\.'))) {
+        // Numbered list
+        contentWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 6),
+            child: Text(
+              line,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 15,
+                height: 1.6,
+              ),
+            ),
           ),
-        ],
-      ),
+        );
+      } else if (line.startsWith('**') && line.endsWith('**')) {
+        // Bold text
+        contentWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              line.replaceAll('**', ''),
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                height: 1.6,
+              ),
+            ),
+          ),
+        );
+      } else {
+        // Regular paragraph
+        contentWidgets.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              line,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 15,
+                height: 1.6,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: contentWidgets,
     );
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }

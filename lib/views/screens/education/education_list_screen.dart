@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 import 'package:navigui/views/widgets/cards/education_card.dart';
+import '../../../logic/cubits/education/education_cubit.dart';
+import '../../../logic/cubits/education/education_state.dart';
+import '../../../core/dependency_injection.dart';
 
 /// Education List Screen - Learn & Grow page
 /// Articles, tips, guides
@@ -11,116 +15,244 @@ class EducationListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(context),
+    return BlocProvider(
+      create: (context) => getIt<EducationCubit>()..loadArticles(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              _buildHeader(context),
 
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
+              // Scrollable content
+              Expanded(
+                child: BlocBuilder<EducationCubit, EducationState>(
+                  builder: (context, state) {
+                    if (state is EducationLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.electricLime,
+                        ),
+                      );
+                    }
 
-                    // Title above featured card
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'New to Job Hunting',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Aclonica',
-                              letterSpacing: -0.5,
+                    if (state is EducationError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 48,
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.3),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Error loading articles',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // Featured card
-                    _buildFeaturedCard(context),
-
-                    const SizedBox(height: 25),
-
-                    // For Students Section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'For Students',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Aclonica',
-                              letterSpacing: -0.5,
+                            const SizedBox(height: 8),
+                            Text(
+                              state.message,
+                              style: TextStyle(
+                                color: Colors.white60,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.3),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                context
+                                    .read<EducationCubit>()
+                                    .refreshArticles();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.electricLime,
+                                foregroundColor: AppColors.background,
+                              ),
+                              child: const Text('Retry'),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    _buildStudentCardsGrid(context),
+                          ],
+                        ),
+                      );
+                    }
 
-                    const SizedBox(height: 25),
+                    if (state is EducationArticlesLoaded) {
+                      final articles = state.articles;
 
-                    // For Employers Section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'For Employers',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Aclonica',
-                              letterSpacing: -0.5,
-                            ),
+                      if (articles.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.article_outlined,
+                                color: Colors.white38,
+                                size: 64,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No articles available',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Check back later for new content',
+                                style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    _buildEmployerCardsGrid(context),
+                        );
+                      }
 
-                    const SizedBox(height: 100),
-                  ],
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          await context
+                              .read<EducationCubit>()
+                              .refreshArticles();
+                        },
+                        color: AppColors.electricLime,
+                        backgroundColor: AppColors.background,
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 20),
+
+                              // Title above featured card
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 24),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      'New to Job Hunting',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontFamily: 'Aclonica',
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Container(
+                                        height: 1,
+                                        color: Colors.white.withOpacity(0.3),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 15),
+
+                              // Display articles from database
+                              ...articles.map((article) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 8),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      context
+                                          .read<EducationCubit>()
+                                          .loadArticleDetail(article.id);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFF2F2F2F),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            article.title,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            article.content.length > 100
+                                                ? '${article.content.substring(0, 100)}...'
+                                                : article.content,
+                                            style: TextStyle(
+                                              color:
+                                                  Colors.white.withOpacity(0.7),
+                                              fontSize: 14,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.access_time,
+                                                size: 16,
+                                                color: AppColors.electricLime,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${article.readTime} min read',
+                                                style: TextStyle(
+                                                  color: AppColors.electricLime,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Icon(
+                                                Icons.visibility,
+                                                size: 16,
+                                                color: Colors.white54,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${article.viewsCount} views',
+                                                style: const TextStyle(
+                                                  color: Colors.white54,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+
+                              const SizedBox(height: 100),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

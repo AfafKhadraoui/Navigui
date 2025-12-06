@@ -33,34 +33,48 @@ class NotificationModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userId': userId,
+      'user_id': userId,
       'title': title,
       'message': message,
       'type': type,
-      'relatedId': relatedId,
-      'relatedType': relatedType,
-      'actionUrl': actionUrl,
+      'related_id': relatedId,
+      'related_type': relatedType,
+      'action_url': actionUrl,
       'priority': priority,
-      'isRead': isRead,
-      'isPushed': isPushed,
-      'createdAt': createdAt.toIso8601String(),
+      'is_read': isRead ? 1 : 0,
+      'is_pushed': isPushed ? 1 : 0,
+      'created_at': createdAt.toIso8601String(),
     };
   }
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    // Handle createdAt - can be String or DateTime from database
+    final createdAtValue = json['createdAt'] ?? json['created_at'];
+    final DateTime createdAtParsed;
+    if (createdAtValue is String) {
+      createdAtParsed = DateTime.parse(createdAtValue);
+    } else if (createdAtValue is DateTime) {
+      createdAtParsed = createdAtValue;
+    } else {
+      createdAtParsed = DateTime.now();
+    }
+
     return NotificationModel(
-      id: json['id'],
-      userId: json['userId'],
-      title: json['title'],
-      message: json['message'],
-      type: json['type'],
-      relatedId: json['relatedId'],
-      relatedType: json['relatedType'],
-      actionUrl: json['actionUrl'],
-      priority: json['priority'] ?? 'medium',
-      isRead: json['isRead'] ?? false,
-      isPushed: json['isPushed'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
+      id: json['id']?.toString() ?? '',
+      userId: (json['userId'] ?? json['user_id'])?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      message: json['message']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      relatedId:
+          json['relatedId']?.toString() ?? json['related_id']?.toString(),
+      relatedType:
+          json['relatedType']?.toString() ?? json['related_type']?.toString(),
+      actionUrl:
+          json['actionUrl']?.toString() ?? json['action_url']?.toString(),
+      priority: (json['priority'] ?? 'medium')?.toString() ?? 'medium',
+      isRead: json['isRead'] == true || json['is_read'] == 1,
+      isPushed: json['isPushed'] == true || json['is_pushed'] == 1,
+      createdAt: createdAtParsed,
     );
   }
 }

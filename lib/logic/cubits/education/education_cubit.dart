@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/repositories/education/education_repo_abstract.dart';
 import 'education_state.dart';
 
 class EducationCubit extends Cubit<EducationState> {
-  // Note: You'll need to create an EducationRepository
-  // final EducationRepository _educationRepository;
+  final EducationRepositoryBase _educationRepository;
 
-  EducationCubit() : super(EducationInitial());
+  EducationCubit(this._educationRepository) : super(EducationInitial());
 
   Future<void> loadArticles({
     String? categoryFilter,
@@ -13,29 +13,40 @@ class EducationCubit extends Cubit<EducationState> {
   }) async {
     try {
       emit(EducationLoading());
-      // TODO: Replace with actual repository call
-      // final articles = await _educationRepository.getArticles(
-      //   category: categoryFilter,
-      //   searchQuery: searchQuery,
-      // );
 
-      // Mock data for now
-      emit(EducationArticlesLoaded(
-        articles: [],
-        categoryFilter: categoryFilter,
+      final result = await _educationRepository.getArticles(
+        categoryId: categoryFilter,
         searchQuery: searchQuery,
-      ));
+      );
+
+      if (result.isSuccess) {
+        emit(EducationArticlesLoaded(
+          articles: result.data!,
+          categoryFilter: categoryFilter,
+          searchQuery: searchQuery,
+        ));
+      } else {
+        emit(EducationError(result.error ?? 'Failed to load articles'));
+      }
     } catch (e) {
       emit(EducationError(e.toString()));
     }
   }
 
-  Future<void> loadArticleDetail(int articleId) async {
+  Future<void> loadArticleDetail(String articleId) async {
     try {
       emit(EducationLoading());
-      // TODO: Replace with actual repository call
-      // final article = await _educationRepository.getArticleById(articleId);
-      // emit(EducationArticleDetailLoaded(article));
+
+      final result = await _educationRepository.getArticleById(articleId);
+
+      if (result.isSuccess) {
+        emit(EducationArticleDetailLoaded(result.data!));
+
+        // Increment view count in background (don't wait)
+        _educationRepository.incrementViewCount(articleId);
+      } else {
+        emit(EducationError(result.error ?? 'Failed to load article'));
+      }
     } catch (e) {
       emit(EducationError(e.toString()));
     }
@@ -74,6 +85,65 @@ class EducationCubit extends Cubit<EducationState> {
       );
     } else {
       await loadArticles();
+    }
+  }
+
+  Future<void> loadPopularArticles({int limit = 10}) async {
+    try {
+      emit(EducationLoading());
+
+      final result =
+          await _educationRepository.getPopularArticles(limit: limit);
+
+      if (result.isSuccess) {
+        emit(EducationArticlesLoaded(
+          articles: result.data!,
+          categoryFilter: null,
+          searchQuery: null,
+        ));
+      } else {
+        emit(EducationError(result.error ?? 'Failed to load popular articles'));
+      }
+    } catch (e) {
+      emit(EducationError(e.toString()));
+    }
+  }
+
+  Future<void> loadRecentArticles({int limit = 10}) async {
+    try {
+      emit(EducationLoading());
+
+      final result = await _educationRepository.getRecentArticles(limit: limit);
+
+      if (result.isSuccess) {
+        emit(EducationArticlesLoaded(
+          articles: result.data!,
+          categoryFilter: null,
+          searchQuery: null,
+        ));
+      } else {
+        emit(EducationError(result.error ?? 'Failed to load recent articles'));
+      }
+    } catch (e) {
+      emit(EducationError(e.toString()));
+    }
+  }
+
+  Future<void> incrementLikesCount(String articleId) async {
+    try {
+      await _educationRepository.incrementLikesCount(articleId);
+    } catch (e) {
+      // Silent fail - don't interrupt user experience
+      print('Error incrementing likes count: $e');
+    }
+  }
+
+  Future<void> decrementLikesCount(String articleId) async {
+    try {
+      await _educationRepository.decrementLikesCount(articleId);
+    } catch (e) {
+      // Silent fail - don't interrupt user experience
+      print('Error decrementing likes count: $e');
     }
   }
 }
