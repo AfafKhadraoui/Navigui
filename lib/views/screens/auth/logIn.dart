@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../routes/app_router.dart';
 import '../../../data/databases/tables/users_table.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../data/models/user_model.dart';
 
 class LoginScreen2 extends StatefulWidget {
   const LoginScreen2({super.key});
@@ -233,6 +236,28 @@ class _LoginScreen2State extends State<LoginScreen2> {
 
                               // Update last login
                               await UsersTable.updateLastLogin(user['id']);
+
+                              // Update AuthCubit with logged in user
+                              if (mounted) {
+                                final userModel = UserModel(
+                                  id: user['id'],
+                                  email: user['email'],
+                                  accountType: user['account_type'],
+                                  name: user['name'],
+                                  phoneNumber: user['phone_number'] ?? '',
+                                  location: user['location'] ?? '',
+                                  profilePicture: user['profile_picture_url'],
+                                  isEmailVerified:
+                                      user['is_email_verified'] == 1,
+                                  isActive: user['is_active'] == 1,
+                                  createdAt: DateTime.parse(user['created_at']),
+                                  updatedAt: user['updated_at'] != null
+                                      ? DateTime.parse(user['updated_at'])
+                                      : null,
+                                );
+
+                                context.read<AuthCubit>().login(userModel);
+                              }
 
                               // Navigate to home
                               if (mounted) {

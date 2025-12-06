@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 // import '../data/repositories/application_repo.dart';
 // import '../data/repositories/user_repo.dart';
 // import '../data/repositories/review_repo.dart';
-// import '../logic/cubits/auth/auth_cubit.dart';
+import '../logic/cubits/auth/auth_cubit.dart';
 // import '../logic/cubits/job/job_cubit.dart';
 // import '../logic/cubits/application/application_cubit.dart';
 // import '../logic/cubits/student_profile/student_profile_cubit.dart';
@@ -69,9 +69,9 @@ Future<void> setupDependencies() async {
   // This is important for BLoC pattern to ensure proper lifecycle
   // TODO: Update to new repository structure
 
-  // getIt.registerFactory<AuthCubit>(
-  //   () => AuthCubit(getIt<AuthRepository>()),
-  // );
+  getIt.registerFactory<AuthCubit>(
+    () => AuthCubit(),
+  );
 
   // getIt.registerFactory<JobCubit>(
   //   () => JobCubit(getIt<JobRepository>()),

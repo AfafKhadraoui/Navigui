@@ -13,7 +13,8 @@ class DatabaseSeeder {
 
     print('Seeding database with dummy data...');
 
-    final now = DateTime.now().toIso8601String();
+    final now = DateTime.now();
+    final nowString = now.toIso8601String();
 
     // Insert user accounts
     await db.insert('users', {
@@ -26,8 +27,8 @@ class DatabaseSeeder {
       'location': 'Algiers, Algeria',
       'is_email_verified': 1,
       'is_active': 1,
-      'created_at': now,
-      'updated_at': now,
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('users', {
@@ -40,157 +41,364 @@ class DatabaseSeeder {
       'location': 'Oran, Algeria',
       'is_email_verified': 1,
       'is_active': 1,
-      'created_at': now,
-      'updated_at': now,
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'student-1',
-      'title': 'Your First Job: What to Expect',
+      'title': 'Your First Job',
       'content':
-          '''Starting your first job can be both exciting and nerve-wracking. Here's what you need to know:
+          '''Starting your first job is an exciting milestone that marks the beginning of your professional journey. Whether you're fresh out of school or transitioning from student life to the workforce, understanding what to expect can help ease those first-day jitters and set you up for success.
 
-## Before You Start
-- Review your employment contract carefully
-- Prepare all necessary documents (ID, certificates)
-- Plan your commute and arrival time
+## Preparing Before Day One
 
-## First Day Tips
-- Arrive 15 minutes early
-- Dress professionally
-- Bring a notebook and pen
-- Be ready to learn and ask questions
+The days leading up to your first job are crucial. Review your employment contract thoroughly—understand your salary, benefits, working hours, and any probation period. Don't hesitate to ask HR if something isn't clear. Prepare all necessary documents including your national ID, educational certificates, social security information, and bank details for salary deposits.
 
-## Common Mistakes to Avoid
-- Don't be late or absent without notice
-- Avoid gossiping or negative talk
-- Don't use your phone excessively
-- Never skip asking for clarification
+Plan your commute ahead of time. Do a test run during the same hours you'll be commuting to account for traffic. Know exactly how long it takes and add buffer time. Being late on your first day creates a bad impression that's hard to shake off.
 
-## Building Good Relationships
-- Be respectful to everyone
-- Show initiative and willingness to help
-- Communicate clearly and professionally
-- Learn from feedback without taking it personally
+## Your First Day Experience
 
-Remember: Everyone was new once. Take your time to learn, and don't be afraid to ask for help!''',
+Arrive at least 15 minutes early on your first day. This shows punctuality and gives you time to compose yourself, use the restroom, and get your bearings. Dress professionally—when in doubt, it's better to be slightly overdressed than too casual. You can always adjust once you understand the office culture.
+
+Bring a notebook and several pens. You'll be receiving lots of information, meeting new people, and learning processes. Taking notes shows you're engaged and helps you remember important details. Don't rely on your phone for notes on the first day—it might look like you're distracted.
+
+Expect to feel overwhelmed. You'll likely meet many people whose names you won't remember, learn about systems and processes that seem complex, and receive more information than you can absorb. This is completely normal. Everyone has been in your shoes.
+
+## Common First-Week Mistakes to Avoid
+
+**Punctuality matters.** Being late or absent without proper notice, especially in your first weeks, signals unreliability. If you're sick or have an emergency, call your supervisor as early as possible—don't just send a text message.
+
+**Watch your phone usage.** While some workplaces are relaxed about phones, err on the side of caution initially. Excessive phone use, especially for personal calls or social media, suggests you're not focused on work. Keep personal phone use to lunch breaks until you understand the office norms.
+
+**Avoid office gossip.** You might notice people complaining or gossiping about colleagues, managers, or the company. Don't participate, even if you're trying to fit in. Stay neutral and positive. Negativity can quickly damage your reputation.
+
+**Ask questions.** The biggest mistake new employees make is pretending to understand when they don't. It's far better to ask for clarification than to make mistakes because you were afraid to seem ignorant. Most people appreciate when you ask questions—it shows you care about doing things correctly.
+
+## Building Strong Relationships
+
+Your relationships with colleagues are just as important as your technical skills. Be respectful and friendly to everyone, from the CEO to the cleaning staff. You never know who might become a valuable connection or mentor.
+
+Show initiative and willingness to help. If you finish your tasks early, ask if there's anything else you can assist with. Volunteer for projects when appropriate. This demonstrates enthusiasm and a team-player attitude.
+
+Communicate clearly and professionally. Whether it's emails, messages, or face-to-face conversations, express yourself clearly and respectfully. Use proper grammar and avoid too much slang or emojis in professional communications.
+
+## Learning and Growing
+
+Accept feedback graciously. When your supervisor or colleagues give you constructive criticism, don't take it personally. See it as an opportunity to improve. Thank them for the feedback and show that you're implementing their suggestions.
+
+Observe and learn from experienced colleagues. Notice how they handle difficult situations, communicate with clients, or manage their time. Ask if you can shadow them on certain tasks to learn their techniques.
+
+Be patient with yourself. You won't master everything in a week or even a month. Professional skills develop over time through practice and experience. Focus on gradual improvement rather than perfection.
+
+## Understanding Workplace Culture
+
+Every workplace has its own culture—the unwritten rules about how people interact, dress, communicate, and work. Spend your first weeks observing: Do people eat lunch together or separately? Is the environment formal or casual? Do people socialize after work? Understanding these dynamics helps you integrate smoothly.
+
+Pay attention to communication norms. Some offices prefer email for everything, others use messaging apps, and some rely on face-to-face conversations. Match the communication style of your workplace.
+
+## Managing Work-Life Balance
+
+Starting a new job is demanding, but remember to maintain balance. Get adequate sleep, eat properly, and make time for exercise and relaxation. Burnout is real, and taking care of yourself ensures you can perform well at work.
+
+Don't be afraid to use your break times. They exist for a reason. Step away from your desk, stretch, or take a short walk. This helps you return refreshed and more focused.
+
+## Final Thoughts
+
+Remember, everyone was new once. Your colleagues understand that you're learning, and most will be happy to help. The key is showing that you're eager to learn, willing to work hard, and able to adapt.
+
+Your first job is more than just earning money—it's where you develop professional skills, build your work ethic, and establish patterns that will serve you throughout your career. Approach it with curiosity, humility, and enthusiasm.
+
+Give yourself at least three months to truly settle in. The first few weeks might feel chaotic, but stick with it. Before you know it, you'll be the experienced one helping the next new hire find their way!''',
       'category_id': 'career-tips',
       'target_audience': 'student',
-      'image_url': 'assets/images/education/first-job.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Career Advisory Team',
-      'read_time': 8,
+      'read_time': 6,
       'views_count': 245,
       'likes_count': 89,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 5)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'student-2',
-      'title': 'Writing a Winning Job Application',
-      'content': '''Your application is your first impression. Make it count!
+      'title': 'Application Tips',
+      'content':
+          '''Your job application is often the first contact a potential employer has with you. In today's competitive job market, a well-crafted application can make the difference between landing an interview and being overlooked. This comprehensive guide will walk you through creating applications that stand out for all the right reasons.
 
-## Application Components
-1. **Cover Letter**: Personalized introduction
-2. **CV/Resume**: Your skills and experience
-3. **References**: Professional contacts who can vouch for you
+## Understanding the Application Package
 
-## Cover Letter Tips
-- Address the hiring manager by name
-- Explain why you want THIS specific job
-- Highlight relevant skills and experiences
-- Keep it concise (max 1 page)
-- Proofread multiple times
+A complete job application typically consists of three main components: a cover letter, your CV or resume, and references. Each serves a distinct purpose and requires careful attention to detail.
 
-## CV Best Practices
-- Use a clean, professional format
-- Start with contact information
-- List education and work experience
-- Include relevant skills and certifications
-- Add any volunteer work or extracurricular activities
+Your **cover letter** is your personal introduction—it's where you explain why you're interested in the specific position and company, and how your background makes you an ideal candidate. Think of it as your chance to tell your story beyond the bullet points of your CV.
 
-## Common Mistakes
-- Generic applications (not tailored to the job)
-- Spelling and grammar errors
-- Including irrelevant information
-- Using unprofessional email addresses
-- Lying or exaggerating qualifications
+Your **CV or resume** is a structured document that presents your education, work experience, skills, and achievements. It should be easy to scan quickly while providing enough detail to showcase your qualifications.
 
-## Follow-Up
-- Send a thank you email after applying
-- Be patient but proactive
-- Keep track of applications submitted''',
+**References** are professional contacts who can vouch for your character, work ethic, and abilities. Choose people who know your work well and will speak positively about you.
+
+## Crafting an Effective Cover Letter
+
+A strong cover letter is personalized, concise, and compelling. Start by researching the company and the hiring manager's name—addressing someone by name shows you've done your homework and care enough to personalize your application.
+
+Begin with a strong opening that immediately states which position you're applying for and where you saw it advertised. Then, in one sentence, give a compelling reason why you're interested. Avoid generic statements like "I'm a hard worker"—be specific about what attracts you to this role or company.
+
+The body of your cover letter should highlight 2-3 relevant experiences or skills that make you a strong candidate. Don't just repeat what's in your CV; instead, provide context and tell mini-stories. For example, instead of saying "I have customer service experience," write "During my part-time role at a busy cafe, I developed strong customer service skills by handling an average of 50 customers per shift while maintaining a friendly, efficient atmosphere."
+
+Use the STAR method (Situation, Task, Action, Result) to structure your examples. This approach helps you provide concrete evidence of your capabilities rather than just making claims.
+
+Close your cover letter by expressing enthusiasm for the opportunity to discuss your application further. Keep your tone professional but let your genuine interest shine through. Thank them for their consideration and provide your contact information.
+
+Keep your cover letter to one page maximum. Hiring managers are busy—they appreciate conciseness. Every sentence should serve a purpose. If it doesn't add value or new information, cut it.
+
+## Building a Strong CV
+
+Your CV should be clean, well-organized, and easy to read. Use a professional font (like Arial, Calibri, or Times New Roman) in 10-12 point size. Stick to a simple, uncluttered format with clear section headings.
+
+**Contact Information**: Start with your full name (larger font), phone number, email address, and location (city and country). Make sure your email address is professional—ideally firstname.lastname@email.com. Avoid usernames like "coolboy99" or "partygirl"—they create a poor impression.
+
+**Personal Summary**: Include a brief 2-3 sentence summary at the top highlighting who you are professionally and what you're seeking. For example: "Recent Computer Science graduate with strong programming skills in Java and Python. Seeking entry-level software development position to apply academic knowledge and contribute to innovative projects."
+
+**Education**: List your educational background in reverse chronological order (most recent first). Include the institution name, degree or diploma earned, dates attended, and your GPA if it's strong (above 3.0 or equivalent). You can also mention relevant coursework, academic honors, or major projects.
+
+**Work Experience**: This is often the most important section. List each position with the company name, your job title, dates of employment, and 3-5 bullet points describing your responsibilities and achievements. Focus on accomplishments rather than just duties. Use action verbs and quantify results when possible.
+
+For example, instead of "Responsible for social media," write "Managed Instagram account, increasing followers by 40% over six months through consistent content posting and engagement strategies."
+
+If you don't have much formal work experience, include volunteer work, internships, significant school projects, or leadership roles in student organizations. All demonstrate valuable skills.
+
+**Skills**: Create a dedicated skills section highlighting both technical and soft skills relevant to the job. For technical skills (like software, languages, tools), be honest about your proficiency level. For soft skills (communication, teamwork, problem-solving), you'll demonstrate these through your examples rather than just listing them.
+
+**Additional Sections**: Depending on your background, you might include sections for:
+- Certifications or training
+- Languages spoken (with proficiency levels)
+- Volunteer work
+- Publications or presentations
+- Professional memberships
+- Awards and honors
+
+**Formatting Tips**: Use bullet points rather than paragraphs for easy scanning. Maintain consistent formatting throughout—if you bold one job title, bold all job titles. Use the same date format throughout. Ensure adequate white space; a cramped CV is hard to read.
+
+## Avoiding Common Application Mistakes
+
+**Generic Applications**: The #1 mistake is sending the same generic application to every job. Employers can tell when you've mass-applied. Tailor each application to the specific role—mention the company name, reference specific job requirements, and explain why you're interested in *that* particular position.
+
+**Spelling and Grammar Errors**: Typos and grammar mistakes signal carelessness. They can instantly disqualify you, especially for roles requiring attention to detail. Proofread multiple times, read your application aloud, use spell-check, and if possible, have someone else review it.
+
+**Including Irrelevant Information**: Your application should be relevant to the job you're applying for. Don't list every job you've ever had or every hobby. Focus on what matters for this specific role. If you worked as a lifeguard years ago but you're now applying for an accounting position, it might not need much detail unless you can draw relevant connections.
+
+**Lying or Exaggerating**: Never lie about your qualifications, experience, or achievements. It's easy for employers to verify information, and dishonesty will disqualify you or get you fired later. It's fine to present your experience in the best light, but stay truthful.
+
+**Using Unprofessional Elements**: This includes overly casual language, emojis, decorative fonts, photos (unless specifically requested), or trying to be overly creative with format when applying to traditional industries. Save creativity for creative fields; most employers prefer clean, professional formats.
+
+**Ignoring Instructions**: If the job posting says "include salary expectations" or "answer these three questions," do it. Failing to follow application instructions suggests you don't pay attention to details.
+
+**Being Too Modest or Too Boastful**: Strike a balance. Don't undersell your achievements, but don't sound arrogant either. Use confident language ("I successfully led..." rather than "I kind of helped with...") while remaining humble and focused on facts.
+
+## The Follow-Up Strategy
+
+After submitting your application, send a brief, professional thank-you email within 24 hours (if you have a contact email). This shows professionalism and keeps you on their radar. Keep it simple: thank them for considering your application, reiterate your interest, and mention you look forward to hearing from them.
+
+Be patient but proactive. If the job posting mentioned a timeframe for decisions, wait until that period has passed before following up. If no timeframe was given, wait about a week or two before sending a polite follow-up email inquiring about the status of your application.
+
+Keep detailed records of all applications you submit: company name, position, date applied, contact information, and any follow-up actions. This helps you stay organized and avoid confusion if multiple companies contact you.
+
+## Tailoring to Different Job Levels
+
+**For Entry-Level Positions**: Emphasize your education, relevant coursework, internships, volunteer work, and transferable skills. Highlight your enthusiasm, willingness to learn, and any relevant projects. Employers hiring entry-level know you won't have extensive experience—they're looking for potential, attitude, and basic competencies.
+
+**For Part-Time or Student Jobs**: Focus on flexibility, reliability, and any relevant experience. Emphasize soft skills like customer service, teamwork, and time management. Show that you understand the balance between work and studies and can handle both responsibly.
+
+## Final Checklist Before Submitting
+
+Before hitting send, verify:
+- ✓ Correct company and position names are used throughout
+- ✓ No spelling or grammar errors
+- ✓ All requested documents are attached
+- ✓ Files are named professionally (e.g., "FirstName_LastName_CV.pdf")
+- ✓ Email address and phone number are correct
+- ✓ You've followed all application instructions
+- ✓ Documents are in the requested format (PDF is usually safest)
+- ✓ Your tone is professional throughout
+
+## Remember
+
+Your application is your marketing tool—it's how you sell yourself to potential employers. Invest time in making it strong, specific, and professional. A well-crafted application opens doors; a careless one closes them. Every application is an opportunity to practice and improve. Even if you don't get the job, you're building valuable skills in self-presentation that will serve you throughout your career.
+
+Quality beats quantity. It's better to submit five excellent, tailored applications than twenty generic ones. Good luck!''',
       'category_id': 'application-tips',
       'target_audience': 'student',
-      'image_url': 'assets/images/education/application-tips.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'HR Specialist',
-      'read_time': 10,
+      'read_time': 8,
       'views_count': 312,
       'likes_count': 156,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 10)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'student-3',
-      'title': 'Know Your Rights as a Worker',
-      'content': '''Understanding your rights protects you in the workplace.
+      'title': 'Worker Rights',
+      'content':
+          '''As a young worker entering the Algerian job market, understanding your rights is essential for protecting yourself and ensuring fair treatment. Many first-time employees don't know what they're entitled to, which can lead to exploitation. This guide will help you understand your fundamental rights as a worker in Algeria and what to do if those rights are violated.
 
-## Basic Worker Rights in Algeria
+## Your Fundamental Rights in Algeria
 
-### Payment Rights
-- Receive your agreed salary on time
-- Get paid for overtime work
-- Receive payslips showing deductions
+Algeria's labor laws provide comprehensive protection for workers. These rights exist whether you're in a full-time permanent position, a part-time job, or a fixed-term contract. Knowing these rights empowers you to recognize when something isn't right and to advocate for yourself appropriately.
 
-### Working Conditions
-- Safe and healthy work environment
-- Maximum working hours per week
-- Rest periods and breaks
-- Annual paid leave
+### Payment and Compensation Rights
 
-### Protection from Discrimination
-- Equal treatment regardless of gender, religion, or background
-- Protection from harassment
-- Right to report misconduct
+You have the absolute right to receive your agreed-upon salary on time, in full, and in the currency specified in your contract (typically Algerian Dinars). Your salary should be paid at regular intervals—monthly for most positions—and payment should occur on or before the agreed date.
 
-## What to Do If Rights Are Violated
-1. Document everything (dates, times, witnesses)
-2. Speak to your supervisor or HR
-3. Keep copies of all communications
-4. Know the labor inspection office contact
-5. Seek legal advice if necessary
+Your employer must provide you with detailed payslips showing your gross salary, all deductions (social security, taxes, etc.), and your net pay. These payslips are important financial records—keep them safe. They serve as proof of employment and income for various purposes like loans or renting.
 
-## Red Flags
-- Employer keeps your ID documents
-- No written contract provided
-- Salary consistently late
-- Unsafe working conditions
-- Excessive unpaid overtime
+If you work overtime (beyond your contracted hours), you're entitled to additional compensation. Overtime rates are typically higher than regular hourly rates, usually 50-75% more depending on when the overtime occurs (weekdays, weekends, or holidays). Your employer cannot force you to work unpaid overtime—this is illegal.
 
-## Resources
-- Ministry of Labor hotline
-- Local labor inspection office
-- Worker rights organizations
+The national minimum wage (SNMG) sets the floor for compensation. Your employer cannot legally pay you less than this amount for full-time work. The minimum wage is periodically adjusted, so stay informed about current rates.
 
-Stay informed and don't be afraid to speak up!''',
+### Working Hours and Rest Periods
+
+The standard legal working week in Algeria is 40 hours, typically distributed across five days. Your employer cannot require you to work more than this regularly without proper overtime compensation. Daily working hours are generally capped at 8-10 hours depending on your sector.
+
+You're entitled to regular breaks during your workday. For a typical 8-hour day, this includes at least a 30-minute meal break (often an hour in practice). You should also have short rest periods, though the exact timing and duration can vary by workplace.
+
+Weekly rest is mandatory—you must have at least one full day off per week (24 consecutive hours), typically Friday or Sunday. If your job requires weekend work (like in retail or hospitality), you should receive a different weekly rest day and potentially additional compensation.
+
+### Annual Leave and Holidays
+
+Every worker in Algeria is entitled to paid annual leave. The minimum is 30 calendar days per year (about 4-5 weeks), though this increases with seniority in some cases. This is among the most generous vacation policies globally—don't let anyone tell you you're not entitled to it.
+
+You accumulate leave throughout the year and can typically use it after completing a certain period of employment (often six months to a year for new employees). Your employer cannot refuse to let you take your accumulated leave indefinitely, though they can ask you to coordinate timing to avoid disrupting business operations.
+
+National and religious holidays are also paid days off. You should not have to work on these days unless your job specifically requires it (like healthcare or security), in which case you should receive additional compensation or alternative rest days.
+
+### Safe and Healthy Working Conditions
+
+You have the right to work in an environment that doesn't pose unreasonable risks to your health and safety. Your employer must provide:
+- Safe equipment and tools
+- Adequate lighting, ventilation, and temperature control
+- Clean sanitary facilities
+- Safety equipment if your job involves hazards (helmets, gloves, etc.)
+- Training on safety procedures
+
+If you notice unsafe conditions, you have the right to report them without fear of retaliation. In cases of immediate danger, you can refuse to work until the situation is corrected.
+
+### Protection from Discrimination and Harassment
+
+Algerian law protects workers from discrimination based on gender, age, race, religion, disability, or political views. You should receive equal pay for equal work regardless of these factors. You cannot be denied employment, promotion, or training opportunities based on discriminatory reasons.
+
+Harassment—whether sexual, verbal, or psychological—is illegal and unacceptable. This includes unwanted comments, jokes, touching, or any behavior that creates a hostile or intimidating work environment. Your employer has a responsibility to prevent harassment and address it promptly when reported.
+
+### Contract and Documentation Rights
+
+You're entitled to a written employment contract that clearly states your position, salary, working hours, location, start date, and other key terms. Never agree to work without a written contract—verbal agreements are difficult to enforce and leave you vulnerable.
+
+Your employer cannot confiscate your personal documents (national ID card, diplomas, passport). If an employer asks to "keep" your papers for any reason, this is a major red flag and potentially illegal. You can provide copies for their files, but originals should remain with you.
+
+## Recognizing Red Flags and Violations
+
+### Warning Signs of Problematic Employers
+
+Certain practices clearly indicate an employer isn't respecting workers' rights:
+
+**Salary Issues**: Consistently late payments, partial payments without explanation, paying less than agreed, or making illegal deductions are serious violations. One late payment might be an administrative error, but repeated problems indicate deeper issues.
+
+**Contract Problems**: No written contract, vague contract terms, forcing you to sign a blank contract, or significantly different conditions from what was promised during hiring all signal trouble.
+
+**Excessive Unpaid Work**: Requiring regular unpaid overtime, forcing you to work through breaks, or expecting work outside normal hours without compensation exploits workers.
+
+**Unsafe Conditions**: Ignoring obvious safety hazards, not providing necessary safety equipment, or retaliating against employees who raise safety concerns shows disregard for worker welfare.
+
+**Harassment or Discrimination**: Any form of harassment, discriminatory treatment, or creating a hostile work environment violates your rights and the law.
+
+**Document Retention**: Keeping your ID card, diplomas, or other personal documents is a control tactic that prevents you from leaving freely—this is unacceptable.
+
+## What to Do If Your Rights Are Violated
+
+### Step 1: Document Everything
+
+Keep detailed records of any violations:
+- Dates and times of incidents
+- What happened and who was involved
+- Any witnesses present
+- Photos or copies of relevant documents
+- Written communications (emails, messages)
+
+This documentation is crucial if you need to file a complaint or take legal action. Keep these records securely outside the workplace—don't rely on company computers or files you might lose access to.
+
+### Step 2: Internal Resolution Attempts
+
+Start by addressing issues internally when possible. This isn't always appropriate (especially for serious violations like harassment), but for many issues, it's a reasonable first step:
+
+**Speak to Your Direct Supervisor**: Sometimes issues stem from misunderstandings or your supervisor being unaware. Explain the problem clearly and professionally. Document this conversation in writing (follow-up email summarizing what you discussed).
+
+**Contact HR or Management**: If your supervisor doesn't resolve the issue or is part of the problem, escalate to human resources or higher management. Submit complaints in writing and keep copies.
+
+### Step 3: External Resources and Complaints
+
+If internal attempts fail or the violation is serious:
+
+**Labor Inspection Office**: The Ministry of Labor has local offices (Inspection du Travail) that handle worker complaints. They can investigate your employer and enforce compliance with labor law. Find your local office contact information online or by calling the Ministry.
+
+**File a Formal Complaint**: You can submit a written complaint to the labor inspection office detailing the violations. Include your documentation. They have the authority to inspect your workplace, interview people, and require your employer to correct violations.
+
+**Legal Consultation**: For serious violations or if you've lost your job unfairly, consult with a lawyer specializing in labor law. Initial consultations are often free or low-cost. They can advise you on your options, including potentially filing a lawsuit.
+
+**Worker Organizations**: Some sectors have unions or worker associations that can provide support, advice, and advocacy. These organizations know labor law well and can help you navigate the complaint process.
+
+### Step 4: Protecting Yourself from Retaliation
+
+Unfortunately, some employers retaliate against workers who assert their rights. Algerian law prohibits this retaliation, but it happens. Protect yourself by:
+- Keeping all documentation secure and backed up
+- Having witnesses when possible
+- Documenting any retaliatory actions
+- Reporting retaliation to labor authorities
+- Consulting with a lawyer if you fear losing your job
+
+## Special Considerations for Student Workers
+
+If you're working while studying, you have the same rights as any other worker. Your employer cannot treat you differently or pay you less simply because you're a student (except in specific apprenticeship or training programs with different regulations).
+
+However, be realistic about balancing work and studies. Make sure your job allows adequate time for classes and studying. Some students accept exploitative conditions thinking they have no alternatives, but your education is an investment in your future—don't let work jeopardize it.
+
+## Building a Culture of Rights Awareness
+
+Understanding your rights isn't about being confrontational or difficult. It's about ensuring fair treatment and sustainable working conditions. Good employers actually appreciate employees who understand labor law because it demonstrates professionalism and helps maintain legal compliance.
+
+Share this knowledge with peers and coworkers. Many workers suffer violations simply because they don't know better. Creating awareness helps everyone and encourages employers to maintain proper standards.
+
+## Resources for More Information
+
+- **Ministry of Labor Website**: Official information about labor laws and regulations
+- **Local Labor Inspection Office**: Direct assistance with complaints and questions
+- **Legal Aid Organizations**: Free or low-cost legal consultation for workers
+- **Worker Rights NGOs**: Organizations dedicated to protecting and advocating for workers
+
+## Remember
+
+You deserve fair treatment, safe conditions, and respect at work. Knowing your rights gives you power—the power to recognize problems, speak up appropriately, and take action when necessary.
+
+Don't let fear of losing your job prevent you from asserting your rights. Employers who violate labor law often count on workers being too afraid or uninformed to complain. By standing up for yourself (appropriately and through proper channels), you not only protect yourself but also contribute to better working conditions for everyone.
+
+Stay informed, document everything, and don't hesitate to seek help when needed. Your rights matter!''',
       'category_id': 'worker-rights',
       'target_audience': 'student',
-      'image_url': 'assets/images/education/worker-rights.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Legal Advisory',
-      'read_time': 12,
+      'read_time': 9,
       'views_count': 189,
       'likes_count': 134,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 15)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'student-4',
-      'title': 'Interview Preparation Guide',
+      'title': 'Interview Success',
       'content': '''Ace your next interview with these proven strategies.
 
 ## Before the Interview
@@ -242,19 +450,19 @@ Stay informed and don't be afraid to speak up!''',
 Good luck!''',
       'category_id': 'interview-skills',
       'target_audience': 'student',
-      'image_url': 'assets/images/education/interview-prep.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Career Coach',
-      'read_time': 15,
+      'read_time': 7,
       'views_count': 428,
       'likes_count': 267,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 20)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'student-5',
-      'title': 'Building Professional Skills',
+      'title': 'Build Your Skills',
       'content': '''Develop the skills employers are looking for.
 
 ## Essential Soft Skills
@@ -313,19 +521,19 @@ Good luck!''',
 Continuous learning is the key to career success!''',
       'category_id': 'skill-building',
       'target_audience': 'student',
-      'image_url': 'assets/images/education/skills.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Skills Development Team',
-      'read_time': 11,
+      'read_time': 5,
       'views_count': 356,
       'likes_count': 198,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 25)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'employer-1',
-      'title': 'Hiring Best Practices for Small Businesses',
+      'title': 'Hiring Best Practices',
       'content': '''Attract and retain the best talent for your business.
 
 ## Define Your Needs
@@ -375,19 +583,19 @@ Continuous learning is the key to career success!''',
 Good hiring leads to business success!''',
       'category_id': 'recruitment',
       'target_audience': 'employer',
-      'image_url': 'assets/images/education/hiring.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'HR Consultant',
-      'read_time': 13,
+      'read_time': 6,
       'views_count': 167,
       'likes_count': 78,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 7)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'employer-2',
-      'title': 'Writing Effective Job Posts',
+      'title': 'Write Job Posts',
       'content': '''Create job posts that attract quality candidates.
 
 ## Job Post Structure
@@ -450,19 +658,19 @@ Good hiring leads to business success!''',
 Clarity attracts quality!''',
       'category_id': 'job-posting',
       'target_audience': 'employer',
-      'image_url': 'assets/images/education/job-posting.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Recruitment Expert',
-      'read_time': 9,
+      'read_time': 5,
       'views_count': 203,
       'likes_count': 112,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 12)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'employer-3',
-      'title': 'Managing Student Workers',
+      'title': 'Manage Student Workers',
       'content': '''Get the best from your student employees.
 
 ## Understanding Student Workers
@@ -528,19 +736,19 @@ Clarity attracts quality!''',
 Invest in your student workers - they're your future!''',
       'category_id': 'management',
       'target_audience': 'employer',
-      'image_url': 'assets/images/education/managing.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Business Management',
-      'read_time': 14,
+      'read_time': 7,
       'views_count': 145,
       'likes_count': 67,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 18)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'employer-4',
-      'title': 'Legal Requirements for Employers',
+      'title': 'Legal Requirements',
       'content': '''Stay compliant with Algerian labor laws.
 
 ## Employment Contracts
@@ -607,19 +815,19 @@ Invest in your student workers - they're your future!''',
 When in doubt, consult a lawyer!''',
       'category_id': 'legal-compliance',
       'target_audience': 'employer',
-      'image_url': 'assets/images/education/legal.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Legal Compliance Team',
-      'read_time': 16,
+      'read_time': 8,
       'views_count': 189,
       'likes_count': 94,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 22)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('education_articles', {
       'id': 'employer-5',
-      'title': 'Building a Positive Workplace Culture',
+      'title': 'Workplace Culture',
       'content': '''Create an environment where employees thrive.
 
 ## What is Workplace Culture?
@@ -706,14 +914,14 @@ The shared values, beliefs, and behaviors that shape your work environment.
 Culture is not created overnight, but every positive action counts!''',
       'category_id': 'workplace-culture',
       'target_audience': 'employer',
-      'image_url': 'assets/images/education/culture.jpg',
+      'image_url': 'assets/images/education/Technology.png',
       'author': 'Organizational Development',
-      'read_time': 12,
+      'read_time': 6,
       'views_count': 178,
       'likes_count': 89,
-      'published_at': now,
-      'created_at': now,
-      'updated_at': now,
+      'published_at': now.subtract(Duration(days: 3)).toIso8601String(),
+      'created_at': nowString,
+      'updated_at': nowString,
     });
 
     await db.insert('notifications', {
@@ -726,7 +934,7 @@ Culture is not created overnight, but every positive action counts!''',
       'priority': 'medium',
       'is_read': 0,
       'is_pushed': 0,
-      'created_at': now,
+      'created_at': nowString,
     });
 
     await db.insert('notifications', {
@@ -770,7 +978,7 @@ Culture is not created overnight, but every positive action counts!''',
       'priority': 'medium',
       'is_read': 0,
       'is_pushed': 0,
-      'created_at': now,
+      'created_at': nowString,
     });
 
     await db.insert('notifications', {
