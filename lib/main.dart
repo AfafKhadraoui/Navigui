@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'commons/themes/style_simple/theme.dart';
 import 'routes/app_router.dart';
 import 'core/dependency_injection.dart';
+import 'data/databases/db_helper.dart';
 // TODO: Update to new repository structure
 // import 'logic/cubits/auth/auth_cubit.dart';
 // import 'logic/cubits/job/job_cubit.dart';
@@ -13,10 +14,9 @@ import 'core/dependency_injection.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-// Seed database with mock data
-  // await DatabaseSeeder.seedDatabase();
-
-
+  // Uncomment to reset database (delete and recreate with fresh seed data)
+  await DBHelper.deleteDB();
+  print('Database deleted, will be recreated on next access');
 
   // Initialize dependency injection
   await setupDependencies();

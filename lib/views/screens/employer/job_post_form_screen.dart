@@ -44,6 +44,8 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
     final job = widget.job;
 
     _titleController = TextEditingController(text: job?.title ?? '');
+    _companyController = TextEditingController(
+        text: ''); // Company comes from employer profile, not job post
     _locationController = TextEditingController(text: job?.location ?? '');
     _descriptionController =
         TextEditingController(text: job?.description ?? '');
@@ -70,6 +72,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
   @override
   void dispose() {
     _titleController.dispose();
+    _companyController.dispose();
     _locationController.dispose();
     _descriptionController.dispose();
     _paymentAmountController.dispose();

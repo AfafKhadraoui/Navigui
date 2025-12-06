@@ -204,12 +204,6 @@ class AppRouter {
         builder: (context, state) => const Step4EmployerScreen(),
       ),
 
-      GoRoute(
-        path: notifications,
-        name: 'notifications',
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-
       // Profile management routes (outside bottom nav)
       GoRoute(
         path: editStudentProfile,
@@ -352,6 +346,15 @@ class AppRouter {
             name: 'profile',
             pageBuilder: (context, state) => NoTransitionPage(
               child: RoleBasedNavigation.getProfileScreen(),
+            ),
+          ),
+
+          // Notifications route (accessible from anywhere in the app)
+          GoRoute(
+            path: notifications,
+            name: 'notifications',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: NotificationsScreen(),
             ),
           ),
 

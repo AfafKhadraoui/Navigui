@@ -26,7 +26,7 @@ class NotificationsLoaded extends NotificationState {
 }
 
 class NotificationMarkedAsRead extends NotificationState {
-  final int notificationId;
+  final String notificationId;
 
   const NotificationMarkedAsRead(this.notificationId);
 
@@ -37,7 +37,7 @@ class NotificationMarkedAsRead extends NotificationState {
 class AllNotificationsMarkedAsRead extends NotificationState {}
 
 class NotificationDeleted extends NotificationState {
-  final int notificationId;
+  final String notificationId;
 
   const NotificationDeleted(this.notificationId);
 

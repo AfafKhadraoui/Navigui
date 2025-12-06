@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../routes/app_router.dart';
+import '../../../data/databases/tables/users_table.dart';
 
 class LoginScreen2 extends StatefulWidget {
   const LoginScreen2({super.key});
@@ -15,6 +16,8 @@ class _LoginScreen2State extends State<LoginScreen2> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -169,25 +172,88 @@ class _LoginScreen2State extends State<LoginScreen2> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
+
+                // Error message
+                if (_errorMessage != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red),
+                    ),
+                    child: Text(
+                      _errorMessage!,
+                      style: GoogleFonts.aclonica(
+                        fontSize: 12,
+                        color: Colors.red,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+                const SizedBox(height: 24),
 
                 // Login Button
                 ElevatedButton(
-                  onPressed: () async {
-                    final email = _emailController.text.trim();
-                    if (email.isEmpty) return;
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
 
-                    // Save email for role detection
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setString('user_email', email);
+                          if (email.isEmpty || password.isEmpty) {
+                            setState(() {
+                              _errorMessage = 'Please enter email and password';
+                            });
+                            return;
+                          }
 
-                    // Simple direct navigation for testing
-                    if (mounted) {
-                      context.go(AppRouter.home);
-                    }
-                  },
+                          setState(() {
+                            _isLoading = true;
+                            _errorMessage = null;
+                          });
+
+                          try {
+                            // Validate credentials against database
+                            final user =
+                                await UsersTable.validateUser(email, password);
+
+                            if (user != null) {
+                              // Save user info to SharedPreferences
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setString('user_id', user['id']);
+                              await prefs.setString(
+                                  'user_email', user['email']);
+                              await prefs.setString('user_name', user['name']);
+                              await prefs.setString(
+                                  'account_type', user['account_type']);
+
+                              // Update last login
+                              await UsersTable.updateLastLogin(user['id']);
+
+                              // Navigate to home
+                              if (mounted) {
+                                context.go(AppRouter.home);
+                              }
+                            } else {
+                              setState(() {
+                                _errorMessage = 'Invalid email or password';
+                                _isLoading = false;
+                              });
+                            }
+                          } catch (e) {
+                            setState(() {
+                              _errorMessage = 'Login failed: ${e.toString()}';
+                              _isLoading = false;
+                            });
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD2FF1F),
+                    backgroundColor:
+                        _isLoading ? Colors.grey : const Color(0xFFD2FF1F),
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -195,13 +261,23 @@ class _LoginScreen2State extends State<LoginScreen2> {
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    'Log in',
-                    style: GoogleFonts.aclonica(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.black),
+                          ),
+                        )
+                      : Text(
+                          'Log in',
+                          style: GoogleFonts.aclonica(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
 
                 const SizedBox(height: 24),
