@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../commons/themes/style_simple/colors.dart';
 import 'step2Employer.dart';
+import '../../../utils/form_validators.dart';
+import '../../../logic/services/signup_data_service.dart';
 
 class Step1EmployerScreen extends StatefulWidget {
   const Step1EmployerScreen({super.key});
@@ -11,6 +12,7 @@ class Step1EmployerScreen extends StatefulWidget {
 }
 
 class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -20,6 +22,28 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _handleContinue() async {
+    if (_formKey.currentState!.validate()) {
+      // Save email and password to temporary storage
+      final signupService = SignupDataService();
+      await signupService.saveMultipleData({
+        SignupDataService.keyEmail: _emailController.text.trim(),
+        SignupDataService.keyPassword: _passwordController.text.trim(),
+        SignupDataService.keyAccountType: 'employer',
+      });
+      
+      // Proceed to next step
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Step2EmployerScreen(),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -77,7 +101,11 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                 ),
                 
                 const Spacer(),
-                
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                 // Title
                 Text(
                   'get ready for the gag',
@@ -102,8 +130,9 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                 const SizedBox(height: 8),
                 
                 // Email TextField (white background + black text)
-                TextField(
+                TextFormField(
                   controller: _emailController,
+                  validator:FormValidators.validateEmail ,
                   keyboardType: TextInputType.emailAddress,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
@@ -117,6 +146,12 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                       color: Colors.grey,
                       fontSize: 14,
                     ),
+                    errorStyle: GoogleFonts.aclonica(
+                      fontSize: 12,
+                      color: Colors.red,
+                      height: 0.8,
+                    ),
+                    errorMaxLines: 2,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                       borderSide: BorderSide.none,
@@ -150,9 +185,10 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                 const SizedBox(height: 8),
                 
                 // Password TextField (white background + black text)
-                TextField(
+                TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  validator:  FormValidators.validatePassword,
                   style: GoogleFonts.aclonica(
                     fontSize: 14,
                     color: Colors.black,
@@ -165,6 +201,12 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                       color: Colors.grey,
                       fontSize: 14,
                     ),
+                    errorStyle: GoogleFonts.aclonica(
+                      fontSize: 12,
+                      color: Colors.red,
+                      height: 0.8,
+                    ),
+                    errorMaxLines: 2,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25),
                       borderSide: BorderSide.none,
@@ -196,19 +238,15 @@ class _Step1EmployerScreenState extends State<Step1EmployerScreen> {
                     ),
                   ),
                 ),
+                    ],
+                  ),
+                ),
                 
                 const SizedBox(height: 40),
                 
                 // Continue Button
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Step2EmployerScreen(),
-                      ),
-                    );
-                  },
+                  onPressed: _handleContinue,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD2FF1F),
                     foregroundColor: Colors.black,

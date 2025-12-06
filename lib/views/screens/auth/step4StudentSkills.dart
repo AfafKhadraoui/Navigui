@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
 import '../../../logic/services/auth_service.dart';
+import '../../../logic/services/signup_data_service.dart';
 // using inline buttons here to avoid importing shared custom_button
 import '../../widgets/common/signup_success_dialog.dart';
 
@@ -74,35 +74,100 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
     });
   }
 
-  void _handleContinue() {
-    // Set student account type in AuthService
-    final authService = context.read<AuthService>();
-    // Quick fix: Manually create student user
-    // TODO: Replace with proper data from all registration steps
-    authService.signup(
-      email: 'student@temp.com',
-      password: 'temp123',
-      name: 'Student User',
-      phoneNumber: '+213XXXXXXXXX',
-      location: 'Alger',
-      accountType: 'student',
-    );
+  void _handleContinue() async {
+    print('🔵 Continue button pressed!');
     
-    // Navigate to success screen
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => SignupSuccessDialog(
-          userName: 'Student', // TODO: Get actual name from signup data
-          isStudent: true,
-          onGoToDashboard: () {
-            context.go(AppRouter.home); // Navigate to home (will show student interface)
-          },
-          onStartOver: () {
-            context.go(AppRouter.accountType); // Go back to account type
-          },
+    // Validate that at least one skill or language is selected
+    if (_selectedSkills.isEmpty && _selectedLanguages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one skill or language'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
         ),
-      ),
-    );
+      );
+      return;
+    }
+    
+    try {
+      // Save skills and languages to temporary storage
+      final signupService = SignupDataService();
+      await signupService.saveMultipleData({
+        SignupDataService.keySkills: _selectedSkills.toList(),
+        SignupDataService.keyLanguages: _selectedLanguages.toList(),
+      });
+      print('✅ Saved skills and languages');
+      
+      // Get all collected signup data
+      final signupData = await signupService.getStudentSignupData();
+      
+      // Debug: Print what data we have
+      print('=== SIGNUP DATA ===');
+      print('Email: ${signupData['email']}');
+      print('Password: ${signupData['password']}');
+      print('Name: ${signupData['name']}');
+      print('Phone: ${signupData['phoneNumber']}');
+      print('Location: ${signupData['location']}');
+      print('==================');
+      
+      // Validate required fields
+      if (signupData['email'] == null || 
+          signupData['password'] == null || 
+          signupData['name'] == null || 
+          signupData['phoneNumber'] == null || 
+          signupData['location'] == null) {
+        throw Exception('Missing required signup data. Please go back and complete all previous steps.');
+      }
+      
+      // Create user account with AuthService
+      final authService = AuthService();
+      final success = await authService.signup(
+        email: signupData['email'] as String,
+        password: signupData['password'] as String,
+        name: signupData['name'] as String,
+        phoneNumber: signupData['phoneNumber'] as String,
+        location: signupData['location'] as String,
+        accountType: 'student',
+      );
+      
+      if (success) {
+        // Clear temporary signup data
+        await signupService.clearAllData();
+        
+        // Navigate to success screen
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => SignupSuccessDialog(
+              userName: signupData['name'] as String,
+              isStudent: true,
+              onGoToDashboard: () {
+                Navigator.of(dialogContext).pop();
+                context.go(AppRouter.home);
+              },
+              onStartOver: () {
+                Navigator.of(dialogContext).pop();
+                context.go(AppRouter.accountType);
+              },
+            ),
+          );
+        }
+      } else {
+        throw Exception('Signup failed. Please try again.');
+      }
+    } catch (e) {
+      // Show error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildSkillChip(String skill) {

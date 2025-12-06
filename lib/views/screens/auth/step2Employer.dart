@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../utils/form_validators.dart';
 import 'step3Employer.dart';
+import '../../../logic/services/signup_data_service.dart';
 
 class Step2EmployerScreen extends StatefulWidget {
   const Step2EmployerScreen({super.key});
@@ -11,6 +13,7 @@ class Step2EmployerScreen extends StatefulWidget {
 }
 
 class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _locationController = TextEditingController();
   final _nameController = TextEditingController();
@@ -30,6 +33,44 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
     'Individual',
   ];
 
+  void _handleContinue() async {
+    if (_formKey.currentState!.validate()) {
+      // Additional type validation since dropdown doesn't use validator directly
+      if (_selectedType == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Please select your business type',
+              style: GoogleFonts.aclonica(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
+      // Save data to temporary storage
+      final signupService = SignupDataService();
+      await signupService.saveMultipleData({
+        SignupDataService.keyName: _nameController.text.trim(),
+        SignupDataService.keyPhoneNumber: _phoneController.text.trim(),
+        SignupDataService.keyLocation: _locationController.text.trim(),
+        SignupDataService.keyBusinessType: _selectedType!,
+        SignupDataService.keyDescription: _descriptionController.text.trim(),
+      });
+      
+      // All validations passed, proceed to next step
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Step3EmployerScreen(),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -43,6 +84,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
     required String label,
     required String hint,
     required TextEditingController controller,
+    String? Function(String?)? validator,
     TextInputType? keyboardType,
     int maxLines = 1,
   }) {
@@ -57,8 +99,9 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
+          validator: validator,
           keyboardType: keyboardType,
           maxLines: maxLines,
           style: GoogleFonts.aclonica(
@@ -73,6 +116,12 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
               color: Colors.grey,
               fontSize: 14,
             ),
+            errorStyle: GoogleFonts.aclonica(
+              fontSize: 12,
+              color: Colors.red,
+              height: 0.8,
+            ),
+            errorMaxLines: 2,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
@@ -84,6 +133,14 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 24,
@@ -150,31 +207,39 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                 
                 const SizedBox(height: 40),
                 
-                // Phone Number
-                _buildTextField(
-                  label: 'Phone number',
-                  hint: '+213 xx xxx xxxx',
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Location
-                _buildTextField(
-                  label: 'Location',
-                  hint: 'City, Country',
-                  controller: _locationController,
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Business/Individual Name
-                _buildTextField(
-                  label: 'Business/ Individual Name',
-                  hint: 'John Doe/ Company Inc.',
-                  controller: _nameController,
-                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Phone Number
+                      _buildTextField(
+                        label: 'Phone number',
+                        hint: '+213 xx xxx xxxx',
+                        controller: _phoneController,
+                        validator: FormValidators.validatePhoneAlgeria,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Location
+                      _buildTextField(
+                        label: 'Location',
+                        hint: 'City, Country',
+                        controller: _locationController,
+                        validator: FormValidators.validateLocation,
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Business/Individual Name
+                      _buildTextField(
+                        label: 'Business/ Individual Name',
+                        hint: 'John Doe/ Company Inc.',
+                        controller: _nameController,
+                        validator: FormValidators.validateBusinessName,
+                      ),
                 
                 const SizedBox(height: 20),
                 
@@ -233,14 +298,18 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                   ],
                 ),
                 
-                const SizedBox(height: 20),
-                
-                // Brief Description (Optional)
-                _buildTextField(
-                  label: 'Brief Description (Optional)',
-                  hint: 'Describe your business or yourself',
-                  controller: _descriptionController,
-                  maxLines: 4,
+                      const SizedBox(height: 20),
+                      
+                      // Brief Description (Optional)
+                      _buildTextField(
+                        label: 'Brief Description (Optional)',
+                        hint: 'Describe your business or yourself',
+                        controller: _descriptionController,
+                        validator: FormValidators.validateDescription,
+                        maxLines: 4,
+                      ),
+                    ],
+                  ),
                 ),
                 
                 const SizedBox(height: 40),
@@ -280,14 +349,7 @@ class _Step2EmployerScreenState extends State<Step2EmployerScreen> {
                     // Continue Button
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Step3EmployerScreen(),
-                            ),
-                          );
-                        },
+                        onPressed: _handleContinue,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFD2FF1F),
                           foregroundColor: Colors.black,

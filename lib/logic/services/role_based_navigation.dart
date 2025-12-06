@@ -33,9 +33,17 @@ class RoleBasedNavigation {
     );
   }
 
-  /// Helper to get user role from email
+  /// Helper to get user role from account type
   static Future<String> _getUserRole() async {
     final prefs = await SharedPreferences.getInstance();
+    final accountType = prefs.getString('user_account_type') ?? '';
+    
+    // Return stored account type if available
+    if (accountType.isNotEmpty) {
+      return accountType;
+    }
+    
+    // Fallback to email check for backward compatibility
     final email = prefs.getString('user_email') ?? '';
     final emailLower = email.toLowerCase();
 
@@ -106,9 +114,9 @@ class RoleBasedNavigation {
   }
 
   /// Get bottom nav item label based on role and index
-  static String getNavLabel(int index, BuildContext context) {
-    // Simple default for testing
-    final isEmployer = false;
+  static Future<String> getNavLabel(int index, BuildContext context) async {
+    final role = await _getUserRole();
+    final isEmployer = role == 'employer';
 
     if (isEmployer) {
       switch (index) {

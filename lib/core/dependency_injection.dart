@@ -1,16 +1,20 @@
 import 'package:get_it/get_it.dart';
+import '../data/repositories/auth/auth_repo_abstract.dart';
+// import '../data/repositories/auth/auth_repo.dart';  // Real API implementation
+import '../data/repositories/auth/mock_auth_repo.dart';  // Mock implementation
+import '../data/repositories/user/user_repo_abstract.dart';
+// import '../data/repositories/user/user_repo_impl.dart';  // Real API implementation
+import '../data/repositories/user/mock_user_repo.dart';  // Mock implementation
+import '../logic/cubits/auth/auth_cubit.dart';
+import '../logic/cubits/student_profile/student_profile_cubit.dart';
+import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
 // TODO: Update to new repository structure
-// import '../data/repositories/auth_repo.dart';
 // import '../data/repositories/job_repo.dart';
 // import '../data/repositories/application_repo.dart';
-// import '../data/repositories/user_repo.dart';
 // import '../data/repositories/notification_repo.dart';
 // import '../data/repositories/review_repo.dart';
-// import '../logic/cubits/auth/auth_cubit.dart';
 // import '../logic/cubits/job/job_cubit.dart';
 // import '../logic/cubits/application/application_cubit.dart';
-// import '../logic/cubits/student_profile/student_profile_cubit.dart';
-// import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
 // import '../logic/cubits/employer_job/employer_job_cubit.dart';
 // import '../logic/cubits/employer_application/employer_application_cubit.dart';
 // import '../logic/cubits/notification/notification_cubit.dart';
@@ -28,11 +32,40 @@ Future<void> setupDependencies() async {
   // ========== REPOSITORIES ==========
   // Repositories are registered as lazy singletons
   // They will be created only when first accessed
-  // TODO: Update to new repository structure
 
+  // Auth Repository
+  // OPTION 1: Use Mock Repository (for testing without backend)
+  getIt.registerLazySingleton<AuthRepository>(
+    () => MockAuthRepository(),
+  );
+  
+  // OPTION 2: Use Real API Repository (when backend is ready)
   // getIt.registerLazySingleton<AuthRepository>(
-  //   () => AuthRepository(),
+  //   () => AuthRepositoryImpl(
+  //     baseUrl: 'http://localhost:5000/api', // TODO: Replace with your backend URL
+  //   ),
   // );
+
+  // User Repository (for profile management)
+  // OPTION 1: Use Mock Repository (for testing without backend)
+  getIt.registerLazySingleton<UserRepository>(
+    () => MockUserRepository(),
+  );
+
+  // OPTION 2: Use Real API Repository (when backend is ready)
+  // Note: UserRepositoryImpl requires auth token from AuthRepository
+  // getIt.registerLazySingleton<UserRepository>(
+  //   () => UserRepositoryImpl(
+  //     baseUrl: 'http://localhost:5000/api', // TODO: Replace with your backend URL
+  //     getAuthToken: () {
+  //       // Get current auth token from AuthRepository
+  //       // You may need to add a getToken() method to AuthRepository
+  //       return null; // TODO: Implement token retrieval
+  //     },
+  //   ),
+  // );
+
+  // TODO: Update to new repository structure
 
   // getIt.registerLazySingleton<JobRepository>(
   //   () => JobRepository(),
@@ -40,10 +73,6 @@ Future<void> setupDependencies() async {
 
   // getIt.registerLazySingleton<ApplicationRepository>(
   //   () => ApplicationRepository(),
-  // );
-
-  // getIt.registerLazySingleton<UserRepository>(
-  //   () => UserRepository(),
   // );
 
   // getIt.registerLazySingleton<NotificationRepository>(
@@ -58,11 +87,22 @@ Future<void> setupDependencies() async {
   // Cubits are registered as factories
   // A new instance will be created each time they are accessed
   // This is important for BLoC pattern to ensure proper lifecycle
-  // TODO: Update to new repository structure
 
-  // getIt.registerFactory<AuthCubit>(
-  //   () => AuthCubit(getIt<AuthRepository>()),
-  // );
+  // Auth Cubit
+  getIt.registerFactory<AuthCubit>(
+    () => AuthCubit(getIt<AuthRepository>()),
+  );
+
+  // Profile Cubits
+  getIt.registerFactory<StudentProfileCubit>(
+    () => StudentProfileCubit(getIt<UserRepository>()),
+  );
+
+  getIt.registerFactory<EmployerProfileCubit>(
+    () => EmployerProfileCubit(getIt<UserRepository>()),
+  );
+
+  // TODO: Update to new repository structure
 
   // getIt.registerFactory<JobCubit>(
   //   () => JobCubit(getIt<JobRepository>()),
@@ -70,14 +110,6 @@ Future<void> setupDependencies() async {
 
   // getIt.registerFactory<ApplicationCubit>(
   //   () => ApplicationCubit(getIt<ApplicationRepository>()),
-  // );
-
-  // getIt.registerFactory<StudentProfileCubit>(
-  //   () => StudentProfileCubit(getIt<UserRepository>()),
-  // );
-
-  // getIt.registerFactory<EmployerProfileCubit>(
-  //   () => EmployerProfileCubit(getIt<UserRepository>()),
   // );
 
   // getIt.registerFactory<EmployerJobCubit>(
@@ -112,3 +144,4 @@ Future<void> setupDependencies() async {
     () => AdminCubit(),
   );
 }
+

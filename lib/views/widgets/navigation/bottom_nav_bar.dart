@@ -40,11 +40,13 @@ class BottomNavBar extends StatelessWidget {
 
   Future<Map<String, bool>> _getUserRoleFlags() async {
     final prefs = await SharedPreferences.getInstance();
+    final accountType = prefs.getString('user_account_type') ?? '';
     final email = prefs.getString('user_email') ?? '';
     final emailLower = email.toLowerCase();
+    
     return {
-      'isAdmin': emailLower.contains('admin'),
-      'isEmployer': emailLower.contains('employer'),
+      'isAdmin': accountType == 'admin' || emailLower.contains('admin'),
+      'isEmployer': accountType == 'employer' || emailLower.contains('employer'),
     };
   }
 

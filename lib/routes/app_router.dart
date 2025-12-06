@@ -15,26 +15,11 @@ import '../views/screens/auth/step2Employer.dart';
 import '../views/screens/auth/step3Employer.dart';
 import '../views/screens/auth/step4Employer.dart';
 import '../views/screens/onboarding/onboarding_screen.dart';
-import '../views/screens/homescreen/home_screen.dart';
-import '../views/screens/jobs/jobs_page.dart';
-import '../views/screens/tasks/my_tasks_screen.dart';
-import '../views/screens/education/education_list_screen.dart';
-import '../views/screens/profile/my_profile_screen.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
-
-// Job board screens
-import '../views/screens/tasks/employer/employer_dashboard_screen.dart';
-import '../views/screens/tasks/employer/job_detail_employer_screen.dart';
-import '../views/screens/tasks/employer/job_requests_screen.dart';
-import '../views/screens/tasks/employer/request_detail_screen.dart';
-
 import '../data/models/job_post.dart';
 import '../data/models/application.dart';
-import '../logic/services/auth_service.dart';
 import '../logic/services/role_based_navigation.dart';
-import '../logic/cubits/auth/auth_cubit.dart';
-import '../logic/cubits/auth/auth_state.dart';
 import '../views/screens/profile/edit_student_profile_screen2.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
 import '../views/screens/employer/edit_employer_profile_screen2.dart';
@@ -46,14 +31,6 @@ import '../views/screens/employer/job_post_detail_screen.dart';
 import '../views/screens/employer/student_requests_screen.dart';
 import '../views/screens/employer/job_applications_screen.dart';
 import '../views/screens/employer/student_request_detail_screen.dart';
-
-// Admin screens
-import '../views/screens/admin/admin_users_screen.dart';
-import '../views/screens/admin/admin_jobs_screen.dart';
-import '../views/screens/admin/admin_reports_screen.dart';
-import '../views/screens/admin/admin_settings_screen.dart';
-
-// Admin screens
 import '../views/screens/admin/admin_users_screen.dart';
 import '../views/screens/admin/admin_jobs_screen.dart';
 import '../views/screens/admin/admin_reports_screen.dart';

@@ -1,61 +1,74 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import '../../../data/repositories/user_repo.dart'; // TODO: Update to new repo structure
+import '../../../data/repositories/user/user_repo_abstract.dart';
 import 'student_profile_state.dart';
 
 class StudentProfileCubit extends Cubit<StudentProfileState> {
-  // TODO: Update to new repo structure
-  // final UserRepository _userRepository;
+  final UserRepository _userRepository;
 
-  StudentProfileCubit() : super(StudentProfileInitial());
+  StudentProfileCubit(this._userRepository) : super(StudentProfileInitial());
 
-  // TODO: Implement with new repository structure
-  // Future<void> loadProfile(int userId) async {
-  //   try {
-  //     emit(StudentProfileLoading());
-  //     final profile = await _userRepository.getStudentProfile(userId);
-  //     emit(StudentProfileLoaded(profile));
-  //   } catch (e) {
-  //     emit(StudentProfileError(e.toString()));
-  //   }
-  // }
+  /// Load student profile by user ID
+  Future<void> loadProfile(String userId) async {
+    try {
+      emit(StudentProfileLoading());
+      final profile = await _userRepository.getStudentProfile(userId);
+      emit(StudentProfileLoaded(profile));
+    } catch (e) {
+      emit(StudentProfileError(e.toString()));
+    }
+  }
 
-  // TODO: Implement with new repository structure
-  // Future<void> updateProfile({
-  //   required int userId,
-  //   String? bio,
-  //   String? phone,
-  //   String? university,
-  //   String? major,
-  //   int? graduationYear,
-  //   List<String>? skills,
-  //   List<Map<String, dynamic>>? education,
-  //   List<Map<String, dynamic>>? experience,
-  //   String? resumeUrl,
-  //   String? profilePictureUrl,
-  // }) async {
-  //   try {
-  //     emit(StudentProfileLoading());
-  //     final updatedProfile = await _userRepository.updateStudentProfile(
-  //       userId: userId,
-  //       bio: bio,
-  //       phone: phone,
-  //       university: university,
-  //       major: major,
-  //       graduationYear: graduationYear,
-  //       skills: skills,
-  //       education: education,
-  //       experience: experience,
-  //       resumeUrl: resumeUrl,
-  //       profilePictureUrl: profilePictureUrl,
-  //     );
-  //     emit(StudentProfileUpdated(updatedProfile));
-  //   } catch (e) {
-  //     emit(StudentProfileError(e.toString()));
-  //   }
-  // }
+  /// Update student profile with provided fields
+  Future<void> updateProfile({
+    required String userId,
+    String? university,
+    String? faculty,
+    String? major,
+    String? yearOfStudy,
+    String? bio,
+    String? cvUrl,
+    List<String>? skills,
+    List<String>? languages,
+    String? availability,
+    String? transportation,
+    String? previousExperience,
+    String? websiteUrl,
+    List<String>? socialMediaLinks,
+    List<String>? portfolio,
+    bool? isPhonePublic,
+    String? profileVisibility,
+  }) async {
+    try {
+      emit(StudentProfileLoading());
+      final updatedProfile = await _userRepository.updateStudentProfile(
+        userId: userId,
+        university: university,
+        faculty: faculty,
+        major: major,
+        yearOfStudy: yearOfStudy,
+        bio: bio,
+        cvUrl: cvUrl,
+        skills: skills,
+        languages: languages,
+        availability: availability,
+        transportation: transportation,
+        previousExperience: previousExperience,
+        websiteUrl: websiteUrl,
+        socialMediaLinks: socialMediaLinks,
+        portfolio: portfolio,
+        isPhonePublic: isPhonePublic,
+        profileVisibility: profileVisibility,
+      );
+      emit(StudentProfileUpdated(updatedProfile));
+      // Also emit loaded state to show updated profile
+      emit(StudentProfileLoaded(updatedProfile));
+    } catch (e) {
+      emit(StudentProfileError(e.toString()));
+    }
+  }
 
-  // TODO: Implement with new repository structure
-  // Future<void> refreshProfile(int userId) async {
-  //   await loadProfile(userId);
-  // }
+  /// Refresh profile (reload from repository)
+  Future<void> refreshProfile(String userId) async {
+    await loadProfile(userId);
+  }
 }
