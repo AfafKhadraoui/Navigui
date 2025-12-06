@@ -23,6 +23,51 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "commonNext": MessageLookupByLibrary.simpleMessage("التالي"),
+    "learnAllEmployerArticles": MessageLookupByLibrary.simpleMessage(
+      "جميع مقالات أصحاب العمل",
+    ),
+    "learnAllStudentArticles": MessageLookupByLibrary.simpleMessage(
+      "جميع مقالات الطلاب",
+    ),
+    "learnCompleteGuide": MessageLookupByLibrary.simpleMessage("دليل شامل"),
+    "learnErrorLoadingArticles": MessageLookupByLibrary.simpleMessage(
+      "خطأ في تحميل المقالات",
+    ),
+    "learnFailedToLoadArticles": MessageLookupByLibrary.simpleMessage(
+      "فشل تحميل المقالات",
+    ),
+    "learnFirstTimeDescription": MessageLookupByLibrary.simpleMessage(
+      "كل ما تحتاجه لكتابة طلبات ناجحة والتفوق في المقابلات",
+    ),
+    "learnFirstTimeJobSeekers": MessageLookupByLibrary.simpleMessage(
+      "الباحثون عن عمل لأول مرة",
+    ),
+    "learnForEmployers": MessageLookupByLibrary.simpleMessage("لأصحاب العمل"),
+    "learnForStudents": MessageLookupByLibrary.simpleMessage("للطلاب"),
+    "learnMinRead": MessageLookupByLibrary.simpleMessage("دقيقة قراءة"),
+    "learnNewToJobHunting": MessageLookupByLibrary.simpleMessage(
+      "جديد في البحث عن عمل",
+    ),
+    "learnNoEmployerArticles": MessageLookupByLibrary.simpleMessage(
+      "لا توجد مقالات لأصحاب العمل",
+    ),
+    "learnNoStudentArticles": MessageLookupByLibrary.simpleMessage(
+      "لا توجد مقالات للطلاب",
+    ),
+    "learnPageTitle": MessageLookupByLibrary.simpleMessage("التعلم والنمو"),
+    "learnReadNow": MessageLookupByLibrary.simpleMessage("اقرأ الآن"),
+    "learnViewAll": MessageLookupByLibrary.simpleMessage("عرض الكل"),
+    "navApplications": MessageLookupByLibrary.simpleMessage("الطلبات"),
+    "navBrowse": MessageLookupByLibrary.simpleMessage("تصفح"),
+    "navDashboard": MessageLookupByLibrary.simpleMessage("لوحة التحكم"),
+    "navHome": MessageLookupByLibrary.simpleMessage("الرئيسية"),
+    "navJobs": MessageLookupByLibrary.simpleMessage("الوظائف"),
+    "navLearn": MessageLookupByLibrary.simpleMessage("تعلّم"),
+    "navMyJobs": MessageLookupByLibrary.simpleMessage("وظائفي"),
+    "navMyTasks": MessageLookupByLibrary.simpleMessage("مهامي"),
+    "navProfile": MessageLookupByLibrary.simpleMessage("الملف الشخصي"),
+    "navSettings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
+    "navUsers": MessageLookupByLibrary.simpleMessage("المستخدمين"),
     "onboardingAccessStudentsTitle": MessageLookupByLibrary.simpleMessage(
       "تواصل مع طلاب\nطموحين",
     ),

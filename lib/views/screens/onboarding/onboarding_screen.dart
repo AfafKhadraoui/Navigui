@@ -160,17 +160,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   /// Build language selection page (first page)
   Widget _buildLanguageSelectionPage() {
-    return LanguageSelectionPage(
-      onLanguageSelected: (languageCode) {
-        // Move to next page (first onboarding page) after selection
-        if (mounted) {
-          _pageController.animateToPage(
-            1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-      },
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: LanguageSelectionPage(
+        onLanguageSelected: (languageCode) {
+          // Move to next page (first onboarding page) after selection
+          if (mounted) {
+            _pageController.animateToPage(
+              1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
     );
   }
 

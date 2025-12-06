@@ -82,87 +82,90 @@ class _EducationCardState extends State<EducationCard> {
               left: 14,
               top: 15,
               right: 70,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 16,
-                      fontFamily: 'Aclonica',
-                      height: 1.1,
-                      letterSpacing: -0.5,
-                    ),
-                    maxLines: widget.description != null ? 2 : 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (widget.description != null) ...[
-                    const SizedBox(height: 6),
+              child: Directionality(
+                textDirection: TextDirection.ltr,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      widget.description!,
+                      widget.title,
                       style: TextStyle(
-                        color: AppColors.black.withOpacity(0.7),
-                        fontSize: 11,
-                        fontFamily: 'Acme',
-                        height: 1.2,
-                        letterSpacing: -0.3,
+                        color: AppColors.black,
+                        fontSize: 16,
+                        fontFamily: 'Aclonica',
+                        height: 1.1,
+                        letterSpacing: -0.5,
                       ),
-                      maxLines: 2,
+                      maxLines: widget.description != null ? 2 : 3,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      if (widget.author != null) ...[
-                        Icon(
-                          Icons.person_outline,
-                          size: 11,
-                          color: AppColors.black.withOpacity(0.6),
+                    if (widget.description != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.description!,
+                        style: TextStyle(
+                          color: AppColors.black.withOpacity(0.7),
+                          fontSize: 11,
+                          fontFamily: 'Acme',
+                          height: 1.2,
+                          letterSpacing: -0.3,
                         ),
-                        const SizedBox(width: 3),
-                        Text(
-                          widget.author!,
-                          style: TextStyle(
-                            color: AppColors.black.withOpacity(0.6),
-                            fontSize: 10,
-                            fontFamily: 'Acme',
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                      if (widget.publishedDate != null) ...[
-                        Icon(
-                          Icons.access_time,
-                          size: 11,
-                          color: AppColors.black.withOpacity(0.6),
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          widget.publishedDate!,
-                          style: TextStyle(
-                            color: AppColors.black.withOpacity(0.6),
-                            fontSize: 10,
-                            fontFamily: 'Acme',
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                      ] else ...[
-                        Text(
-                          'explore →',
-                          style: TextStyle(
-                            color: AppColors.black,
-                            fontSize: 12,
-                            fontFamily: 'Aclonica',
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                      ],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        if (widget.author != null) ...[
+                          Icon(
+                            Icons.person_outline,
+                            size: 11,
+                            color: AppColors.black.withOpacity(0.6),
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            widget.author!,
+                            style: TextStyle(
+                              color: AppColors.black.withOpacity(0.6),
+                              fontSize: 10,
+                              fontFamily: 'Acme',
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        if (widget.publishedDate != null) ...[
+                          Icon(
+                            Icons.access_time,
+                            size: 11,
+                            color: AppColors.black.withOpacity(0.6),
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            widget.publishedDate!,
+                            style: TextStyle(
+                              color: AppColors.black.withOpacity(0.6),
+                              fontSize: 10,
+                              fontFamily: 'Acme',
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                        ] else ...[
+                          Text(
+                            'explore →',
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 12,
+                              fontFamily: 'Aclonica',
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
 

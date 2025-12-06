@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../generated/s.dart';
 import '../../../logic/cubits/education/education_cubit.dart';
 import '../../../logic/cubits/education/education_state.dart';
 import '../../../core/dependency_injection.dart';
@@ -9,6 +11,29 @@ import '../../widgets/cards/education_card.dart';
 
 class AllEmployerArticlesScreen extends StatelessWidget {
   const AllEmployerArticlesScreen({super.key});
+
+  TextStyle _getUITextStyle(
+    BuildContext context, {
+    required double fontSize,
+    Color color = Colors.white,
+    FontWeight? fontWeight,
+  }) {
+    final locale = Localizations.localeOf(context).languageCode;
+    if (locale == 'ar') {
+      return GoogleFonts.cairo(
+        fontSize: fontSize,
+        color: color,
+        fontWeight: fontWeight ?? FontWeight.w700,
+      );
+    }
+    return TextStyle(
+      fontSize: fontSize,
+      color: color,
+      fontFamily: 'Aclonica',
+      fontWeight: fontWeight ?? FontWeight.w400,
+      letterSpacing: -0.5,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +68,7 @@ class AllEmployerArticlesScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Failed to load articles',
+                              S.of(context)!.learnFailedToLoadArticles,
                               style: TextStyle(
                                 color: Colors.red.shade300,
                                 fontSize: 16,
@@ -62,7 +87,7 @@ class AllEmployerArticlesScreen extends StatelessWidget {
                       if (employerArticles.isEmpty) {
                         return Center(
                           child: Text(
-                            'No employer articles available',
+                            S.of(context)!.learnNoEmployerArticles,
                             style: TextStyle(
                               color: AppColors.white.withOpacity(0.6),
                               fontSize: 16,
@@ -110,14 +135,9 @@ class AllEmployerArticlesScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          const Text(
-            'All Employer Articles',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontFamily: 'Aclonica',
-              letterSpacing: -0.5,
-            ),
+          Text(
+            S.of(context)!.learnAllEmployerArticles,
+            style: _getUITextStyle(context, fontSize: 24, color: Colors.white),
           ),
         ],
       ),

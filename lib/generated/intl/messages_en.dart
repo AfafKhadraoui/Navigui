@@ -72,6 +72,53 @@ class MessageLookup extends MessageLookupByLibrary {
     "commonWelcome": MessageLookupByLibrary.simpleMessage("Welcome"),
     "commonWelcomeBack": MessageLookupByLibrary.simpleMessage("Welcome back!"),
     "commonYes": MessageLookupByLibrary.simpleMessage("Yes"),
+    "learnAllEmployerArticles": MessageLookupByLibrary.simpleMessage(
+      "All Employer Articles",
+    ),
+    "learnAllStudentArticles": MessageLookupByLibrary.simpleMessage(
+      "All Student Articles",
+    ),
+    "learnCompleteGuide": MessageLookupByLibrary.simpleMessage(
+      "complete guide",
+    ),
+    "learnErrorLoadingArticles": MessageLookupByLibrary.simpleMessage(
+      "Error loading articles",
+    ),
+    "learnFailedToLoadArticles": MessageLookupByLibrary.simpleMessage(
+      "Failed to load articles",
+    ),
+    "learnFirstTimeDescription": MessageLookupByLibrary.simpleMessage(
+      "Everything you need to write winning  applications and ace your interviews",
+    ),
+    "learnFirstTimeJobSeekers": MessageLookupByLibrary.simpleMessage(
+      "First-Time Job Seekers",
+    ),
+    "learnForEmployers": MessageLookupByLibrary.simpleMessage("For Employers"),
+    "learnForStudents": MessageLookupByLibrary.simpleMessage("For Students"),
+    "learnMinRead": MessageLookupByLibrary.simpleMessage("min read"),
+    "learnNewToJobHunting": MessageLookupByLibrary.simpleMessage(
+      "New to Job Hunting",
+    ),
+    "learnNoEmployerArticles": MessageLookupByLibrary.simpleMessage(
+      "No employer articles available",
+    ),
+    "learnNoStudentArticles": MessageLookupByLibrary.simpleMessage(
+      "No student articles available",
+    ),
+    "learnPageTitle": MessageLookupByLibrary.simpleMessage("Learn & Grow"),
+    "learnReadNow": MessageLookupByLibrary.simpleMessage("Read Now"),
+    "learnViewAll": MessageLookupByLibrary.simpleMessage("view all"),
+    "navApplications": MessageLookupByLibrary.simpleMessage("Applications"),
+    "navBrowse": MessageLookupByLibrary.simpleMessage("Browse"),
+    "navDashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+    "navHome": MessageLookupByLibrary.simpleMessage("Home"),
+    "navJobs": MessageLookupByLibrary.simpleMessage("Jobs"),
+    "navLearn": MessageLookupByLibrary.simpleMessage("Learn"),
+    "navMyJobs": MessageLookupByLibrary.simpleMessage("My Jobs"),
+    "navMyTasks": MessageLookupByLibrary.simpleMessage("My Tasks"),
+    "navProfile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "navSettings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "navUsers": MessageLookupByLibrary.simpleMessage("Users"),
     "onboardingAccessStudentsTitle": MessageLookupByLibrary.simpleMessage(
       "Access ambitious\nStudents",
     ),

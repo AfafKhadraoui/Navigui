@@ -23,11 +23,62 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "commonNext": MessageLookupByLibrary.simpleMessage("Suivant"),
+    "learnAllEmployerArticles": MessageLookupByLibrary.simpleMessage(
+      "Tous les articles employeurs",
+    ),
+    "learnAllStudentArticles": MessageLookupByLibrary.simpleMessage(
+      "Tous les articles étudiants",
+    ),
+    "learnCompleteGuide": MessageLookupByLibrary.simpleMessage("guide complet"),
+    "learnErrorLoadingArticles": MessageLookupByLibrary.simpleMessage(
+      "Erreur de chargement des articles",
+    ),
+    "learnFailedToLoadArticles": MessageLookupByLibrary.simpleMessage(
+      "Échec du chargement des articles",
+    ),
+    "learnFirstTimeDescription": MessageLookupByLibrary.simpleMessage(
+      "Tout ce dont vous avez besoin pour rédiger des candidatures gagnantes et réussir vos entretiens",
+    ),
+    "learnFirstTimeJobSeekers": MessageLookupByLibrary.simpleMessage(
+      "Chercheurs d\'emploi débutants",
+    ),
+    "learnForEmployers": MessageLookupByLibrary.simpleMessage(
+      "Pour les employeurs",
+    ),
+    "learnForStudents": MessageLookupByLibrary.simpleMessage(
+      "Pour les étudiants",
+    ),
+    "learnMinRead": MessageLookupByLibrary.simpleMessage("min de lecture"),
+    "learnNewToJobHunting": MessageLookupByLibrary.simpleMessage(
+      "Nouveau dans la recherche d\'emploi",
+    ),
+    "learnNoEmployerArticles": MessageLookupByLibrary.simpleMessage(
+      "Aucun article employeur disponible",
+    ),
+    "learnNoStudentArticles": MessageLookupByLibrary.simpleMessage(
+      "Aucun article étudiant disponible",
+    ),
+    "learnPageTitle": MessageLookupByLibrary.simpleMessage(
+      "Apprendre & Grandir",
+    ),
+    "learnReadNow": MessageLookupByLibrary.simpleMessage("Lire maintenant"),
+    "learnViewAll": MessageLookupByLibrary.simpleMessage("voir tout"),
+    "navApplications": MessageLookupByLibrary.simpleMessage("Candidatures"),
+    "navBrowse": MessageLookupByLibrary.simpleMessage("Parcourir"),
+    "navDashboard": MessageLookupByLibrary.simpleMessage("Tableau de bord"),
+    "navHome": MessageLookupByLibrary.simpleMessage("Accueil"),
+    "navJobs": MessageLookupByLibrary.simpleMessage("Emplois"),
+    "navLearn": MessageLookupByLibrary.simpleMessage("Apprendre"),
+    "navMyJobs": MessageLookupByLibrary.simpleMessage("Mes emplois"),
+    "navMyTasks": MessageLookupByLibrary.simpleMessage("Mes tâches"),
+    "navProfile": MessageLookupByLibrary.simpleMessage("Profil"),
+    "navSettings": MessageLookupByLibrary.simpleMessage("Paramètres"),
+    "navUsers": MessageLookupByLibrary.simpleMessage("Utilisateurs"),
     "onboardingAccessStudentsTitle": MessageLookupByLibrary.simpleMessage(
       "Accédez à des\nétudiants ambitieux",
     ),
     "onboardingFindWorkTitle": MessageLookupByLibrary.simpleMessage(
-      "Trouvez un travail qui\ncorrespond à votre emploi\ndu temps",
+      "Trouvez un travail\nqui correspond à\nvotre emploi du temps",
     ),
     "onboardingReadyTitle": MessageLookupByLibrary.simpleMessage(
       "Prêt à commencer\nà gagner et embaucher?",

@@ -164,4 +164,86 @@ class SAr extends S {
 
   @override
   String get commonNotAvailable => 'N/A';
+
+  @override
+  String get learnPageTitle => 'التعلم والنمو';
+
+  @override
+  String get learnNewToJobHunting => 'جديد في البحث عن عمل';
+
+  @override
+  String get learnForStudents => 'للطلاب';
+
+  @override
+  String get learnForEmployers => 'لأصحاب العمل';
+
+  @override
+  String get learnViewAll => 'عرض الكل';
+
+  @override
+  String get learnCompleteGuide => 'دليل شامل';
+
+  @override
+  String get learnReadNow => 'اقرأ الآن';
+
+  @override
+  String get learnMinRead => 'دقيقة قراءة';
+
+  @override
+  String get learnErrorLoadingArticles => 'خطأ في تحميل المقالات';
+
+  @override
+  String get learnFailedToLoadArticles => 'فشل تحميل المقالات';
+
+  @override
+  String get learnNoStudentArticles => 'لا توجد مقالات للطلاب';
+
+  @override
+  String get learnNoEmployerArticles => 'لا توجد مقالات لأصحاب العمل';
+
+  @override
+  String get learnAllStudentArticles => 'جميع مقالات الطلاب';
+
+  @override
+  String get learnAllEmployerArticles => 'جميع مقالات أصحاب العمل';
+
+  @override
+  String get learnFirstTimeJobSeekers => 'الباحثون عن عمل لأول مرة';
+
+  @override
+  String get learnFirstTimeDescription =>
+      'كل ما تحتاجه لكتابة طلبات ناجحة والتفوق في المقابلات';
+
+  @override
+  String get navHome => 'الرئيسية';
+
+  @override
+  String get navBrowse => 'تصفح';
+
+  @override
+  String get navMyTasks => 'مهامي';
+
+  @override
+  String get navLearn => 'تعلّم';
+
+  @override
+  String get navProfile => 'الملف الشخصي';
+
+  @override
+  String get navMyJobs => 'وظائفي';
+
+  @override
+  String get navApplications => 'الطلبات';
+
+  @override
+  String get navDashboard => 'لوحة التحكم';
+
+  @override
+  String get navUsers => 'المستخدمين';
+
+  @override
+  String get navJobs => 'الوظائف';
+
+  @override
+  String get navSettings => 'الإعدادات';
 }
