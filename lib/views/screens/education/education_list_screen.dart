@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 import 'package:navigui/views/widgets/cards/education_card.dart';
+import 'package:navigui/generated/s.dart';
 import '../../../logic/cubits/education/education_cubit.dart';
 import '../../../logic/cubits/education/education_state.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
@@ -16,6 +18,29 @@ import '../../../data/models/education_article_model.dart';
 /// How to write applications, resume building, interview skills
 class EducationListScreen extends StatelessWidget {
   const EducationListScreen({super.key});
+
+  TextStyle _getUITextStyle(
+    BuildContext context, {
+    required double fontSize,
+    Color color = Colors.white,
+    FontWeight? fontWeight,
+  }) {
+    final locale = Localizations.localeOf(context).languageCode;
+    if (locale == 'ar') {
+      return GoogleFonts.cairo(
+        fontSize: fontSize,
+        color: color,
+        fontWeight: fontWeight ?? FontWeight.w700,
+      );
+    }
+    return TextStyle(
+      fontSize: fontSize,
+      color: color,
+      fontFamily: 'Aclonica',
+      fontWeight: fontWeight ?? FontWeight.w400,
+      letterSpacing: -0.5,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +78,7 @@ class EducationListScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Error loading articles',
+                              S.of(context)!.learnErrorLoadingArticles,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -90,14 +115,10 @@ class EducationListScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: Row(
                               children: [
-                                const Text(
-                                  'New to Job Hunting',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontFamily: 'Aclonica',
-                                    letterSpacing: -0.5,
-                                  ),
+                                Text(
+                                  S.of(context)!.learnNewToJobHunting,
+                                  style: _getUITextStyle(context,
+                                      fontSize: 20, color: Colors.white),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
@@ -123,21 +144,17 @@ class EducationListScreen extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'For Students',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontFamily: 'Aclonica',
-                                    letterSpacing: -0.5,
-                                  ),
+                                Text(
+                                  S.of(context)!.learnForStudents,
+                                  style: _getUITextStyle(context,
+                                      fontSize: 20, color: Colors.white),
                                 ),
                                 GestureDetector(
                                   onTap: () {
                                     context.go('/learn/all-student-articles');
                                   },
-                                  child: const Text(
-                                    'view all',
+                                  child: Text(
+                                    S.of(context)!.learnViewAll,
                                     style: TextStyle(
                                       color: AppColors.electricLime,
                                       fontSize: 14,
@@ -162,21 +179,17 @@ class EducationListScreen extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'For Employers',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontFamily: 'Aclonica',
-                                    letterSpacing: -0.5,
-                                  ),
+                                Text(
+                                  S.of(context)!.learnForEmployers,
+                                  style: _getUITextStyle(context,
+                                      fontSize: 20, color: Colors.white),
                                 ),
                                 GestureDetector(
                                   onTap: () {
                                     context.go('/learn/all-employer-articles');
                                   },
-                                  child: const Text(
-                                    'view all',
+                                  child: Text(
+                                    S.of(context)!.learnViewAll,
                                     style: TextStyle(
                                       color: AppColors.electricLime,
                                       fontSize: 14,
@@ -227,13 +240,9 @@ class EducationListScreen extends StatelessWidget {
           // Title
           Expanded(
             child: Text(
-              'Learn & Grow',
-              style: TextStyle(
-                color: AppColors.white,
-                fontSize: 24,
-                fontFamily: 'Aclonica',
-                letterSpacing: -0.5,
-              ),
+              S.of(context)!.learnPageTitle,
+              style: _getUITextStyle(context,
+                  fontSize: 24, color: AppColors.white),
             ),
           ),
         ],
@@ -262,9 +271,10 @@ class EducationListScreen extends StatelessWidget {
       ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
 
     final featuredArticle = userArticles.isNotEmpty ? userArticles.first : null;
-    final title = featuredArticle?.title ?? 'First-Time Job Seekers';
-    final description = featuredArticle?.content ??
-        'Everything you need to write winning  applications and ace your interviews';
+    final title =
+        featuredArticle?.title ?? S.of(context)!.learnFirstTimeJobSeekers;
+    final description =
+        featuredArticle?.content ?? S.of(context)!.learnFirstTimeDescription;
     final readTime = featuredArticle?.readTime ?? 15;
     final articleId = featuredArticle?.id ?? 'first-time-job-seekers';
 
@@ -336,7 +346,7 @@ class EducationListScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'complete guide',
+                      S.of(context)!.learnCompleteGuide,
                       style: TextStyle(
                         color: AppColors.black,
                         fontSize: 9,
@@ -383,7 +393,7 @@ class EducationListScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      'Read Now',
+                      S.of(context)!.learnReadNow,
                       style: TextStyle(
                         color: AppColors.black,
                         fontSize: 12,

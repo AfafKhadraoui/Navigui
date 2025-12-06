@@ -398,6 +398,211 @@ class S {
   String get commonNotAvailable {
     return Intl.message('N/A', name: 'commonNotAvailable', desc: '', args: []);
   }
+
+  /// `Learn & Grow`
+  String get learnPageTitle {
+    return Intl.message(
+      'Learn & Grow',
+      name: 'learnPageTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New to Job Hunting`
+  String get learnNewToJobHunting {
+    return Intl.message(
+      'New to Job Hunting',
+      name: 'learnNewToJobHunting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `For Students`
+  String get learnForStudents {
+    return Intl.message(
+      'For Students',
+      name: 'learnForStudents',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `For Employers`
+  String get learnForEmployers {
+    return Intl.message(
+      'For Employers',
+      name: 'learnForEmployers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `view all`
+  String get learnViewAll {
+    return Intl.message('view all', name: 'learnViewAll', desc: '', args: []);
+  }
+
+  /// `complete guide`
+  String get learnCompleteGuide {
+    return Intl.message(
+      'complete guide',
+      name: 'learnCompleteGuide',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Read Now`
+  String get learnReadNow {
+    return Intl.message('Read Now', name: 'learnReadNow', desc: '', args: []);
+  }
+
+  /// `min read`
+  String get learnMinRead {
+    return Intl.message('min read', name: 'learnMinRead', desc: '', args: []);
+  }
+
+  /// `Error loading articles`
+  String get learnErrorLoadingArticles {
+    return Intl.message(
+      'Error loading articles',
+      name: 'learnErrorLoadingArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load articles`
+  String get learnFailedToLoadArticles {
+    return Intl.message(
+      'Failed to load articles',
+      name: 'learnFailedToLoadArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No student articles available`
+  String get learnNoStudentArticles {
+    return Intl.message(
+      'No student articles available',
+      name: 'learnNoStudentArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No employer articles available`
+  String get learnNoEmployerArticles {
+    return Intl.message(
+      'No employer articles available',
+      name: 'learnNoEmployerArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Student Articles`
+  String get learnAllStudentArticles {
+    return Intl.message(
+      'All Student Articles',
+      name: 'learnAllStudentArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Employer Articles`
+  String get learnAllEmployerArticles {
+    return Intl.message(
+      'All Employer Articles',
+      name: 'learnAllEmployerArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `First-Time Job Seekers`
+  String get learnFirstTimeJobSeekers {
+    return Intl.message(
+      'First-Time Job Seekers',
+      name: 'learnFirstTimeJobSeekers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Everything you need to write winning  applications and ace your interviews`
+  String get learnFirstTimeDescription {
+    return Intl.message(
+      'Everything you need to write winning  applications and ace your interviews',
+      name: 'learnFirstTimeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Home`
+  String get navHome {
+    return Intl.message('Home', name: 'navHome', desc: '', args: []);
+  }
+
+  /// `Browse`
+  String get navBrowse {
+    return Intl.message('Browse', name: 'navBrowse', desc: '', args: []);
+  }
+
+  /// `My Tasks`
+  String get navMyTasks {
+    return Intl.message('My Tasks', name: 'navMyTasks', desc: '', args: []);
+  }
+
+  /// `Learn`
+  String get navLearn {
+    return Intl.message('Learn', name: 'navLearn', desc: '', args: []);
+  }
+
+  /// `Profile`
+  String get navProfile {
+    return Intl.message('Profile', name: 'navProfile', desc: '', args: []);
+  }
+
+  /// `My Jobs`
+  String get navMyJobs {
+    return Intl.message('My Jobs', name: 'navMyJobs', desc: '', args: []);
+  }
+
+  /// `Applications`
+  String get navApplications {
+    return Intl.message(
+      'Applications',
+      name: 'navApplications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get navDashboard {
+    return Intl.message('Dashboard', name: 'navDashboard', desc: '', args: []);
+  }
+
+  /// `Users`
+  String get navUsers {
+    return Intl.message('Users', name: 'navUsers', desc: '', args: []);
+  }
+
+  /// `Jobs`
+  String get navJobs {
+    return Intl.message('Jobs', name: 'navJobs', desc: '', args: []);
+  }
+
+  /// `Settings`
+  String get navSettings {
+    return Intl.message('Settings', name: 'navSettings', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

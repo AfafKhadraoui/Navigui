@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../generated/s.dart';
 
 /// Bottom Navigation Bar
 /// 5 tabs: Home, Browse Jobs, My Tasks, Learn, Profile
@@ -63,55 +64,58 @@ class BottomNavBar extends StatelessWidget {
     final List<BottomNavigationBarItem> navItems;
     if (isAdmin) {
       navItems = [
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.dashboard_outlined),
           activeIcon: Icon(Icons.dashboard),
-          label: 'Dashboard',
+          label: S.of(context)!.navDashboard,
         ),
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.people_outline),
           activeIcon: Icon(Icons.people),
-          label: 'Users',
+          label: S.of(context)!.navUsers,
         ),
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.work_outline),
           activeIcon: Icon(Icons.work),
-          label: 'Jobs',
+          label: S.of(context)!.navJobs,
         ),
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.settings_outlined),
           activeIcon: Icon(Icons.settings),
-          label: 'Settings',
+          label: S.of(context)!.navSettings,
         ),
       ];
     } else {
       // Student/Employer have 5 tabs
       navItems = [
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
           activeIcon: Icon(Icons.home),
-          label: 'Home',
+          label: S.of(context)!.navHome,
         ),
         BottomNavigationBarItem(
           icon: Icon(isEmployer ? Icons.business_outlined : Icons.work_outline),
           activeIcon: Icon(isEmployer ? Icons.business : Icons.work),
-          label: isEmployer ? 'My Jobs' : 'Browse',
+          label:
+              isEmployer ? S.of(context)!.navMyJobs : S.of(context)!.navBrowse,
         ),
         BottomNavigationBarItem(
           icon: Icon(
               isEmployer ? Icons.assignment_outlined : Icons.task_alt_outlined),
           activeIcon: Icon(isEmployer ? Icons.assignment : Icons.task_alt),
-          label: isEmployer ? 'Applications' : 'My Tasks',
+          label: isEmployer
+              ? S.of(context)!.navApplications
+              : S.of(context)!.navMyTasks,
         ),
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.school_outlined),
           activeIcon: Icon(Icons.school),
-          label: 'Learn',
+          label: S.of(context)!.navLearn,
         ),
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),
           activeIcon: Icon(Icons.person),
-          label: 'Profile',
+          label: S.of(context)!.navProfile,
         ),
       ];
     }

@@ -166,4 +166,86 @@ class SFr extends S {
 
   @override
   String get commonNotAvailable => 'N/A';
+
+  @override
+  String get learnPageTitle => 'Apprendre & Grandir';
+
+  @override
+  String get learnNewToJobHunting => 'Nouveau dans la recherche d\'emploi';
+
+  @override
+  String get learnForStudents => 'Pour les étudiants';
+
+  @override
+  String get learnForEmployers => 'Pour les employeurs';
+
+  @override
+  String get learnViewAll => 'voir tout';
+
+  @override
+  String get learnCompleteGuide => 'guide complet';
+
+  @override
+  String get learnReadNow => 'Lire maintenant';
+
+  @override
+  String get learnMinRead => 'min de lecture';
+
+  @override
+  String get learnErrorLoadingArticles => 'Erreur de chargement des articles';
+
+  @override
+  String get learnFailedToLoadArticles => 'Échec du chargement des articles';
+
+  @override
+  String get learnNoStudentArticles => 'Aucun article étudiant disponible';
+
+  @override
+  String get learnNoEmployerArticles => 'Aucun article employeur disponible';
+
+  @override
+  String get learnAllStudentArticles => 'Tous les articles étudiants';
+
+  @override
+  String get learnAllEmployerArticles => 'Tous les articles employeurs';
+
+  @override
+  String get learnFirstTimeJobSeekers => 'Chercheurs d\'emploi débutants';
+
+  @override
+  String get learnFirstTimeDescription =>
+      'Tout ce dont vous avez besoin pour rédiger des candidatures gagnantes et réussir vos entretiens';
+
+  @override
+  String get navHome => 'Accueil';
+
+  @override
+  String get navBrowse => 'Parcourir';
+
+  @override
+  String get navMyTasks => 'Mes tâches';
+
+  @override
+  String get navLearn => 'Apprendre';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
+  String get navMyJobs => 'Mes emplois';
+
+  @override
+  String get navApplications => 'Candidatures';
+
+  @override
+  String get navDashboard => 'Tableau de bord';
+
+  @override
+  String get navUsers => 'Utilisateurs';
+
+  @override
+  String get navJobs => 'Emplois';
+
+  @override
+  String get navSettings => 'Paramètres';
 }
