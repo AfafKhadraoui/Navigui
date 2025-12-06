@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'commons/themes/style_simple/theme.dart';
 import 'routes/app_router.dart';
 import 'core/dependency_injection.dart';
 import 'data/databases/db_helper.dart';
 import 'logic/cubits/auth/auth_cubit.dart';
+import 'commons/language_provider.dart';
+import 'generated/s.dart';
 // import 'logic/cubits/job/job_cubit.dart';
 // import 'logic/cubits/application/application_cubit.dart';
 // import 'logic/cubits/notification/notification_cubit.dart';
@@ -20,7 +24,13 @@ void main() async {
   // Initialize dependency injection
   await setupDependencies();
 
-  runApp(const NaviguiApp());
+  runApp(
+    // Wrap with ChangeNotifierProvider for language management
+    ChangeNotifierProvider(
+      create: (_) => LanguageProvider(),
+      child: const NaviguiApp(),
+    ),
+  );
 }
 
 class NaviguiApp extends StatelessWidget {
@@ -34,11 +44,28 @@ class NaviguiApp extends StatelessWidget {
           create: (_) => getIt<AuthCubit>(),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'Navigui',
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        routerConfig: AppRouter.router,
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, child) {
+          return MaterialApp.router(
+            title: 'Navigui',
+            theme: AppTheme.lightTheme,
+            debugShowCheckedModeBanner: false,
+            routerConfig: AppRouter.router,
+            // Localization setup
+            locale: languageProvider.currentLocale,
+            localizationsDelegates: const [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'), // English
+              Locale('ar'), // Arabic
+              Locale('fr'), // French
+            ],
+          );
+        },
       ),
     );
     // TODO: Re-enable other cubits when implementing new repository structure

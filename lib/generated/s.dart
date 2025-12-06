@@ -279,6 +279,42 @@ abstract class S {
   /// **'Information'**
   String get commonInfo;
 
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome TO\nNavigui'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingFindWorkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Work That Fits\nYour Schedule'**
+  String get onboardingFindWorkTitle;
+
+  /// No description provided for @onboardingAccessStudentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ambitious\nStudents'**
+  String get onboardingAccessStudentsTitle;
+
+  /// No description provided for @onboardingReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready To Start\nEarning And Hiring?'**
+  String get onboardingReadyTitle;
+
+  /// No description provided for @onboardingSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get onboardingSignIn;
+
+  /// No description provided for @onboardingSignUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get onboardingSignUp;
+
   /// No description provided for @commonNoData.
   ///
   /// In en, this message translates to:

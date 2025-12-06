@@ -48,8 +48,23 @@ class LanguageProvider extends ChangeNotifier {
 
   /// Get all supported languages
   List<Map<String, String>> get supportedLanguages => [
-        {'code': 'en', 'name': 'English', 'flag': '🇬🇧'},
-        {'code': 'ar', 'name': 'العربية', 'flag': '🇩🇿'},
-        {'code': 'fr', 'name': 'Français', 'flag': '🇫🇷'},
+        {
+          'code': 'en',
+          'name': 'English',
+          'nativeName': 'English',
+          'flag': '🇬🇧'
+        },
+        {
+          'code': 'ar',
+          'name': 'Arabic',
+          'nativeName': 'العربية',
+          'flag': '🇩🇿'
+        },
+        {
+          'code': 'fr',
+          'name': 'French',
+          'nativeName': 'Français',
+          'flag': '🇫🇷'
+        },
       ];
 }

@@ -1,4 +1,13 @@
 {
   "@@locale": "ar",
-  "@@last_modified": "2025-12-04"
+  "@@last_modified": "2025-12-04",
+  
+  "commonNext": "التالي",
+  
+  "onboardingWelcomeTitle": "مرحباً بك في\nNavigui",
+  "onboardingFindWorkTitle": "ابحث عن عمل يناسب\nجدولك",
+  "onboardingAccessStudentsTitle": "تواصل مع طلاب\nطموحين",
+  "onboardingReadyTitle": "هل أنت مستعد\nللبدء؟",
+  "onboardingSignIn": "تسجيل الدخول",
+  "onboardingSignUp": "إنشاء حساب"
 }

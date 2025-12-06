@@ -100,6 +100,24 @@ class SEn extends S {
   String get commonInfo => 'Information';
 
   @override
+  String get onboardingWelcomeTitle => 'Welcome TO\nNavigui';
+
+  @override
+  String get onboardingFindWorkTitle => 'Find Work That Fits\nYour Schedule';
+
+  @override
+  String get onboardingAccessStudentsTitle => 'Access ambitious\nStudents';
+
+  @override
+  String get onboardingReadyTitle => 'Ready To Start\nEarning And Hiring?';
+
+  @override
+  String get onboardingSignIn => 'Sign in';
+
+  @override
+  String get onboardingSignUp => 'Sign up';
+
+  @override
   String get commonNoData => 'No data available';
 
   @override
