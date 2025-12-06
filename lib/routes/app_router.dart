@@ -19,6 +19,8 @@ import '../views/screens/homescreen/home_screen.dart';
 import '../views/screens/jobs/jobs_page.dart';
 import '../views/screens/tasks/my_tasks_screen.dart';
 import '../views/screens/education/education_list_screen.dart';
+import '../views/screens/education/all_student_articles_screen.dart';
+import '../views/screens/education/all_employer_articles_screen.dart';
 import '../views/screens/profile/my_profile_screen.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
@@ -337,6 +339,20 @@ class AppRouter {
                   final articleId = state.pathParameters['id'] ?? '';
                   return EducationArticleScreen(articleId: articleId);
                 },
+              ),
+              GoRoute(
+                path: 'all-student-articles',
+                name: 'all-student-articles',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: const AllStudentArticlesScreen(),
+                ),
+              ),
+              GoRoute(
+                path: 'all-employer-articles',
+                name: 'all-employer-articles',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: const AllEmployerArticlesScreen(),
+                ),
               ),
             ],
           ),

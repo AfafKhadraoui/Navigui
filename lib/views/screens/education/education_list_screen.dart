@@ -121,6 +121,7 @@ class EducationListScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   'For Students',
@@ -131,18 +132,27 @@ class EducationListScreen extends StatelessWidget {
                                     letterSpacing: -0.5,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Container(
-                                    height: 1,
-                                    color: Colors.white.withOpacity(0.3),
+                                GestureDetector(
+                                  onTap: () {
+                                    context.go('/learn/all-student-articles');
+                                  },
+                                  child: const Text(
+                                    'view all',
+                                    style: TextStyle(
+                                      color: AppColors.electricLime,
+                                      fontSize: 14,
+                                      fontFamily: 'Acme',
+                                      letterSpacing: -0.5,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: AppColors.electricLime,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(height: 15),
-                          _buildStudentCardsGrid(context, articles),
+                          _buildStudentCardsColumn(context, articles),
 
                           const SizedBox(height: 25),
 
@@ -150,6 +160,7 @@ class EducationListScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   'For Employers',
@@ -160,18 +171,27 @@ class EducationListScreen extends StatelessWidget {
                                     letterSpacing: -0.5,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Container(
-                                    height: 1,
-                                    color: Colors.white.withOpacity(0.3),
+                                GestureDetector(
+                                  onTap: () {
+                                    context.go('/learn/all-employer-articles');
+                                  },
+                                  child: const Text(
+                                    'view all',
+                                    style: TextStyle(
+                                      color: AppColors.electricLime,
+                                      fontSize: 14,
+                                      fontFamily: 'Acme',
+                                      letterSpacing: -0.5,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: AppColors.electricLime,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(height: 15),
-                          _buildEmployerCardsGrid(context, articles),
+                          _buildEmployerCardsColumn(context, articles),
 
                           const SizedBox(height: 100),
                         ],
@@ -440,7 +460,7 @@ class EducationListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStudentCardsGrid(
+  Widget _buildStudentCardsColumn(
       BuildContext context, List<EducationArticleModel> articles) {
     // Filter articles for students or use static content
     final studentArticles =
@@ -523,7 +543,7 @@ class EducationListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmployerCardsGrid(
+  Widget _buildEmployerCardsColumn(
       BuildContext context, List<EducationArticleModel> articles) {
     // Filter articles for employers or use static content
     final employerArticles =

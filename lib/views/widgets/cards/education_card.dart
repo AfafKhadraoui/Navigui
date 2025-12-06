@@ -10,6 +10,10 @@ class EducationCard extends StatefulWidget {
   final String? imagePath;
   final bool isLiked;
   final VoidCallback? onTap;
+  final String? description;
+  final String? author;
+  final String? publishedDate;
+  final int? viewsCount;
 
   const EducationCard({
     super.key,
@@ -21,6 +25,10 @@ class EducationCard extends StatefulWidget {
     this.imagePath,
     this.isLiked = false,
     this.onTap,
+    this.description,
+    this.author,
+    this.publishedDate,
+    this.viewsCount,
   });
 
   @override
@@ -86,18 +94,73 @@ class _EducationCardState extends State<EducationCard> {
                       height: 1.1,
                       letterSpacing: -0.5,
                     ),
-                    maxLines: 3,
+                    maxLines: widget.description != null ? 2 : 3,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'explore →',
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 12,
-                      fontFamily: 'Aclonica',
-                      letterSpacing: -0.5,
+                  if (widget.description != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.description!,
+                      style: TextStyle(
+                        color: AppColors.black.withOpacity(0.7),
+                        fontSize: 11,
+                        fontFamily: 'Acme',
+                        height: 1.2,
+                        letterSpacing: -0.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                  ],
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (widget.author != null) ...[
+                        Icon(
+                          Icons.person_outline,
+                          size: 11,
+                          color: AppColors.black.withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          widget.author!,
+                          style: TextStyle(
+                            color: AppColors.black.withOpacity(0.6),
+                            fontSize: 10,
+                            fontFamily: 'Acme',
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      if (widget.publishedDate != null) ...[
+                        Icon(
+                          Icons.access_time,
+                          size: 11,
+                          color: AppColors.black.withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          widget.publishedDate!,
+                          style: TextStyle(
+                            color: AppColors.black.withOpacity(0.6),
+                            fontSize: 10,
+                            fontFamily: 'Acme',
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ] else ...[
+                        Text(
+                          'explore →',
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 12,
+                            fontFamily: 'Aclonica',
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
