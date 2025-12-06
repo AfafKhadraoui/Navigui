@@ -141,8 +141,12 @@ class DatabaseAuthRepository implements AuthRepository {
       // Hash password
       final hashedPassword = _hashPassword(password);
 
-      // Insert new user
-      final userId = await db.insert('users', {
+      // Generate unique user ID (TEXT format to match schema)
+      final userId = '${accountType}-${DateTime.now().millisecondsSinceEpoch}';
+
+      // Insert new user with explicit ID
+      await db.insert('users', {
+        'id': userId, // Explicitly set the TEXT ID
         'email': email,
         'password_hash': hashedPassword,
         'account_type': accountType,
@@ -153,13 +157,14 @@ class DatabaseAuthRepository implements AuthRepository {
         'is_email_verified': 0, // Default false
         'is_active': 1, // Default true
         'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
       });
 
       print('✅ User created with ID: $userId');
 
       // Generate token
       _currentToken = 'db_token_${DateTime.now().millisecondsSinceEpoch}';
-      _currentUserId = userId.toString();
+      _currentUserId = userId;
 
       // Save session to secure storage (encrypted)
       await _secureStorage.saveUserSession(
@@ -175,7 +180,7 @@ class DatabaseAuthRepository implements AuthRepository {
       await _secureStorage.saveUserLocation(location);
 
       return UserModel(
-        id: userId.toString(),
+        id: userId,
         email: email,
         name: name,
         phoneNumber: phoneNumber,

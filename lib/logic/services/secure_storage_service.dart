@@ -262,17 +262,8 @@ class SecureStorageService {
 
   /// Clear all stored data (logout)
   Future<void> clearAll() async {
-    await Future.wait([
-      deleteAuthToken(),
-      deleteUserId(),
-      deleteUserEmail(),
-      deleteUserType(),
-      deleteUserName(),
-      deleteUserPhone(),
-      deleteUserLocation(),
-      deleteRefreshToken(),
-      setAuthenticated(false),
-    ]);
+    // Use deleteAll() for faster logout - single native call instead of multiple
+    await _storage.deleteAll();
   }
 
   /// Clear only tokens (useful for token refresh scenarios)

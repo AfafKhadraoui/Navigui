@@ -8,7 +8,6 @@ import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../logic/services/signup_data_service.dart';
 // using inline buttons here to avoid importing shared custom_button
-import '../../widgets/common/signup_success_dialog.dart';
 
 class Step4StudentSkillsScreen extends StatefulWidget {
   const Step4StudentSkillsScreen({super.key});
@@ -136,24 +135,22 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
       // Clear temporary signup data
       await signupService.clearAllData();
       
-      // Navigate to success screen
+      // Show success message
       if (context.mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (dialogContext) => SignupSuccessDialog(
-            userName: signupData['name'] as String,
-            isStudent: true,
-            onGoToDashboard: () {
-              Navigator.of(dialogContext).pop();
-              context.go(AppRouter.home);
-            },
-            onStartOver: () {
-              Navigator.of(dialogContext).pop();
-              context.go(AppRouter.accountType);
-            },
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Welcome ${signupData['name']}! Your account has been created successfully.'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
         );
+        
+        // Navigate directly to home page
+        // The router will handle authentication state
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (context.mounted) {
+          context.go(AppRouter.home);
+        }
       }
     } catch (e) {
       // Show error
