@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/auth/auth_repo_abstract.dart';
 import '../../../data/models/student_model.dart';
 import '../../../data/models/employer_model.dart';
+import '../../../logic/services/secure_storage_service.dart';
 import 'auth_state.dart';
 
 /// AuthCubit - Manages authentication state using BLoC pattern
@@ -128,7 +129,20 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await _authRepository.getCurrentUser();
       if (user != null) {
-        emit(AuthAuthenticated(user));
+        // Check if session has expired
+        final secureStorage = SecureStorageService();
+        final isExpired = await secureStorage.isSessionExpired();
+        
+        if (isExpired) {
+          // Session expired - logout
+          print('⏰ Session expired during auth check');
+          await logout();
+          emit(AuthUnauthenticated());
+        } else {
+          // Session valid - update activity and authenticate
+          await secureStorage.updateLastActivity();
+          emit(AuthAuthenticated(user));
+        }
       } else {
         emit(AuthUnauthenticated());
       }

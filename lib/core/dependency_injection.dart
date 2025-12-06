@@ -1,10 +1,13 @@
 import 'package:get_it/get_it.dart';
 import '../data/repositories/auth/auth_repo_abstract.dart';
 // import '../data/repositories/auth/auth_repo.dart';  // Real API implementation
-import '../data/repositories/auth/mock_auth_repo.dart';  // Mock implementation
+// import '../data/repositories/auth/mock_auth_repo.dart';  // Mock implementation (REMOVED)
+import '../data/repositories/auth/database_auth_repo.dart';  // Database implementation
 import '../data/repositories/user/user_repo_abstract.dart';
 // import '../data/repositories/user/user_repo_impl.dart';  // Real API implementation
 import '../data/repositories/user/mock_user_repo.dart';  // Mock implementation
+import '../data/repositories/admin/admin_repo_abstract.dart';
+import '../data/repositories/admin/admin_repo_impl.dart';
 import '../logic/cubits/auth/auth_cubit.dart';
 import '../logic/cubits/student_profile/student_profile_cubit.dart';
 import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
@@ -34,9 +37,9 @@ Future<void> setupDependencies() async {
   // They will be created only when first accessed
 
   // Auth Repository
-  // OPTION 1: Use Mock Repository (for testing without backend)
+  // OPTION 1: Use Database Repository (with SQLite)
   getIt.registerLazySingleton<AuthRepository>(
-    () => MockAuthRepository(),
+    () => DatabaseAuthRepository(),
   );
   
   // OPTION 2: Use Real API Repository (when backend is ready)
@@ -50,6 +53,11 @@ Future<void> setupDependencies() async {
   // OPTION 1: Use Mock Repository (for testing without backend)
   getIt.registerLazySingleton<UserRepository>(
     () => MockUserRepository(),
+  );
+
+  // Admin Repository (for admin operations)
+  getIt.registerLazySingleton<AdminRepository>(
+    () => AdminRepositoryImpl(),
   );
 
   // OPTION 2: Use Real API Repository (when backend is ready)
@@ -141,7 +149,7 @@ Future<void> setupDependencies() async {
   );
 
   getIt.registerFactory<AdminCubit>(
-    () => AdminCubit(),
+    () => AdminCubit(getIt<AdminRepository>()),
   );
 }
 

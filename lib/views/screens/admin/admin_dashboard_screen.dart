@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../logic/services/secure_storage_service.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -10,9 +11,27 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  String _adminName = 'Admin';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminName();
+  }
+
+  Future<void> _loadAdminName() async {
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    if (mounted) {
+      setState(() {
+        _adminName = session['name'] ?? 'Admin';
+      });
+    }
+  }
+
   Future<void> _refreshData() async {
-    // Simple refresh - just delay
-    await Future.delayed(const Duration(seconds: 1));
+    await _loadAdminName();
+    await Future.delayed(const Duration(milliseconds: 500));
   }
 
   @override
@@ -94,7 +113,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Welcome, Admin',
+                      'Welcome, $_adminName',
                       style: GoogleFonts.acme(
                           fontSize: 20,
                           color: AppColors.white,

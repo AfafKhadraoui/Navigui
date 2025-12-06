@@ -6,6 +6,7 @@ import 'package:navigui/views/widgets/home/educational_content_section.dart';
 import 'package:navigui/views/widgets/employer/stat_card.dart';
 import 'package:navigui/views/widgets/employer/job_post_card.dart';
 import 'package:navigui/views/widgets/employer/application_card.dart';
+import '../../../logic/services/secure_storage_service.dart';
 
 /// Employer Home Screen
 /// Dashboard showing hiring activity, job posts, and recent applications
@@ -17,6 +18,24 @@ class EmployerHomeScreen extends StatefulWidget {
 }
 
 class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
+  String _userName = 'Business';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    if (mounted) {
+      setState(() {
+        _userName = session['name'] ?? 'Business';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +110,7 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
               ),
               const SizedBox(height: 3),
               Text(
-                'Café Express',
+                _userName,
                 style: TextStyle(
                   color: AppColors.white,
                   fontSize: 22,

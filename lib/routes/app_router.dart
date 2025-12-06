@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../logic/services/secure_storage_service.dart';
 import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/auth/login.dart';
 import '../views/screens/auth/AccountType.dart';
@@ -99,6 +100,59 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: splash,
     restorationScopeId: null,
+    redirect: (context, state) async {
+      final secureStorage = SecureStorageService();
+      final isAuthenticated = await secureStorage.isAuthenticated();
+      final isSessionExpired = await secureStorage.isSessionExpired();
+      
+      final currentPath = state.uri.path;
+      
+      // List of public routes that don't require authentication
+      final publicRoutes = [
+        splash,
+        onboarding,
+        login,
+        accountType,
+        studentStep1,
+        studentStep2,
+        studentStep3,
+        studentStep4,
+        studentStep5,
+        employerStep1,
+        employerStep2,
+        employerStep3,
+        employerStep4,
+      ];
+      
+      final isPublicRoute = publicRoutes.any((route) => currentPath.startsWith(route));
+      
+      // Check for session expiration
+      if (isAuthenticated && isSessionExpired) {
+        // Session expired - clear and redirect to login
+        await secureStorage.clearUserSession();
+        return login;
+      }
+      
+      // If user is authenticated and trying to access public routes, redirect to home
+      if (isAuthenticated && isPublicRoute) {
+        // Update last activity on navigation
+        await secureStorage.updateLastActivity();
+        return home;
+      }
+      
+      // If user is not authenticated and trying to access protected routes, redirect to login
+      if (!isAuthenticated && !isPublicRoute) {
+        return login;
+      }
+      
+      // Update last activity for authenticated users
+      if (isAuthenticated) {
+        await secureStorage.updateLastActivity();
+      }
+      
+      // No redirect needed
+      return null;
+    },
     routes: [
       // PUBLIC ROUTES (No Bottom Bar)
       GoRoute(

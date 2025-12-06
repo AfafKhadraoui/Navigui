@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
-import '../../../logic/services/auth_service.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../logic/services/signup_data_service.dart';
 // using inline buttons here to avoid importing shared custom_button
 import '../../widgets/common/signup_success_dialog.dart';
@@ -119,42 +121,39 @@ class _Step4StudentSkillsScreenState extends State<Step4StudentSkillsScreen> {
         throw Exception('Missing required signup data. Please go back and complete all previous steps.');
       }
       
-      // Create user account with AuthService
-      final authService = AuthService();
-      final success = await authService.signup(
-        email: signupData['email'] as String,
-        password: signupData['password'] as String,
-        name: signupData['name'] as String,
-        phoneNumber: signupData['phoneNumber'] as String,
-        location: signupData['location'] as String,
-        accountType: 'student',
-      );
+      // Create user account with AuthCubit (uses DatabaseAuthRepository)
+      if (context.mounted) {
+        await context.read<AuthCubit>().signup(
+          email: signupData['email'] as String,
+          password: signupData['password'] as String,
+          name: signupData['name'] as String,
+          phoneNumber: signupData['phoneNumber'] as String,
+          location: signupData['location'] as String,
+          accountType: 'student',
+        );
+      }
       
-      if (success) {
-        // Clear temporary signup data
-        await signupService.clearAllData();
-        
-        // Navigate to success screen
-        if (context.mounted) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (dialogContext) => SignupSuccessDialog(
-              userName: signupData['name'] as String,
-              isStudent: true,
-              onGoToDashboard: () {
-                Navigator.of(dialogContext).pop();
-                context.go(AppRouter.home);
-              },
-              onStartOver: () {
-                Navigator.of(dialogContext).pop();
-                context.go(AppRouter.accountType);
-              },
-            ),
-          );
-        }
-      } else {
-        throw Exception('Signup failed. Please try again.');
+      // Clear temporary signup data
+      await signupService.clearAllData();
+      
+      // Navigate to success screen
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => SignupSuccessDialog(
+            userName: signupData['name'] as String,
+            isStudent: true,
+            onGoToDashboard: () {
+              Navigator.of(dialogContext).pop();
+              context.go(AppRouter.home);
+            },
+            onStartOver: () {
+              Navigator.of(dialogContext).pop();
+              context.go(AppRouter.accountType);
+            },
+          ),
+        );
       }
     } catch (e) {
       // Show error

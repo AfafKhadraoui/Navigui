@@ -5,9 +5,33 @@ import 'package:navigui/views/widgets/home/part_time_jobs_section.dart';
 import 'package:navigui/views/widgets/home/quick_tasks_section.dart';
 import 'package:navigui/views/widgets/home/educational_content_section.dart';
 import 'package:navigui/routes/app_router.dart';
+import '../../../logic/services/secure_storage_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _userName = 'User';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    if (mounted) {
+      setState(() {
+        _userName = session['name'] ?? 'User';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +137,7 @@ class HomeScreen extends StatelessWidget {
           // Hello text
           Expanded(
             child: Text(
-              'Hello, Afaf',
+              'Hello, $_userName',
               style: TextStyle(
                 color: AppColors.purple1, // #AB93E0
                 fontSize: 16,

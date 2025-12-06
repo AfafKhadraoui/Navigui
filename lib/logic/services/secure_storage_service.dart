@@ -11,8 +11,15 @@ class SecureStorageService {
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserType = 'user_type'; // student, employer, admin
   static const String _keyUserName = 'user_name';
+  static const String _keyUserPhone = 'user_phone';
+  static const String _keyUserLocation = 'user_location';
   static const String _keyRefreshToken = 'refresh_token';
   static const String _keyIsAuthenticated = 'is_authenticated';
+  static const String _keyLastActivityTime = 'last_activity_time';
+  static const String _keySessionTimeout = 'session_timeout'; // in minutes
+
+  // Session timeout duration (30 minutes by default)
+  static const int defaultSessionTimeoutMinutes = 30;
 
   SecureStorageService({FlutterSecureStorage? storage})
       : _storage = storage ??
@@ -128,6 +135,36 @@ class SecureStorageService {
     await _storage.delete(key: _keyUserName);
   }
 
+  /// Save user phone
+  Future<void> saveUserPhone(String phone) async {
+    await _storage.write(key: _keyUserPhone, value: phone);
+  }
+
+  /// Get user phone
+  Future<String?> getUserPhone() async {
+    return await _storage.read(key: _keyUserPhone);
+  }
+
+  /// Delete user phone
+  Future<void> deleteUserPhone() async {
+    await _storage.delete(key: _keyUserPhone);
+  }
+
+  /// Save user location
+  Future<void> saveUserLocation(String location) async {
+    await _storage.write(key: _keyUserLocation, value: location);
+  }
+
+  /// Get user location
+  Future<String?> getUserLocation() async {
+    return await _storage.read(key: _keyUserLocation);
+  }
+
+  /// Delete user location
+  Future<void> deleteUserLocation() async {
+    await _storage.delete(key: _keyUserLocation);
+  }
+
   // ========== AUTHENTICATION STATUS ==========
 
   /// Check if user is authenticated
@@ -142,6 +179,48 @@ class SecureStorageService {
       key: _keyIsAuthenticated,
       value: isAuth ? 'true' : 'false',
     );
+  }
+
+  // ========== SESSION TIMEOUT METHODS ==========
+
+  /// Update last activity time (call this on user interaction)
+  Future<void> updateLastActivity() async {
+    final now = DateTime.now().millisecondsSinceEpoch.toString();
+    await _storage.write(key: _keyLastActivityTime, value: now);
+  }
+
+  /// Get last activity time
+  Future<DateTime?> getLastActivity() async {
+    final value = await _storage.read(key: _keyLastActivityTime);
+    if (value == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(int.parse(value));
+  }
+
+  /// Check if session has expired
+  Future<bool> isSessionExpired() async {
+    final lastActivity = await getLastActivity();
+    if (lastActivity == null) return true;
+
+    final now = DateTime.now();
+    final difference = now.difference(lastActivity);
+    
+    return difference.inMinutes >= defaultSessionTimeoutMinutes;
+  }
+
+  /// Set custom session timeout (in minutes)
+  Future<void> setSessionTimeout(int minutes) async {
+    await _storage.write(key: _keySessionTimeout, value: minutes.toString());
+  }
+
+  /// Get session timeout duration
+  Future<int> getSessionTimeout() async {
+    final value = await _storage.read(key: _keySessionTimeout);
+    return value != null ? int.parse(value) : defaultSessionTimeoutMinutes;
+  }
+
+  /// Clear expired session
+  Future<void> clearUserSession() async {
+    await clearAll();
   }
 
   // ========== BULK OPERATIONS ==========
@@ -163,6 +242,7 @@ class SecureStorageService {
       saveUserName(name),
       if (refreshToken != null) saveRefreshToken(refreshToken),
       setAuthenticated(true),
+      updateLastActivity(), // Track session start time
     ]);
   }
 
@@ -174,6 +254,8 @@ class SecureStorageService {
       'email': await getUserEmail(),
       'userType': await getUserType(),
       'name': await getUserName(),
+      'phone': await getUserPhone(),
+      'location': await getUserLocation(),
       'refreshToken': await getRefreshToken(),
     };
   }
@@ -186,6 +268,8 @@ class SecureStorageService {
       deleteUserEmail(),
       deleteUserType(),
       deleteUserName(),
+      deleteUserPhone(),
+      deleteUserLocation(),
       deleteRefreshToken(),
       setAuthenticated(false),
     ]);

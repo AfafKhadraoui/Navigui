@@ -1,27 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/repositories/admin/admin_repo_abstract.dart';
 import 'admin_state.dart';
 
 class AdminCubit extends Cubit<AdminState> {
-  // Note: You'll need to create an AdminRepository
-  // final AdminRepository _adminRepository;
+  final AdminRepository _adminRepository;
 
-  AdminCubit() : super(AdminInitial());
+  AdminCubit(this._adminRepository) : super(AdminInitial());
 
   Future<void> loadDashboard() async {
     try {
       emit(AdminLoading());
-      // TODO: Replace with actual repository call
-      // final statistics = await _adminRepository.getDashboardStatistics();
-
-      // Mock data for now
-      final statistics = {
-        'totalUsers': 0,
-        'totalJobs': 0,
-        'totalApplications': 0,
-        'activeJobs': 0,
-        'pendingReports': 0,
-      };
-
+      final statistics = await _adminRepository.getDashboardStatistics();
       emit(AdminDashboardLoaded(statistics));
     } catch (e) {
       emit(AdminError(e.toString()));
@@ -34,14 +23,13 @@ class AdminCubit extends Cubit<AdminState> {
   }) async {
     try {
       emit(AdminLoading());
-      // TODO: Replace with actual repository call
-      // final users = await _adminRepository.getUsers(
-      //   role: roleFilter,
-      //   status: statusFilter,
-      // );
+      final users = await _adminRepository.getUsers(
+        roleFilter: roleFilter,
+        statusFilter: statusFilter,
+      );
 
       emit(AdminUsersLoaded(
-        users: [],
+        users: users,
         roleFilter: roleFilter,
         statusFilter: statusFilter,
       ));
@@ -53,11 +41,10 @@ class AdminCubit extends Cubit<AdminState> {
   Future<void> loadJobs({String? statusFilter}) async {
     try {
       emit(AdminLoading());
-      // TODO: Replace with actual repository call
-      // final jobs = await _adminRepository.getJobs(status: statusFilter);
+      final jobs = await _adminRepository.getJobs(statusFilter: statusFilter);
 
       emit(AdminJobsLoaded(
-        jobs: [],
+        jobs: jobs,
         statusFilter: statusFilter,
       ));
     } catch (e) {
@@ -66,14 +53,13 @@ class AdminCubit extends Cubit<AdminState> {
   }
 
   Future<void> updateUserStatus({
-    required int userId,
+    required String userId,
     required String status,
   }) async {
     try {
       emit(AdminLoading());
-      // TODO: Replace with actual repository call
-      // final user = await _adminRepository.updateUserStatus(userId, status);
-      // emit(AdminUserUpdated(user));
+      final user = await _adminRepository.updateUserStatus(userId, status);
+      emit(AdminUserUpdated(user));
 
       // Reload users
       await loadUsers();
@@ -82,19 +68,18 @@ class AdminCubit extends Cubit<AdminState> {
     }
   }
 
-  Future<void> verifyEmployer(int userId) async {
+  Future<void> verifyEmployer(String userId) async {
     await updateUserStatus(userId: userId, status: 'verified');
   }
 
-  Future<void> suspendUser(int userId) async {
+  Future<void> suspendUser(String userId) async {
     await updateUserStatus(userId: userId, status: 'suspended');
   }
 
-  Future<void> deleteJob(int jobId) async {
+  Future<void> deleteJob(String jobId) async {
     try {
       emit(AdminLoading());
-      // TODO: Replace with actual repository call
-      // await _adminRepository.deleteJob(jobId);
+      await _adminRepository.deleteJob(jobId);
 
       // Reload jobs
       await loadJobs();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../logic/services/secure_storage_service.dart';
 import '../../views/screens/homescreen/home_screen.dart';
 import '../../views/screens/jobs/jobs_page.dart';
 import '../../views/screens/tasks/my_tasks_screen.dart';
@@ -33,25 +33,17 @@ class RoleBasedNavigation {
     );
   }
 
-  /// Helper to get user role from account type
+  /// Helper to get user role from secure storage
   static Future<String> _getUserRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    final accountType = prefs.getString('user_account_type') ?? '';
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
     
-    // Return stored account type if available
-    if (accountType.isNotEmpty) {
-      return accountType;
+    final userType = session['userType'];
+    if (userType != null && userType.isNotEmpty) {
+      return userType;
     }
     
-    // Fallback to email check for backward compatibility
-    final email = prefs.getString('user_email') ?? '';
-    final emailLower = email.toLowerCase();
-
-    if (emailLower.contains('admin')) {
-      return 'admin';
-    } else if (emailLower.contains('employer')) {
-      return 'employer';
-    }
+    // Default to student if no session
     return 'student';
   }
 

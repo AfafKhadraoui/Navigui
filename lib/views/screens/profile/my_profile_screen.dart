@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../../logic/services/secure_storage_service.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
 import 'public_student_profile_screen.dart';
@@ -34,13 +34,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    
     setState(() {
-      _userName = prefs.getString('user_name') ?? 'User';
-      _userEmail = prefs.getString('user_email') ?? 'user@example.com';
-      _userPhone = prefs.getString('user_phone') ?? '';
-      _userLocation = prefs.getString('user_location') ?? '';
-      _accountType = prefs.getString('user_account_type') ?? 'student';
+      _userName = session['name'] ?? 'User';
+      _userEmail = session['email'] ?? 'user@example.com';
+      _userPhone = session['phone'] ?? '';
+      _userLocation = session['location'] ?? '';
+      _accountType = session['userType'] ?? 'student';
       _isLoading = false;
     });
   }
