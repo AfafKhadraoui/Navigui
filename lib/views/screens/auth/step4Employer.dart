@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
-import '../../../logic/services/auth_service.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
+import '../../../logic/services/signup_data_service.dart';
+import '../../../utils/form_validators.dart';
 // copied buttons from step3 instead of using custom_button
-import '../../widgets/common/signup_success_dialog.dart';
 
 class Step4EmployerScreen extends StatefulWidget {
   const Step4EmployerScreen({super.key});
@@ -16,6 +18,7 @@ class Step4EmployerScreen extends StatefulWidget {
 }
 
 class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _industryController = TextEditingController();
   final _addressController = TextEditingController();
 
@@ -26,41 +29,88 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
     super.dispose();
   }
 
-  void _handleContinue() {
-    // Set employer account type in AuthService
-    final authService = context.read<AuthService>();
-    // Quick fix: Manually create employer user
-    // TODO: Replace with proper data from all registration steps
-    authService.signup(
-      email: 'employer@temp.com',
-      password: 'temp123',
-      name: 'Employer User',
-      phoneNumber: '+213XXXXXXXXX',
-      location: 'Alger',
-      accountType: 'employer',
-    );
-    
-    // Navigate to success screen
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => SignupSuccessDialog(
-          userName: 'kjhl', // TODO: Get actual name from signup data
-          isStudent: false,
-          onGoToDashboard: () {
-            context.go(AppRouter.home); // Navigate to home (will show employer interface)
-          },
-          onStartOver: () {
-            context.go(AppRouter.accountType); // Go back to account type
-          },
-        ),
-      ),
-    );
+  void _handleContinue() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Save industry and address to temporary storage
+        final signupService = SignupDataService();
+        await signupService.saveMultipleData({
+          SignupDataService.keyIndustry: _industryController.text.trim(),
+          SignupDataService.keyAddress: _addressController.text.trim(),
+        });
+        
+        // Get all collected signup data
+        final signupData = await signupService.getEmployerSignupData();
+        
+        // Debug: Print what data we have
+        print('=== EMPLOYER SIGNUP DATA ===');
+        print('Email: ${signupData['email']}');
+        print('Password: ${signupData['password']}');
+        print('Name: ${signupData['name']}');
+        print('Phone: ${signupData['phoneNumber']}');
+        print('Location: ${signupData['location']}');
+        print('============================');
+        
+        // Validate required fields
+        if (signupData['email'] == null || 
+            signupData['password'] == null || 
+            signupData['name'] == null || 
+            signupData['phoneNumber'] == null || 
+            signupData['location'] == null) {
+          throw Exception('Missing required signup data. Please go back and complete all previous steps.');
+        }
+        
+        // Create user account with AuthCubit (uses DatabaseAuthRepository)
+        if (context.mounted) {
+          await context.read<AuthCubit>().signup(
+            email: signupData['email'] as String,
+            password: signupData['password'] as String,
+            name: signupData['name'] as String,
+            phoneNumber: signupData['phoneNumber'] as String,
+            location: signupData['location'] as String,
+            accountType: 'employer',
+          );
+        }
+        // Clear temporary signup data
+        await signupService.clearAllData();
+        
+        // Show success message
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Welcome ${signupData['name']}! Your account has been created successfully.'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          
+          // Navigate directly to home page
+          // The router will handle authentication state
+          await Future.delayed(const Duration(milliseconds: 500));
+          if (context.mounted) {
+            context.go(AppRouter.home);
+          }
+        }
+      } catch (e) {
+        // Show error
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    }
   }
 
   Widget _buildTextField({
     required String label,
     required String hint,
     required TextEditingController controller,
+    String? Function(String?)? validator,
     TextInputType? keyboardType,
   }) {
     return Column(
@@ -74,8 +124,9 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
+          validator: validator,
           keyboardType: keyboardType,
           style: GoogleFonts.aclonica(
             fontSize: 14,
@@ -89,6 +140,12 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
               color: Colors.grey,
               fontSize: 14,
             ),
+            errorStyle: GoogleFonts.aclonica(
+              fontSize: 12,
+              color: Colors.red,
+              height: 0.8,
+            ),
+            errorMaxLines: 2,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
@@ -100,6 +157,14 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
@@ -180,20 +245,40 @@ class _Step4EmployerScreenState extends State<Step4EmployerScreen> {
 
                       const SizedBox(height: 40),
 
-                      // Industry / Category
-                      _buildTextField(
-                        label: 'Industry / Category',
-                        hint: 'e.g., Technology, Healthcare',
-                        controller: _industryController,
-                      ),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Industry / Category
+                            _buildTextField(
+                              label: 'Industry / Category',
+                              hint: 'e.g., Technology, Healthcare',
+                              controller: _industryController,
+                              validator: (value) => FormValidators.validateTextField(
+                                value,
+                                fieldName: 'industry',
+                                minLength: 2,
+                                maxLength: 100,
+                              ),
+                            ),
 
-                      const SizedBox(height: 24),
+                            const SizedBox(height: 24),
 
-                      // Business Address (Optional)
-                      _buildTextField(
-                        label: 'Business Address (Optional)',
-                        hint: 'e.g., 123 Main St, City, Country',
-                        controller: _addressController,
+                            // Business Address (Optional)
+                            _buildTextField(
+                              label: 'Business Address (Optional)',
+                              hint: 'e.g., 123 Main St, City, Country',
+                              controller: _addressController,
+                              validator: (value) => FormValidators.validateTextField(
+                                value,
+                                fieldName: 'address',
+                                allowEmpty: true,
+                                maxLength: 200,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
 
                       const SizedBox(height: 12),

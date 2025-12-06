@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../utils/form_validators.dart';
 import 'step5Student.dart';
 
 class Step4StudentScreen extends StatefulWidget {
@@ -11,6 +12,7 @@ class Step4StudentScreen extends StatefulWidget {
 }
 
 class _Step4StudentScreenState extends State<Step4StudentScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _skillsController = TextEditingController();
   final _bioController = TextEditingController();
 
@@ -21,10 +23,23 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
     super.dispose();
   }
 
+  void _handleContinue() {
+    if (_formKey.currentState!.validate()) {
+      // All validations passed, proceed to next step
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Step5StudentScreen(),
+        ),
+      );
+    }
+  }
+
   Widget _buildTextField({
     required String label,
     required String hint,
     required TextEditingController controller,
+    String? Function(String?)? validator,
     TextInputType? keyboardType,
     int maxLines = 1,
   }) {
@@ -39,8 +54,9 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
+          validator: validator,
           keyboardType: keyboardType,
           maxLines: maxLines,
           style: GoogleFonts.aclonica(
@@ -66,6 +82,14 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 24,
@@ -144,21 +168,42 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
               
               const SizedBox(height: 60),
               
-              // Skills / Interests
-              _buildTextField(
-                label: 'Skills / Interests',
-                hint: 'e.g., Graphic Design, Marketing',
-                controller: _skillsController,
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Bio (Optional)
-              _buildTextField(
-                label: 'Bio (Optional)',
-                hint: 'Tell us about yourself...',
-                controller: _bioController,
-                maxLines: 4,
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Skills / Interests
+                    _buildTextField(
+                      label: 'Skills / Interests',
+                      hint: 'e.g., Graphic Design, Marketing',
+                      controller: _skillsController,
+                      validator: (value) => FormValidators.validateTextField(
+                        value,
+                        fieldName: 'skills/interests',
+                        minLength: 3,
+                        maxLength: 200,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Bio (Optional)
+                    _buildTextField(
+                      label: 'Bio (Optional)',
+                      hint: 'Tell us about yourself...',
+                      controller: _bioController,
+                      validator: (value) => FormValidators.validateDescription(
+                        value,
+                        fieldName: 'Bio',
+                        required: false,
+                        minLength: 10,
+                        maxLength: 500,
+                      ),
+                      maxLines: 4,
+                    ),
+                  ],
+                ),
               ),
               
               const Spacer(),
@@ -198,14 +243,7 @@ class _Step4StudentScreenState extends State<Step4StudentScreen> {
                   // Continue Button
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Step5StudentScreen(),
-                          ),
-                        );
-                      },
+                      onPressed: _handleContinue,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9288EE),
                         foregroundColor: AppColors.white,

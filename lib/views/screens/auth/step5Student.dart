@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../commons/themes/style_simple/colors.dart';
+import 'package:go_router/go_router.dart';
+import '../../../utils/form_validators.dart';
+import '../../../routes/app_router.dart';
+import '../../widgets/common/signup_success_dialog.dart';
 
 class Step5StudentScreen extends StatefulWidget {
   const Step5StudentScreen({super.key});
@@ -10,6 +13,7 @@ class Step5StudentScreen extends StatefulWidget {
 }
 
 class _Step5StudentScreenState extends State<Step5StudentScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _availabilityController = TextEditingController();
   final _portfolioController = TextEditingController();
 
@@ -20,10 +24,36 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
     super.dispose();
   }
 
+  void _handleFinish() {
+    if (_formKey.currentState!.validate()) {
+      // TODO: Complete signup with all collected data
+      // For now just navigate to success
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => SignupSuccessDialog(
+            userName: 'Student User', // TODO: Get actual name
+            isStudent: true,
+            onGoToDashboard: () {
+              Navigator.of(dialogContext).pop();
+              context.go(AppRouter.home);
+            },
+            onStartOver: () {
+              Navigator.of(dialogContext).pop();
+              context.go(AppRouter.accountType);
+            },
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildTextField({
     required String label,
     required String hint,
     required TextEditingController controller,
+    String? Function(String?)? validator,
     TextInputType? keyboardType,
   }) {
     return Column(
@@ -37,8 +67,9 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
+          validator: validator,
           keyboardType: keyboardType,
           style: GoogleFonts.aclonica(
             fontSize: 14,
@@ -63,6 +94,14 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
@@ -141,21 +180,41 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
               
               const SizedBox(height: 60),
               
-              // Availability
-              _buildTextField(
-                label: 'Availability',
-                hint: 'e.g., Weekends, Evenings',
-                controller: _availabilityController,
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Portfolio / Links (Optional)
-              _buildTextField(
-                label: 'Portfolio / Links (Optional)',
-                hint: 'LinkedIn, GitHub, Website...',
-                controller: _portfolioController,
-                keyboardType: TextInputType.url,
+              // Form
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Availability
+                    _buildTextField(
+                      label: 'Availability',
+                      hint: 'e.g., Weekends, Evenings',
+                      controller: _availabilityController,
+                      validator: (value) => FormValidators.validateTextField(
+                        value,
+                        fieldName: 'availability',
+                        minLength: 3,
+                        maxLength: 100,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Portfolio / Links (Optional)
+                    _buildTextField(
+                      label: 'Portfolio / Links (Optional)',
+                      hint: 'LinkedIn, GitHub, Website...',
+                      controller: _portfolioController,
+                      keyboardType: TextInputType.url,
+                      validator: (value) => FormValidators.validateUrl(
+                        value,
+                        fieldName: 'portfolio URL',
+                        required: false,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               
               const Spacer(),
@@ -195,10 +254,7 @@ class _Step5StudentScreenState extends State<Step5StudentScreen> {
                   // Complete Button
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: Complete signup
-                        print('Student signup complete!');
-                      },
+                      onPressed: _handleFinish,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9288EE),
                         foregroundColor: Colors.white,

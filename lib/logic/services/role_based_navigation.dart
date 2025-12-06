@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../logic/services/secure_storage_service.dart';
 import '../../views/screens/homescreen/home_screen.dart';
 import '../../views/screens/jobs/jobs_page.dart';
 import '../../views/screens/tasks/my_tasks_screen.dart';
@@ -33,17 +33,17 @@ class RoleBasedNavigation {
     );
   }
 
-  /// Helper to get user role from email
+  /// Helper to get user role from secure storage
   static Future<String> _getUserRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('user_email') ?? '';
-    final emailLower = email.toLowerCase();
-
-    if (emailLower.contains('admin')) {
-      return 'admin';
-    } else if (emailLower.contains('employer')) {
-      return 'employer';
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    
+    final userType = session['userType'];
+    if (userType != null && userType.isNotEmpty) {
+      return userType;
     }
+    
+    // Default to student if no session
     return 'student';
   }
 
@@ -106,9 +106,9 @@ class RoleBasedNavigation {
   }
 
   /// Get bottom nav item label based on role and index
-  static String getNavLabel(int index, BuildContext context) {
-    // Simple default for testing
-    final isEmployer = false;
+  static Future<String> getNavLabel(int index, BuildContext context) async {
+    final role = await _getUserRole();
+    final isEmployer = role == 'employer';
 
     if (isEmployer) {
       switch (index) {

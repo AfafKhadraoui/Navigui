@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import 'step3Student.dart';
+import '../../../utils/form_validators.dart';
+import '../../../logic/services/signup_data_service.dart';
 
 class Step2StudentScreen extends StatefulWidget {
   const Step2StudentScreen({super.key});
@@ -11,6 +13,7 @@ class Step2StudentScreen extends StatefulWidget {
 }
 
 class _Step2StudentScreenState extends State<Step2StudentScreen> {
+  final _formkey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _locationController = TextEditingController();
   final _fullNameController = TextEditingController();
@@ -44,10 +47,50 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
     super.dispose();
   }
 
+  void _handleContinue() async {
+    if (_formkey.currentState!.validate()) {
+      // Validate dropdown
+      if (_selectedYear == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Please select your year of study',
+              style: GoogleFonts.aclonica(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Save data to temporary storage
+      final signupService = SignupDataService();
+      await signupService.saveMultipleData({
+        SignupDataService.keyName: _fullNameController.text.trim(),
+        SignupDataService.keyPhoneNumber: _phoneController.text.trim(),
+        SignupDataService.keyLocation: _locationController.text.trim(),
+        SignupDataService.keyUniversity: _universityController.text.trim(),
+        SignupDataService.keyFaculty: _facultyController.text.trim(),
+        SignupDataService.keyYearOfStudy: _selectedYear!,
+      });
+
+      // All validations passed, proceed to next step
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Step3StudentScreen(),
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildTextField({
     required String label,
     required String hint,
     required TextEditingController controller,
+    String? Function(String?)? validator,
     TextInputType? keyboardType,
     bool obscureText = false,
   }) {
@@ -62,8 +105,9 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
+          validator: validator,
           keyboardType: keyboardType,
           obscureText: obscureText,
           style: GoogleFonts.aclonica(
@@ -78,6 +122,12 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
               color: Colors.grey,
               fontSize: 14,
             ),
+            errorStyle: GoogleFonts.aclonica(
+              fontSize: 12,
+              color: Colors.red,
+              height: 0.8,
+            ),
+            errorMaxLines: 2,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
@@ -89,6 +139,14 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide.none,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
@@ -155,48 +213,71 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                 
                 const SizedBox(height: 40),
                 
-                // Phone Number
-                _buildTextField(
-                  label: 'Phone number',
-                  hint: '+213 456 7890 xxx',
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Location
-                _buildTextField(
-                  label: 'Location',
-                  hint: 'City, Country',
-                  controller: _locationController,
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Full Name
-                _buildTextField(
-                  label: 'Full Name',
-                  hint: 'John Doe',
-                  controller: _fullNameController,
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // University
-                _buildTextField(
-                  label: 'University',
-                  hint: 'e.g., ENSIA, ESI, USTHB, ENS...etc',
-                  controller: _universityController,
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Faculty / Major
-                _buildTextField(
-                  label: 'Faculty / Major',
-                  hint: 'e.g., Computer Science',
-                  controller: _facultyController,
+                Form(
+                  key: _formkey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Phone Number
+                      _buildTextField(
+                        label: 'Phone number',
+                        hint: '+213 456 7890 xxx',
+                        validator: FormValidators.validatePhoneAlgeria,
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Location
+                      _buildTextField(
+                        label: 'Location',
+                        hint: 'City, Country',
+                        validator: FormValidators.validateLocation,
+                        controller: _locationController,
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Full Name
+                      _buildTextField(
+                        label: 'Full Name',
+                        hint: 'John Doe',
+                        validator: FormValidators.validateName,
+                        controller: _fullNameController,
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // University
+                      _buildTextField(
+                        label: 'University',
+                        hint: 'e.g., ENSIA, ESI, USTHB, ENS...etc',
+                        controller: _universityController,
+                        validator: (value) => FormValidators.validateTextField(
+                          value,
+                          fieldName: 'university',
+                          minLength: 2,
+                          maxLength: 100,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Faculty / Major
+                      _buildTextField(
+                        label: 'Faculty / Major',
+                        hint: 'e.g., Computer Science',
+                        controller: _facultyController,
+                        validator: (value) => FormValidators.validateTextField(
+                          value,
+                          fieldName: 'faculty/major',
+                          minLength: 2,
+                          maxLength: 100,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 
                 const SizedBox(height: 20),
@@ -293,14 +374,7 @@ class _Step2StudentScreenState extends State<Step2StudentScreen> {
                     // Continue Button
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Step3StudentScreen(),
-                            ),
-                          );
-                        },
+                        onPressed: _handleContinue,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF9288EE),
                           foregroundColor: Colors.white,

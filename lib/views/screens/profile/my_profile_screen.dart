@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../logic/services/secure_storage_service.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/student_profile/student_profile_cubit.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
 import 'public_student_profile_screen.dart';
@@ -11,13 +15,68 @@ import '../jobs/my_applications_screen.dart';
 /// My Profile Screen
 /// Shows user profile with edit button
 /// Statistics tab, Portfolio tab, Reviews tab, Settings, About, Logout
-class MyProfileScreen extends StatelessWidget {
+class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
 
   @override
+  State<MyProfileScreen> createState() => _MyProfileScreenState();
+}
+
+class _MyProfileScreenState extends State<MyProfileScreen> {
+  String _userName = 'Loading...';
+  String _userEmail = 'Loading...';
+  String _userPhone = '';
+  String _userLocation = '';
+  String _accountType = 'student';
+  String? _userId;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    
+    setState(() {
+      _userName = session['name'] ?? 'User';
+      _userEmail = session['email'] ?? 'user@example.com';
+      _userPhone = session['phone'] ?? '';
+      _userLocation = session['location'] ?? '';
+      _accountType = session['userType'] ?? 'student';
+      _userId = session['userId'];
+      _isLoading = false;
+    });
+
+    // Load full profile from database for students (cached by cubit, very fast)
+    if (_accountType == 'student' && _userId != null) {
+      // Non-blocking: load in background, cubit caches result
+      try {
+        context.read<StudentProfileCubit>().loadProfile(_userId!);
+      } catch (e) {
+        // Cubit not available in context, skip profile preload
+        print('⚠️ StudentProfileCubit not available, skipping profile preload');
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: Get actual user type from state/provider
-    final bool isStudent = true; // Change this based on logged-in user type
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: AppColors.black,
+        body: const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.purple6,
+          ),
+        ),
+      );
+    }
+
+    final bool isStudent = _accountType == 'student';
     
     return Scaffold(
       backgroundColor: AppColors.black,
@@ -36,7 +95,7 @@ class MyProfileScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.white),
             onPressed: () {
-              // TODO: Navigate to settings
+              context.go('/settings');
             },
           ),
         ],
@@ -70,7 +129,7 @@ class MyProfileScreen extends StatelessWidget {
               
               // Name
               Text(
-                isStudent ? 'Student Name' : 'Company Name',
+                _userName,
                 style: GoogleFonts.aclonica(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -82,10 +141,68 @@ class MyProfileScreen extends StatelessWidget {
               
               // Email
               Text(
-                'user@example.com',
+                _userEmail,
                 style: GoogleFonts.aclonica(
                   fontSize: 14,
                   color: AppColors.grey6,
+                ),
+              ),
+              
+              const SizedBox(height: 4),
+              
+              // Phone (if available)
+              if (_userPhone.isNotEmpty)
+                Text(
+                  _userPhone,
+                  style: GoogleFonts.aclonica(
+                    fontSize: 12,
+                    color: AppColors.grey6,
+                  ),
+                ),
+              
+              const SizedBox(height: 4),
+              
+              // Location (if available)
+              if (_userLocation.isNotEmpty)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      size: 16,
+                      color: AppColors.grey6,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _userLocation,
+                      style: GoogleFonts.aclonica(
+                        fontSize: 12,
+                        color: AppColors.grey6,
+                      ),
+                    ),
+                  ],
+                ),
+              
+              const SizedBox(height: 8),
+              
+              // Account Type Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isStudent ? AppColors.purple6.withOpacity(0.2) : AppColors.electricLime.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isStudent ? AppColors.purple6 : AppColors.electricLime,
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  isStudent ? 'STUDENT' : 'EMPLOYER',
+                  style: GoogleFonts.aclonica(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isStudent ? AppColors.purple6 : AppColors.electricLime,
+                  ),
                 ),
               ),
               
@@ -135,9 +252,9 @@ class MyProfileScreen extends StatelessWidget {
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           fullscreenDialog: true,
-                          builder: (context) => const PublicStudentProfileScreen(
-                            studentId: 'current_user', // TODO: Use actual user ID
-                            studentName: 'Student Name',
+                          builder: (context) => PublicStudentProfileScreen(
+                            studentId: _userId ?? '',
+                            studentName: _userName,
                           ),
                         ),
                       );
@@ -145,9 +262,9 @@ class MyProfileScreen extends StatelessWidget {
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           fullscreenDialog: true,
-                          builder: (context) => const PublicEmployerProfileScreen(
-                            employerId: 'current_user', // TODO: Use actual user ID
-                            companyName: 'Company Name',
+                          builder: (context) => PublicEmployerProfileScreen(
+                            employerId: _userId ?? '',
+                            companyName: _userName,
                           ),
                         ),
                       );
@@ -572,9 +689,11 @@ class MyProfileScreen extends StatelessWidget {
                             ),
                           ),
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               Navigator.pop(context);
-                              context.go(AppRouter.login);
+                              // Properly logout using AuthCubit
+                              await context.read<AuthCubit>().logout();
+                              // Navigation handled by AuthCubit state change
                             },
                             child: Text(
                               'Logout',

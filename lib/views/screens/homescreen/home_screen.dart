@@ -1,28 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 import 'package:navigui/views/widgets/home/part_time_jobs_section.dart';
 import 'package:navigui/views/widgets/home/quick_tasks_section.dart';
 import 'package:navigui/views/widgets/home/educational_content_section.dart';
 import 'package:navigui/routes/app_router.dart';
+import '../../../logic/services/secure_storage_service.dart';
+import '../../../logic/cubits/language/language_cubit.dart';
+import '../../../generated/s.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header with profile
-            _buildHeader(context),
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
+class _HomeScreenState extends State<HomeScreen> {
+  String _userName = 'User';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    if (mounted) {
+      setState(() {
+        _userName = session['name'] ?? 'User';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Listen to locale changes to trigger rebuild
+    return BlocBuilder<LanguageCubit, Locale>(
+      builder: (context, locale) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Header with profile
+                _buildHeader(context),
+
+                // Scrollable content
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
                   children: [
                     const SizedBox(height: 10),
 
@@ -52,6 +82,8 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+      },
     );
   }
 
@@ -113,7 +145,7 @@ class HomeScreen extends StatelessWidget {
           // Hello text
           Expanded(
             child: Text(
-              'Hello, Afaf',
+              '${S.of(context)!.commonWelcome}, $_userName',
               style: TextStyle(
                 color: AppColors.purple1, // #AB93E0
                 fontSize: 16,

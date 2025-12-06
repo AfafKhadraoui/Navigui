@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'step4Employer.dart';
 
 class Step3EmployerScreen extends StatefulWidget {
@@ -12,6 +13,42 @@ class Step3EmployerScreen extends StatefulWidget {
 
 class _Step3EmployerScreenState extends State<Step3EmployerScreen> {
   File? _profileImage;
+  void _handleContinue() {
+     Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Step4EmployerScreen(),
+        ),
+      );
+    
+  }
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 85,
+      );
+      
+      if (image != null) {
+        setState(() {
+          _profileImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error picking image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +117,7 @@ class _Step3EmployerScreenState extends State<Step3EmployerScreen> {
 
               // Upload Photo Area
               GestureDetector(
-                onTap: () {
-                  // TODO: Implement image picker
-                  print('Pick image');
-                },
+                onTap: _pickImage,
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
@@ -93,34 +127,63 @@ class _Step3EmployerScreenState extends State<Step3EmployerScreen> {
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.camera_alt,
-                          color: Color(0xFFD2FF1F),
-                          size: 40,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Upload a photo',
-                          style: GoogleFonts.aclonica(
-                            fontSize: 16,
-                            color: Colors.white,
+                  child: _profileImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.file(
+                                _profileImage!,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                bottom: 8,
+                                right: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.6),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: Color(0xFFD2FF1F),
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.camera_alt,
+                                color: Color(0xFFD2FF1F),
+                                size: 40,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Upload a photo',
+                                style: GoogleFonts.aclonica(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'PNG, JPG up to 100MB',
+                                style: GoogleFonts.aclonica(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'PNG, JPG up to 100MB',
-                          style: GoogleFonts.aclonica(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
 
@@ -191,14 +254,7 @@ class _Step3EmployerScreenState extends State<Step3EmployerScreen> {
                   // Continue Button
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Step4EmployerScreen(),
-                          ),
-                        );
-                      },
+                      onPressed: _handleContinue,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFD2FF1F),
                         foregroundColor: Colors.black,

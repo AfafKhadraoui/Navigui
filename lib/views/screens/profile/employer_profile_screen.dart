@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../data/models/job_post.dart';
-import '../../../utils/mock_data.dart';
 import '../../../routes/app_router.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/employer_profile/employer_profile_cubit.dart';
+import '../../../logic/cubits/employer_profile/employer_profile_state.dart';
+import '../../../logic/services/secure_storage_service.dart';
 import 'public_employer_profile_screen.dart';
 
 /// Employer Profile Screen (Own Profile Management)
@@ -21,12 +25,34 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<JobPost> _jobs = [];
+  String _businessName = 'Loading...';
+  String _industry = '';
+  String _location = '';
+  String? _userId;
+  bool _isLoadingData = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadUserData();
     _loadJobs();
+  }
+
+  Future<void> _loadUserData() async {
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    
+    setState(() {
+      _businessName = session['name'] ?? 'Company';
+      _userId = session['userId'];
+      _isLoadingData = false;
+    });
+
+    // Load full profile from database
+    if (_userId != null) {
+      context.read<EmployerProfileCubit>().loadProfile(_userId!);
+    }
   }
 
   void _loadJobs() {
@@ -61,15 +87,30 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.white),
             onPressed: () {
-              // TODO: Navigate to settings
+              context.go('/settings');
             },
           ),
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        child: BlocBuilder<EmployerProfileCubit, EmployerProfileState>(
+          builder: (context, state) {
+            // Update local state when profile loads
+            if (state is EmployerProfileLoaded) {
+              _businessName = state.profile.businessName;
+              _industry = state.profile.industry;
+              _location = state.profile.location ?? '';
+            }
+
+            if (_isLoadingData && state is! EmployerProfileLoaded) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.electricLime),
+              );
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 24),
 
@@ -96,7 +137,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
 
               // Company Name
               Text(
-                'Tech Solutions Inc.',
+                _businessName,
                 style: GoogleFonts.aclonica(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -108,7 +149,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
 
               // Industry
               Text(
-                'Technology & Software Development',
+                _industry.isNotEmpty ? _industry : 'Technology & Software Development',
                 style: GoogleFonts.aclonica(
                   fontSize: 16,
                   color: AppColors.electricLime,
@@ -125,7 +166,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
                       color: AppColors.grey6, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    'Algiers, Algeria',
+                    _location.isNotEmpty ? _location : 'Algiers, Algeria',
                     style: GoogleFonts.aclonica(
                       fontSize: 14,
                       color: AppColors.grey6,
@@ -334,9 +375,11 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.pop(context);
-                                context.go(AppRouter.login);
+                                // Properly logout using AuthCubit
+                                await context.read<AuthCubit>().logout();
+                                // Navigation handled by AuthCubit state change
                               },
                               child: Text(
                                 'Logout',
@@ -370,8 +413,10 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
               ),
 
               const SizedBox(height: 24),
-            ],
-          ),
+              ],
+            ),
+          );
+          },
         ),
       ),
     );

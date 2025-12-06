@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../utils/form_validators.dart';
 import 'step4StudentSkills.dart';
+import '../../../logic/services/signup_data_service.dart';
 
 class Step3StudentScreen extends StatefulWidget {
   const Step3StudentScreen({super.key});

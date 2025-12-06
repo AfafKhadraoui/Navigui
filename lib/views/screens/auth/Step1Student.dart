@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
-import 'step2Student.dart';
+import '../../../routes/app_router.dart';
+import '../../../logic/services/signup_data_service.dart';
+import '../../../utils/form_validators.dart';
 
 class Step1StudentScreen extends StatefulWidget {
   const Step1StudentScreen({super.key});
@@ -11,6 +14,7 @@ class Step1StudentScreen extends StatefulWidget {
 }
 
 class _Step1StudentScreenState extends State<Step1StudentScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -21,7 +25,22 @@ class _Step1StudentScreenState extends State<Step1StudentScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-
+  void _handleContinue() async {
+    if (_formKey.currentState!.validate()) {
+      // Save email and password to temporary storage
+      final signupService = SignupDataService();
+      await signupService.saveMultipleData({
+        SignupDataService.keyEmail: _emailController.text.trim(),
+        SignupDataService.keyPassword: _passwordController.text,
+        SignupDataService.keyAccountType: 'student',
+      });
+      
+      // Proceed to next step
+      if (context.mounted) {
+        context.go(AppRouter.studentStep2);
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,102 +95,144 @@ class _Step1StudentScreenState extends State<Step1StudentScreen> {
 
               const SizedBox(height: 24),
 
-              // Email
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(25),
+              // Form with Email and Password fields
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Email
+                    TextFormField(
+                validator: FormValidators.validateEmail,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: GoogleFonts.aclonica(
+                  fontSize: 14,
+                  color: AppColors.white,
                 ),
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: GoogleFonts.aclonica(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  hintText: 'student@example.com',
+                  hintStyle: GoogleFonts.aclonica(
+                    color: AppColors.grey6,
                     fontSize: 14,
-                    color: AppColors.white,
                   ),
-                  decoration: InputDecoration(
-                    hintText: 'careerplace@gmail.com',
-                    hintStyle: GoogleFonts.aclonica(
-                      color: AppColors.grey6,
-                      fontSize: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Colors.transparent,
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF9288EE),
-                        width: 1.5,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 20,
+                  errorStyle: GoogleFonts.aclonica(
+                    fontSize: 12,
+                    color: Colors.red,
+                    height: 0.8,
+                  ),
+                  errorMaxLines: 2,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.transparent,
+                      width: 1.5,
                     ),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF9288EE),
+                      width: 1.5,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 20,
+                  ),
                 ),
-              ),
+                    ),
 
-              const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-              // Password
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(25),
+                    // Password
+                    TextFormField(
+                validator: FormValidators.validatePassword,
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                style: GoogleFonts.aclonica(
+                  fontSize: 14,
+                  color: AppColors.white,
                 ),
-                child: TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  style: GoogleFonts.aclonica(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  hintText: '••••••••••',
+                  hintStyle: GoogleFonts.aclonica(
+                    color: AppColors.grey6,
                     fontSize: 14,
-                    color: AppColors.white,
                   ),
-                  decoration: InputDecoration(
-                    hintText: '••••••••••',
-                    hintStyle: GoogleFonts.aclonica(
+                  errorStyle: GoogleFonts.aclonica(
+                    fontSize: 12,
+                    color: Colors.red,
+                    height: 0.8,
+                  ),
+                  errorMaxLines: 2,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.transparent,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF9288EE),
+                      width: 1.5,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: const BorderSide(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 20,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
                       color: AppColors.grey6,
-                      fontSize: 14,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Colors.transparent,
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF9288EE),
-                        width: 1.5,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 20,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: AppColors.grey6,
-                      ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    ),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
+                ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -182,7 +243,7 @@ class _Step1StudentScreenState extends State<Step1StudentScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.go(AppRouter.accountType),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF9288EE),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -200,9 +261,10 @@ class _Step1StudentScreenState extends State<Step1StudentScreen> {
 
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (c) => const Step2StudentScreen()));
-                      },
+                      // onPressed: () {
+                      //   Navigator.push(context, MaterialPageRoute(builder: (c) => const Step2StudentScreen()));
+                      // },
+                      onPressed: _handleContinue,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9288EE),
                         foregroundColor: Colors.white,
@@ -238,6 +300,6 @@ class _Step1StudentScreenState extends State<Step1StudentScreen> {
           ),
         ),
       ),
-    );
+    );  
   }
 }

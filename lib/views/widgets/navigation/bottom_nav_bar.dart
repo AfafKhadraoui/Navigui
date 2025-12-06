@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../../logic/services/secure_storage_service.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../generated/s.dart';
 
@@ -40,12 +40,14 @@ class BottomNavBar extends StatelessWidget {
   }
 
   Future<Map<String, bool>> _getUserRoleFlags() async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('user_email') ?? '';
-    final emailLower = email.toLowerCase();
+    final secureStorage = SecureStorageService();
+    final session = await secureStorage.getUserSession();
+    
+    final accountType = session['userType'] ?? '';
+    
     return {
-      'isAdmin': emailLower.contains('admin'),
-      'isEmployer': emailLower.contains('employer'),
+      'isAdmin': accountType == 'admin',
+      'isEmployer': accountType == 'employer',
     };
   }
 

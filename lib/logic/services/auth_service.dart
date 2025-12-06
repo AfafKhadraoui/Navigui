@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/user_model.dart';
 
 /// Auth Service - Manages user authentication state and role
@@ -20,25 +21,43 @@ class AuthService extends ChangeNotifier {
   /// Login user (mock implementation)
   Future<bool> login(String email, String password) async {
     try {
-      // TODO: Replace with actual API call
-      await Future.delayed(
-          const Duration(seconds: 1)); // Simulate network delay
+      // Default test accounts
+      const testAccounts = {
+        'admin@navigui.com': {'password': 'admin123', 'type': 'admin', 'name': 'Admin User'},
+        'employer@navigui.com': {'password': 'employer123', 'type': 'employer', 'name': 'Employer User'},
+        'student@navigui.com': {'password': 'student123', 'type': 'student', 'name': 'Student User'},
+      };
 
-      // Mock user - In production, get this from your backend
-      // Determine role from email: admin > employer > student
-      final String accountType;
-      if (email.toLowerCase().contains('admin')) {
-        accountType = 'admin';
-      } else if (email.contains('employer')) {
-        accountType = 'employer';
+      await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+
+      String accountType;
+      String userName;
+      
+      // Check if it's a test account
+      if (testAccounts.containsKey(email.toLowerCase())) {
+        final account = testAccounts[email.toLowerCase()]!;
+        // Validate password for test accounts
+        if (account['password'] != password) {
+          return false; // Wrong password
+        }
+        accountType = account['type']!;
+        userName = account['name']!;
       } else {
-        accountType = 'student';
+        // For other emails, determine role from email pattern (backward compatibility)
+        if (email.toLowerCase().contains('admin')) {
+          accountType = 'admin';
+        } else if (email.contains('employer')) {
+          accountType = 'employer';
+        } else {
+          accountType = 'student';
+        }
+        userName = 'Test User';
       }
 
       _currentUser = UserModel(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         email: email,
-        name: 'Test User', // Get from backend
+        name: userName,
         phoneNumber: '+213XXXXXXXXX',
         location: 'Alger',
         accountType: accountType,
@@ -46,6 +65,13 @@ class AuthService extends ChangeNotifier {
       );
 
       _isAuthenticated = true;
+      
+      // Save to SharedPreferences for role-based navigation
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_email', email);
+      await prefs.setString('user_name', userName);
+      await prefs.setString('user_account_type', accountType);
+      
       notifyListeners();
       return true;
     } catch (e) {
@@ -79,6 +105,15 @@ class AuthService extends ChangeNotifier {
       );
 
       _isAuthenticated = true;
+      
+      // Save to SharedPreferences for role-based navigation
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_email', email);
+      await prefs.setString('user_name', name);
+      await prefs.setString('user_phone', phoneNumber);
+      await prefs.setString('user_location', location);
+      await prefs.setString('user_account_type', accountType);
+      
       notifyListeners();
       return true;
     } catch (e) {
@@ -87,9 +122,18 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Logout user
-  void logout() {
+  void logout() async {
     _currentUser = null;
     _isAuthenticated = false;
+    
+    // Clear SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_email');
+    await prefs.remove('user_name');
+    await prefs.remove('user_phone');
+    await prefs.remove('user_location');
+    await prefs.remove('user_account_type');
+    
     notifyListeners();
   }
 

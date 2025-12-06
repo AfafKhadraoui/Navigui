@@ -1,59 +1,64 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import '../../../data/repositories/user_repo.dart'; // TODO: Update to new repo structure
+import '../../../data/repositories/user/user_repo_abstract.dart';
 import 'employer_profile_state.dart';
 
 class EmployerProfileCubit extends Cubit<EmployerProfileState> {
-  // TODO: Update to new repo structure
-  // final UserRepository _userRepository;
+  final UserRepository _userRepository;
 
-  EmployerProfileCubit() : super(EmployerProfileInitial());
+  EmployerProfileCubit(this._userRepository) : super(EmployerProfileInitial());
 
-  // TODO: Implement with new repository structure
-  // Future<void> loadProfile(int userId) async {
-  //   try {
-  //     emit(EmployerProfileLoading());
-  //     final profile = await _userRepository.getEmployerProfile(userId);
-  //     emit(EmployerProfileLoaded(profile));
-  //   } catch (e) {
-  //     emit(EmployerProfileError(e.toString()));
-  //   }
-  // }
+  /// Load employer profile by user ID
+  Future<void> loadProfile(String userId) async {
+    try {
+      emit(EmployerProfileLoading());
+      final profile = await _userRepository.getEmployerProfile(userId);
+      emit(EmployerProfileLoaded(profile));
+    } catch (e) {
+      emit(EmployerProfileError(e.toString()));
+    }
+  }
 
-  // TODO: Implement with new repository structure
-  // Future<void> updateProfile({
-  //   required int userId,
-  //   String? companyName,
-  //   String? companyDescription,
-  //   String? industry,
-  //   String? website,
-  //   String? phone,
-  //   String? address,
-  //   String? logoUrl,
-  //   int? companySize,
-  //   int? foundedYear,
-  // }) async {
-  //   try {
-  //     emit(EmployerProfileLoading());
-  //     final updatedProfile = await _userRepository.updateEmployerProfile(
-  //       userId: userId,
-  //       companyName: companyName,
-  //       companyDescription: companyDescription,
-  //       industry: industry,
-  //       website: website,
-  //       phone: phone,
-  //       address: address,
-  //       logoUrl: logoUrl,
-  //       companySize: companySize,
-  //       foundedYear: foundedYear,
-  //     );
-  //     emit(EmployerProfileUpdated(updatedProfile));
-  //   } catch (e) {
-  //     emit(EmployerProfileError(e.toString()));
-  //   }
-  // }
+  /// Update employer profile with provided fields
+  Future<void> updateProfile({
+    required String userId,
+    String? businessName,
+    String? businessType,
+    String? industry,
+    String? description,
+    String? location,
+    String? address,
+    String? logo,
+    String? websiteUrl,
+    String? verificationDocumentUrl,
+    List<String>? socialMediaLinks,
+    Map<String, dynamic>? contactInfo,
+  }) async {
+    try {
+      emit(EmployerProfileLoading());
+      final updatedProfile = await _userRepository.updateEmployerProfile(
+        userId: userId,
+        businessName: businessName,
+        businessType: businessType,
+        industry: industry,
+        description: description,
+        location: location,
+        address: address,
+        logo: logo,
+        websiteUrl: websiteUrl,
+        verificationDocumentUrl: verificationDocumentUrl,
+        socialMediaLinks: socialMediaLinks,
+        contactInfo: contactInfo,
+      );
+      emit(EmployerProfileUpdated(updatedProfile));
+      // Also emit loaded state to show updated profile
+      emit(EmployerProfileLoaded(updatedProfile));
+    } catch (e) {
+      emit(EmployerProfileError(e.toString()));
+    }
+  }
 
-  // TODO: Implement with new repository structure
-  // Future<void> refreshProfile(int userId) async {
-  //   await loadProfile(userId);
-  // }
+  /// Refresh profile (reload from repository)
+  Future<void> refreshProfile(String userId) async {
+    await loadProfile(userId);
+  }
 }

@@ -1,7 +1,7 @@
 // lib/routes/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../logic/services/secure_storage_service.dart';
 import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/onboarding/language_selection_splash.dart';
 import '../views/screens/auth/login.dart';
@@ -25,22 +25,12 @@ import '../views/screens/education/all_employer_articles_screen.dart';
 import '../views/screens/profile/my_profile_screen.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
-
-// Job board screens
-import '../views/screens/tasks/employer/employer_dashboard_screen.dart';
-import '../views/screens/tasks/employer/job_detail_employer_screen.dart';
-import '../views/screens/tasks/employer/job_requests_screen.dart';
-import '../views/screens/tasks/employer/request_detail_screen.dart';
-
 import '../data/models/job_post.dart';
 import '../data/models/application.dart';
-import '../logic/services/auth_service.dart';
 import '../logic/services/role_based_navigation.dart';
-import '../logic/cubits/auth/auth_cubit.dart';
-import '../logic/cubits/auth/auth_state.dart';
-import '../views/screens/profile/edit_student_profile_screen2.dart';
+import '../views/screens/profile/edit_student_profile_screen.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
-import '../views/screens/employer/edit_employer_profile_screen2.dart';
+import '../views/screens/profile/edit_employer_profile_screen.dart';
 import '../views/screens/jobs/job_detail_screen.dart';
 import '../views/screens/education/article_detail_screen.dart';
 import '../views/screens/employer/my_job_posts_screen.dart';
@@ -50,11 +40,11 @@ import '../views/screens/employer/student_requests_screen.dart';
 import '../views/screens/employer/job_applications_screen.dart';
 import '../views/screens/employer/student_request_detail_screen.dart';
 
-// Admin screens
 import '../views/screens/admin/admin_users_screen.dart';
 import '../views/screens/admin/admin_jobs_screen.dart';
 import '../views/screens/admin/admin_reports_screen.dart';
 import '../views/screens/admin/admin_settings_screen.dart';
+import '../views/screens/profile/settings_screen.dart';
 
 /// App Router Configuration
 ///
@@ -103,6 +93,7 @@ class AppRouter {
 
   // Additional routes
   static const String notifications = '/notifications';
+  static const String settings = '/settings';
 
   // Profile routes
   static const String editStudentProfile = '/profile/edit-student';
@@ -120,6 +111,59 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: splash,
     restorationScopeId: null,
+    redirect: (context, state) async {
+      final secureStorage = SecureStorageService();
+      final isAuthenticated = await secureStorage.isAuthenticated();
+      final isSessionExpired = await secureStorage.isSessionExpired();
+      
+      final currentPath = state.uri.path;
+      
+      // List of public routes that don't require authentication
+      final publicRoutes = [
+        splash,
+        onboarding,
+        login,
+        accountType,
+        studentStep1,
+        studentStep2,
+        studentStep3,
+        studentStep4,
+        studentStep5,
+        employerStep1,
+        employerStep2,
+        employerStep3,
+        employerStep4,
+      ];
+      
+      final isPublicRoute = publicRoutes.any((route) => currentPath.startsWith(route));
+      
+      // Check for session expiration
+      if (isAuthenticated && isSessionExpired) {
+        // Session expired - clear and redirect to login
+        await secureStorage.clearUserSession();
+        return login;
+      }
+      
+      // If user is authenticated and trying to access public routes, redirect to home
+      if (isAuthenticated && isPublicRoute) {
+        // Update last activity on navigation
+        await secureStorage.updateLastActivity();
+        return home;
+      }
+      
+      // If user is not authenticated and trying to access protected routes, redirect to login
+      if (!isAuthenticated && !isPublicRoute) {
+        return login;
+      }
+      
+      // Update last activity for authenticated users
+      if (isAuthenticated) {
+        await secureStorage.updateLastActivity();
+      }
+      
+      // No redirect needed
+      return null;
+    },
     routes: [
       // PUBLIC ROUTES (No Bottom Bar)
       GoRoute(
@@ -208,6 +252,13 @@ class AppRouter {
         builder: (context, state) => const Step4EmployerScreen(),
       ),
 
+      // Settings Screen (outside ShellRoute so no bottom navbar)
+      GoRoute(
+        path: settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+
       // Profile management routes (outside bottom nav)
       GoRoute(
         path: editStudentProfile,
@@ -224,7 +275,7 @@ class AppRouter {
       GoRoute(
         path: editEmployerProfile,
         name: 'edit-employer-profile',
-        builder: (context, state) => const EditEmployerProfileScreen2(),
+        builder: (context, state) => const EditEmployerProfileScreen(),
       ),
 
       // PROTECTED ROUTES (With Bottom Bar)
@@ -441,10 +492,11 @@ class _RootScaffoldState extends State<RootScaffold> {
   }
 
   Future<void> _loadEmail() async {
-    final prefs = await SharedPreferences.getInstance();
+    final secureStorage = SecureStorageService();
+    final email = await secureStorage.getUserEmail();
     if (mounted) {
       setState(() {
-        _cachedEmail = prefs.getString('user_email');
+        _cachedEmail = email;
       });
     }
   }
