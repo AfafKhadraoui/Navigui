@@ -31,7 +31,7 @@ class SFr extends S {
   String get commonContinue => 'Continue';
 
   @override
-  String get commonNext => 'Next';
+  String get commonNext => 'Suivant';
 
   @override
   String get commonPrevious => 'Previous';
@@ -98,6 +98,26 @@ class SFr extends S {
 
   @override
   String get commonInfo => 'Information';
+
+  @override
+  String get onboardingWelcomeTitle => 'Bienvenue sur\nNavigui';
+
+  @override
+  String get onboardingFindWorkTitle =>
+      'Trouvez un travail\nqui correspond à\nvotre emploi du temps';
+
+  @override
+  String get onboardingAccessStudentsTitle =>
+      'Accédez à des\nétudiants ambitieux';
+
+  @override
+  String get onboardingReadyTitle => 'Prêt à commencer\nà gagner et embaucher?';
+
+  @override
+  String get onboardingSignIn => 'Se connecter';
+
+  @override
+  String get onboardingSignUp => 'S\'inscrire';
 
   @override
   String get commonNoData => 'No data available';

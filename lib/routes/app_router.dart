@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../views/screens/onboarding/splash_screen.dart';
+import '../views/screens/onboarding/language_selection_splash.dart';
 import '../views/screens/auth/login.dart';
 import '../views/screens/auth/AccountType.dart';
 import '../views/screens/auth/step1Student.dart';
@@ -19,6 +20,8 @@ import '../views/screens/homescreen/home_screen.dart';
 import '../views/screens/jobs/jobs_page.dart';
 import '../views/screens/tasks/my_tasks_screen.dart';
 import '../views/screens/education/education_list_screen.dart';
+import '../views/screens/education/all_student_articles_screen.dart';
+import '../views/screens/education/all_employer_articles_screen.dart';
 import '../views/screens/profile/my_profile_screen.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
@@ -53,12 +56,6 @@ import '../views/screens/admin/admin_jobs_screen.dart';
 import '../views/screens/admin/admin_reports_screen.dart';
 import '../views/screens/admin/admin_settings_screen.dart';
 
-// Admin screens
-import '../views/screens/admin/admin_users_screen.dart';
-import '../views/screens/admin/admin_jobs_screen.dart';
-import '../views/screens/admin/admin_reports_screen.dart';
-import '../views/screens/admin/admin_settings_screen.dart';
-
 /// App Router Configuration
 ///
 /// Two types of routes:
@@ -78,6 +75,7 @@ import '../views/screens/admin/admin_settings_screen.dart';
 class AppRouter {
   // Route names as constants
   static const String splash = '/splash';
+  static const String languageSelection = '/language-selection';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String accountType = '/account-type';
@@ -128,6 +126,12 @@ class AppRouter {
         path: splash,
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+
+      GoRoute(
+        path: languageSelection,
+        name: 'language-selection',
+        builder: (context, state) => const LanguageSelectionPage(),
       ),
 
       GoRoute(
@@ -337,6 +341,20 @@ class AppRouter {
                   final articleId = state.pathParameters['id'] ?? '';
                   return EducationArticleScreen(articleId: articleId);
                 },
+              ),
+              GoRoute(
+                path: 'all-student-articles',
+                name: 'all-student-articles',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: const AllStudentArticlesScreen(),
+                ),
+              ),
+              GoRoute(
+                path: 'all-employer-articles',
+                name: 'all-employer-articles',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: const AllEmployerArticlesScreen(),
+                ),
               ),
             ],
           ),

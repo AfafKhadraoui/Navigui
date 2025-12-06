@@ -31,7 +31,7 @@ class SAr extends S {
   String get commonContinue => 'Continue';
 
   @override
-  String get commonNext => 'Next';
+  String get commonNext => 'التالي';
 
   @override
   String get commonPrevious => 'Previous';
@@ -98,6 +98,24 @@ class SAr extends S {
 
   @override
   String get commonInfo => 'Information';
+
+  @override
+  String get onboardingWelcomeTitle => 'مرحباً بك في\nNavigui';
+
+  @override
+  String get onboardingFindWorkTitle => 'ابحث عن عمل يناسب\nجدولك';
+
+  @override
+  String get onboardingAccessStudentsTitle => 'تواصل مع طلاب\nطموحين';
+
+  @override
+  String get onboardingReadyTitle => 'هل أنت مستعد\nللبدء؟';
+
+  @override
+  String get onboardingSignIn => 'تسجيل الدخول';
+
+  @override
+  String get onboardingSignUp => 'إنشاء حساب';
 
   @override
   String get commonNoData => 'No data available';

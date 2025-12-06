@@ -8,6 +8,16 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit() : super(AuthInitial());
 
+  // Login with user model
+  void login(dynamic user) {
+    emit(AuthAuthenticated(user));
+  }
+
+  // Logout
+  void logout() {
+    emit(AuthUnauthenticated());
+  }
+
   // TODO: Implement with new repository structure
   // Future<void> login({
   //   required String email,
