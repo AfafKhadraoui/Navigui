@@ -1,4 +1,4 @@
-// lib/data/databases/seed_data.dart
+﻿// lib/data/databases/seed_data.dart
 import 'db_helper.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -18,7 +18,7 @@ class DatabaseSeeder {
     final userCount = await db.rawQuery('SELECT COUNT(*) FROM users');
     if ((userCount.first.values.first as int) > 0) return; // Already seeded
     
-    print('🌱 Seeding database with test users...');
+    print(' Seeding database with test users...');
     
     // Insert default test accounts with hashed passwords
     await db.insert('users', {
@@ -92,8 +92,8 @@ class DatabaseSeeder {
       'updated_at': DateTime.now().toIso8601String(),
     });
     
-    print('✅ Database seeded with 5 test users');
-    print('📋 Available accounts:');
+    print(' Database seeded with 5 test users');
+    print(' Available accounts:');
     print('   - admin@navigui.com / admin123');
     print('   - employer@navigui.com / employer123');
     print('   - student@navigui.com / student123');

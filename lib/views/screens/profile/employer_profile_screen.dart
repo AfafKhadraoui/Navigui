@@ -10,7 +10,6 @@ import '../../../logic/cubits/employer_profile/employer_profile_cubit.dart';
 import '../../../logic/cubits/employer_profile/employer_profile_state.dart';
 import '../../../logic/services/secure_storage_service.dart';
 import 'public_employer_profile_screen.dart';
-import 'settings_screen.dart';
 
 /// Employer Profile Screen (Own Profile Management)
 /// Shows: Logo, business name, industry, description, location,
@@ -88,12 +87,7 @@ class _EmployerProfileScreenState extends State<EmployerProfileScreen>
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
-              );
+              context.go('/settings');
             },
           ),
         ],

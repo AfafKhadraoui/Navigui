@@ -6,6 +6,7 @@ import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../logic/cubits/auth/auth_state.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../core/dependency_injection.dart';
+import '../../../data/repositories/user/user_repo_abstract.dart';
 
 /// Edit Student Profile Screen
 /// Allows students to edit all their profile information
@@ -41,6 +42,7 @@ class _EditStudentProfileViewState extends State<_EditStudentProfileView> {
   final _formKey = GlobalKey<FormState>();
   
   // Controllers for text fields
+  late final TextEditingController _nameController;
   late final TextEditingController _universityController;
   late final TextEditingController _facultyController;
   late final TextEditingController _majorController;
@@ -58,6 +60,7 @@ class _EditStudentProfileViewState extends State<_EditStudentProfileView> {
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
     _universityController = TextEditingController();
     _facultyController = TextEditingController();
     _majorController = TextEditingController();
@@ -72,6 +75,7 @@ class _EditStudentProfileViewState extends State<_EditStudentProfileView> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _universityController.dispose();
     _facultyController.dispose();
     _majorController.dispose();
@@ -88,7 +92,11 @@ class _EditStudentProfileViewState extends State<_EditStudentProfileView> {
   void _populateFields(state) {
     if (state is StudentProfileLoaded) {
       final profile = state.profile;
+      final authState = context.read<AuthCubit>().state;
+      final userName = authState is AuthAuthenticated ? authState.user.name : '';
+      
       setState(() {
+        _nameController.text = userName;
         _universityController.text = profile.university;
         _facultyController.text = profile.faculty;
         _majorController.text = profile.major;
@@ -117,6 +125,16 @@ class _EditStudentProfileViewState extends State<_EditStudentProfileView> {
         .where((s) => s.isNotEmpty)
         .toList();
 
+    // Update user name if changed
+    if (_nameController.text.isNotEmpty && _nameController.text != authState.user.name) {
+      final userRepo = getIt<UserRepository>();
+      await userRepo.updateUser(
+        userId: authState.user.id,
+        name: _nameController.text,
+      );
+    }
+
+    // Update student profile
     await context.read<StudentProfileCubit>().updateProfile(
       userId: authState.user.id,
       university: _universityController.text,
@@ -195,6 +213,13 @@ class _EditStudentProfileViewState extends State<_EditStudentProfileView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _buildTextField(
+                    controller: _nameController,
+                    label: 'Full Name',
+                    hint: 'Enter your full name',
+                    required: true,
+                  ),
+                  const SizedBox(height: 16),
                   _buildTextField(
                     controller: _universityController,
                     label: 'University',

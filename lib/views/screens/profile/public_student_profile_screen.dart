@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../logic/cubits/student_profile/student_profile_cubit.dart';
+import '../../../logic/cubits/student_profile/student_profile_state.dart';
+import '../../../core/dependency_injection.dart';
 
 /// Public Student Profile Screen (View Any Student)
 /// Shows: Photo, name, university, major, bio, skills, field of study, 
 /// rating, reviews, CV download
-class PublicStudentProfileScreen extends StatefulWidget {
+class PublicStudentProfileScreen extends StatelessWidget {
   final String studentId;
   final String? studentName;
 
@@ -16,37 +20,34 @@ class PublicStudentProfileScreen extends StatefulWidget {
   });
 
   @override
-  State<PublicStudentProfileScreen> createState() => _PublicStudentProfileScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) {
+        final cubit = getIt<StudentProfileCubit>();
+        cubit.loadProfile(studentId);
+        return cubit;
+      },
+      child: _PublicStudentProfileView(studentName: studentName),
+    );
+  }
 }
 
-class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  bool _isLoading = true;
+class _PublicStudentProfileView extends StatefulWidget {
+  final String? studentName;
 
-  // Mock data - replace with API call
-  final Map<String, dynamic> _studentData = {
-    'name': 'Afaf Khadraoui',
-    'university': 'University of Science and Technology',
-    'major': 'Computer Science',
-    'bio': 'Passionate computer science student with a keen interest in mobile development and UI/UX design. Looking for opportunities to apply my skills in real-world projects and gain valuable experience.',
-    'fieldOfStudy': 'Computer Science & Software Engineering',
-    'year': 'Master 1',
-    'rating': 4.5,
-    'reviewCount': 15,
-    'profilePicture': null,
-  };
+  const _PublicStudentProfileView({this.studentName});
+
+  @override
+  State<_PublicStudentProfileView> createState() => _PublicStudentProfileViewState();
+}
+
+class _PublicStudentProfileViewState extends State<_PublicStudentProfileView> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadStudentData();
-  }
-
-  Future<void> _loadStudentData() async {
-    // TODO: Load from API using widget.studentId
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   @override
@@ -67,7 +68,7 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Student Profile',
+          widget.studentName ?? 'Student Profile',
           style: GoogleFonts.aclonica(
             fontSize: 20,
             color: AppColors.white,
@@ -75,9 +76,37 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.purple6))
-          : SafeArea(
+      body: BlocBuilder<StudentProfileCubit, StudentProfileState>(
+        builder: (context, state) {
+          if (state is StudentProfileLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.purple6),
+            );
+          }
+
+          if (state is StudentProfileError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: AppColors.red1, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.message,
+                    style: GoogleFonts.inter(color: AppColors.white),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state is! StudentProfileLoaded) {
+            return const SizedBox.shrink();
+          }
+
+          final profile = state.profile;
+
+          return SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,7 +136,7 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
                     
                     // Name
                     Text(
-                      _studentData['name'],
+                      widget.studentName ?? 'Student',
                       style: GoogleFonts.aclonica(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -119,7 +148,7 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
                     
                     // Major
                     Text(
-                      '${_studentData['major']} Student',
+                      '${profile.major} Student',
                       style: GoogleFonts.aclonica(
                         fontSize: 16,
                         color: AppColors.purple6,
@@ -130,7 +159,7 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
                     
                     // University
                     Text(
-                      _studentData['university'],
+                      profile.university,
                       style: GoogleFonts.aclonica(
                         fontSize: 14,
                         color: AppColors.grey6,
@@ -146,14 +175,14 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
                       children: [
                         ...List.generate(5, (index) {
                           return Icon(
-                            index < (_studentData['rating'] as double).floor() ? Icons.star : Icons.star_border,
+                            index < profile.rating.floor() ? Icons.star : Icons.star_border,
                             color: AppColors.yellow5,
                             size: 20,
                           );
                         }),
                         const SizedBox(width: 8),
                         Text(
-                          '${_studentData['rating']} (${_studentData['reviewCount']} reviews)',
+                          '${profile.rating.toStringAsFixed(1)} (${profile.reviewCount} reviews)',
                           style: GoogleFonts.aclonica(
                             fontSize: 14,
                             color: AppColors.grey6,
@@ -284,8 +313,8 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          _buildAboutTab(),
-                          _buildSkillsTab(),
+                          _buildAboutTab(profile),
+                          _buildSkillsTab(profile),
                           _buildReviewsTab(),
                         ],
                       ),
@@ -293,11 +322,13 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
                   ],
                 ),
               ),
-            ),
+            );
+        },
+      ),
     );
   }
 
-  Widget _buildAboutTab() {
+  Widget _buildAboutTab(profile) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -305,19 +336,19 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
         children: [
           _buildSectionTitle('Bio'),
           const SizedBox(height: 12),
-          _buildInfoCard(_studentData['bio']),
+          _buildInfoCard(profile.bio ?? 'No bio provided'),
           
           const SizedBox(height: 24),
           
           _buildSectionTitle('Field of Study'),
           const SizedBox(height: 12),
-          _buildInfoCard(_studentData['fieldOfStudy']),
+          _buildInfoCard('${profile.faculty} - ${profile.major}'),
           
           const SizedBox(height: 24),
           
           _buildSectionTitle('Year of Study'),
           const SizedBox(height: 12),
-          _buildInfoCard(_studentData['year']),
+          _buildInfoCard(profile.yearOfStudy),
           
           const SizedBox(height: 24),
           
@@ -326,11 +357,9 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: [
-              _buildChip('Arabic - Native'),
-              _buildChip('English - Fluent'),
-              _buildChip('French - Intermediate'),
-            ],
+            children: profile.languages.isNotEmpty
+                ? profile.languages.map((lang) => _buildChip(lang)).toList()
+                : [_buildChip('Not specified')],
           ),
           
           const SizedBox(height: 24),
@@ -339,43 +368,20 @@ class _PublicStudentProfileScreenState extends State<PublicStudentProfileScreen>
     );
   }
 
-  Widget _buildSkillsTab() {
+  Widget _buildSkillsTab(profile) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('Technical Skills'),
+          _buildSectionTitle('Skills'),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: [
-              _buildSkillChip('Flutter', 0.9),
-              _buildSkillChip('Dart', 0.85),
-              _buildSkillChip('Firebase', 0.75),
-              _buildSkillChip('Python', 0.8),
-              _buildSkillChip('Java', 0.7),
-              _buildSkillChip('Git', 0.85),
-              _buildSkillChip('REST APIs', 0.8),
-              _buildSkillChip('SQL', 0.75),
-            ],
-          ),
-          
-          const SizedBox(height: 24),
-          
-          _buildSectionTitle('Soft Skills'),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildChip('Team Collaboration'),
-              _buildChip('Problem Solving'),
-              _buildChip('Communication'),
-              _buildChip('Time Management'),
-              _buildChip('Creativity'),
-            ],
+            children: profile.skills.isNotEmpty
+                ? profile.skills.map((skill) => _buildChip(skill)).toList()
+                : [_buildChip('No skills added yet')],
           ),
           
           const SizedBox(height: 24),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../generated/s.dart';
+import '../../../routes/app_router.dart';
 
 /// Settings Screen
 /// Language selection, notifications, privacy settings, account management
@@ -17,11 +20,14 @@ class SettingsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            // Navigate back to profile using GoRouter
+            context.go(AppRouter.profile);
+          },
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          S.of(context)!.commonSettings,
+          style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -46,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
                 final languageCubit = context.read<LanguageCubit>();
                 return _buildSettingsTile(
                   icon: Icons.language,
-                  title: 'Language',
+                  title: S.of(context)!.commonLanguage,
                   subtitle: languageCubit.currentLanguageName,
                   onTap: () => _showLanguageDialog(context),
                 );

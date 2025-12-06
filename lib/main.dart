@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'commons/themes/style_simple/theme.dart';
 import 'routes/app_router.dart';
@@ -8,6 +9,8 @@ import 'logic/cubits/auth/auth_cubit.dart';
 import 'logic/cubits/language/language_cubit.dart';
 import 'logic/services/session_manager.dart';
 import 'data/databases/seed_data.dart';
+import 'commons/language_provider.dart';
+import 'generated/s.dart';
 // TODO: Update to new repository structure
 // import 'logic/cubits/job/job_cubit.dart';
 // import 'logic/cubits/application/application_cubit.dart';
@@ -23,7 +26,13 @@ void main() async {
   // Initialize dependency injection
   await setupDependencies();
 
-  runApp(const NaviguiApp());
+  runApp(
+    // Wrap with ChangeNotifierProvider for language management
+    ChangeNotifierProvider(
+      create: (_) => LanguageProvider(),
+      child: const NaviguiApp(),
+    ),
+  );
 }
 
 class NaviguiApp extends StatefulWidget {
@@ -84,12 +93,14 @@ class _NaviguiAppState extends State<NaviguiApp> {
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
           return MaterialApp.router(
+            key: ValueKey(locale.languageCode), // Force rebuild when locale changes
             title: 'Navigui',
             theme: AppTheme.lightTheme,
             debugShowCheckedModeBanner: false,
             routerConfig: AppRouter.router,
             locale: locale,
             localizationsDelegates: const [
+              S.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,

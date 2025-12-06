@@ -16,6 +16,7 @@ import 'table_schemas/education_articles_schema.dart';
 import 'table_schemas/job_required_skills_schema.dart';
 import 'table_schemas/student_skills_schema.dart';
 import 'table_schemas/reports_schema.dart';
+import 'seed_data.dart';
 
 class DBHelper {
   static Database? _database;
@@ -63,6 +64,9 @@ class DBHelper {
     await ReportsSchema.create(db);
 
     print('Database initialized with 12 tables');
+
+    // Seed with dummy data
+    await DatabaseSeeder.seedDatabase();
   }
 
   // Upgrade database when version changes

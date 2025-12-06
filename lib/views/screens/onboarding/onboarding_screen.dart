@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 import 'package:navigui/routes/app_router.dart';
+import 'package:navigui/views/screens/onboarding/language_selection_splash.dart';
+import 'package:navigui/generated/s.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -14,29 +17,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingPageData> _pages = [
-    OnboardingPageData(
-      title: 'Welcome TO\nNavigui',
-      imagePath: 'assets/images/onboarding/welcome1.png',
-      backgroundColor: AppColors.purple2, // #DCC1FF
-    ),
-    OnboardingPageData(
-      title: 'Find Work That Fits\nYour Schedule',
-      imagePath: 'assets/images/onboarding/welcome2.png',
-      backgroundColor: AppColors.yellow1, // #F7CE45
-    ),
-    OnboardingPageData(
-      title: 'Access ambitious\nStudents',
-      imagePath: 'assets/images/onboarding/welcome3.png',
-      backgroundColor: AppColors.purple1, // #AB93E0
-    ),
-    OnboardingPageData(
-      title: 'Ready To Start\nEarning And Hiring?',
-      imagePath: 'assets/images/onboarding/welcome4.png',
-      backgroundColor: AppColors.purple2, // #DCC1FF
-      isLastPage: true,
-    ),
-  ];
+  // Total pages = 1 language page + 4 onboarding pages
+  int get _totalPages => 5;
+
+  List<OnboardingPageData> _getPages(BuildContext context) {
+    final s = S.of(context)!;
+    return [
+      OnboardingPageData(
+        title: s.onboardingWelcomeTitle,
+        imagePath: 'assets/images/onboarding/welcome1.png',
+        backgroundColor: AppColors.purple2, // #DCC1FF
+      ),
+      OnboardingPageData(
+        title: s.onboardingFindWorkTitle,
+        imagePath: 'assets/images/onboarding/welcome2.png',
+        backgroundColor: AppColors.yellow1, // #F7CE45
+      ),
+      OnboardingPageData(
+        title: s.onboardingAccessStudentsTitle,
+        imagePath: 'assets/images/onboarding/welcome3.png',
+        backgroundColor: AppColors.purple1, // #AB93E0
+      ),
+      OnboardingPageData(
+        title: s.onboardingReadyTitle,
+        imagePath: 'assets/images/onboarding/welcome4.png',
+        backgroundColor: AppColors.purple2, // #DCC1FF
+        isLastPage: true,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -51,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _nextPage() {
-    if (_currentPage < _pages.length - 1) {
+    if (_currentPage < _getPages(context).length) {
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 300),
@@ -68,98 +77,157 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     context.go(AppRouter.accountType);
   }
 
+  /// Get text style with appropriate font for current locale
+  TextStyle _getTextStyle(bool isLastPage) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final fontSize = isLastPage ? 30.0 : 32.0;
+
+    // Use Cairo for Arabic - clean, modern font that matches Aclonica's bold style
+    if (locale == 'ar') {
+      return GoogleFonts.cairo(
+        color: AppColors.black,
+        fontSize: fontSize,
+        fontWeight: FontWeight.w700, // Bold for Arabic readability
+        height: 1.3,
+        letterSpacing: 0,
+      );
+    }
+
+    // Default Aclonica for English and French
+    return TextStyle(
+      color: AppColors.black,
+      fontSize: fontSize,
+      fontFamily: 'Aclonica',
+      fontWeight: FontWeight.w400,
+      height: 1.2,
+      letterSpacing: -0.5,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // PageView with onboarding pages
+          // PageView with language selection + onboarding pages
           PageView.builder(
             controller: _pageController,
             onPageChanged: _onPageChanged,
-            itemCount: _pages.length,
+            itemCount: _totalPages,
             itemBuilder: (context, index) {
-              return _buildPage(_pages[index]);
+              // First page is language selection
+              if (index == 0) {
+                return _buildLanguageSelectionPage();
+              }
+              // Rest are onboarding pages
+              final pages = _getPages(context);
+              return _buildPage(pages[index - 1]);
             },
           ),
 
-          // Page indicators (dots)
-          Positioned(
-            bottom: _pages[_currentPage].isLastPage ? 170 : 120,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                _pages.length,
-                (index) => _buildPageIndicator(index),
+          // Page indicators (dots) - hidden on language selection page
+          if (_currentPage > 0)
+            Positioned(
+              bottom:
+                  _getPages(context)[_currentPage - 1].isLastPage ? 170 : 120,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  _totalPages,
+                  (index) => _buildPageIndicator(index),
+                ),
               ),
             ),
-          ),
 
-          // Buttons (Next or Sign in/Sign up)
-          Positioned(
-            bottom: 60,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: _pages[_currentPage].isLastPage
-                  ? _buildAuthButtons()
-                  : _buildNextButton(),
+          // Buttons (Next or Sign in/Sign up) - not shown on language page
+          if (_currentPage > 0)
+            Positioned(
+              bottom: 60,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: _getPages(context)[_currentPage - 1].isLastPage
+                    ? _buildAuthButtons()
+                    : _buildNextButton(),
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  /// Build individual onboarding page 
+  /// Build language selection page (first page)
+  Widget _buildLanguageSelectionPage() {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: LanguageSelectionPage(
+        onLanguageSelected: (languageCode) {
+          // Move to next page (first onboarding page) after selection
+          if (mounted) {
+            _pageController.animateToPage(
+              1,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  /// Build individual onboarding page
   Widget _buildPage(OnboardingPageData page) {
     return Container(
       color: page.backgroundColor,
       child: SafeArea(
-        child: Column(
-          children: [
-            // Title at TOP - consistent 140 spacing for all pages
-            const SizedBox(height: 140),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      // Title at TOP
+                      const SizedBox(height: 80),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16), // Reduced padding for more width
-              child: SizedBox(
-                width: double.infinity, // Force full width
-                child: Text(
-                  page.title,
-                  textAlign: TextAlign.center,
-                  maxLines: 3, // Allow up to 3 lines
-                  style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: page.isLastPage
-                        ? 30
-                        : 34, // Smaller for last page to fit "Earning And Hiring?" on one line
-                    fontFamily: 'Aclonica',
-                    fontWeight: FontWeight.w400,
-                    height: 1.15, // Tight line spacing
-                    letterSpacing: -0.5, // Slightly tighter letters
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          page.title,
+                          textAlign: TextAlign.center,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: _getTextStyle(page.isLastPage),
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // Illustration
+                      Image.asset(
+                        page.imagePath,
+                        height: page.isLastPage ? 300 : 320,
+                        width: page.isLastPage ? 310 : 330,
+                        fit: BoxFit.contain,
+                      ),
+
+                      const Spacer(),
+
+                      SizedBox(
+                          height: page.isLastPage
+                              ? 200
+                              : 150), // Space for buttons and dots
+                    ],
                   ),
                 ),
               ),
-            ),
-
-            const Spacer(), // Push image to center
-
-            // Illustration
-            Image.asset(
-              page.imagePath,
-              height: page.isLastPage ? 338 : 382,
-              width: page.isLastPage ? 347 : 393,
-              fit: BoxFit.contain,
-            ),
-
-            const Spacer(), // Push buttons to bottom
-
-            SizedBox(height: page.isLastPage ? 190 : 140), // Space for buttons
-          ],
+            );
+          },
         ),
       ),
     );
@@ -191,10 +259,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           border: Border.all(color: AppColors.black, width: 2),
           borderRadius: BorderRadius.circular(99),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'Next',
-            style: TextStyle(
+            S.of(context)!.commonNext,
+            style: const TextStyle(
               color: AppColors.black,
               fontSize: 16,
               fontFamily: 'Aclonica',
@@ -220,10 +288,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: const Color(0xFFF5F378), // Yellow from your design
               borderRadius: BorderRadius.circular(25),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Sign in',
-                style: TextStyle(
+                S.of(context)!.onboardingSignIn,
+                style: const TextStyle(
                   color: Color(0xFF1A1A1A),
                   fontSize: 16,
                   fontFamily: 'Aclonica',
@@ -246,10 +314,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: AppColors.white, // White background
               borderRadius: BorderRadius.circular(25),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Sign up',
-                style: TextStyle(
+                S.of(context)!.onboardingSignUp,
+                style: const TextStyle(
                   color: Color(0xFF1A1A1A),
                   fontSize: 16,
                   fontFamily: 'Aclonica',

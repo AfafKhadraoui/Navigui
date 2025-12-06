@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 import 'package:navigui/views/widgets/home/part_time_jobs_section.dart';
 import 'package:navigui/views/widgets/home/quick_tasks_section.dart';
 import 'package:navigui/views/widgets/home/educational_content_section.dart';
 import 'package:navigui/routes/app_router.dart';
 import '../../../logic/services/secure_storage_service.dart';
+import '../../../logic/cubits/language/language_cubit.dart';
+import '../../../generated/s.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,18 +38,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header with profile
-            _buildHeader(context),
+    // Listen to locale changes to trigger rebuild
+    return BlocBuilder<LanguageCubit, Locale>(
+      builder: (context, locale) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Header with profile
+                _buildHeader(context),
 
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
+                // Scrollable content
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
                   children: [
                     const SizedBox(height: 10),
 
@@ -76,6 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 
@@ -137,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Hello text
           Expanded(
             child: Text(
-              'Hello, $_userName',
+              '${S.of(context)!.commonWelcome}, $_userName',
               style: TextStyle(
                 color: AppColors.purple1, // #AB93E0
                 fontSize: 16,

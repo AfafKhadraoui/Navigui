@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../routes/app_router.dart';
 import '../../../utils/form_validators.dart';
 import '../../../logic/cubits/auth/auth_cubit.dart';
@@ -19,6 +19,8 @@ class _LoginScreen2State extends State<LoginScreen2> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -231,13 +233,35 @@ class _LoginScreen2State extends State<LoginScreen2> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
+
+                // Error message
+                if (_errorMessage != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red),
+                    ),
+                    child: Text(
+                      _errorMessage!,
+                      style: GoogleFonts.aclonica(
+                        fontSize: 12,
+                        color: Colors.red,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+                const SizedBox(height: 24),
 
                 // Login Button
                 ElevatedButton(
                   onPressed: isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD2FF1F),
+                    backgroundColor:
+                        _isLoading ? Colors.grey : const Color(0xFFD2FF1F),
                     foregroundColor: Colors.black,
                     disabledBackgroundColor: Colors.grey,
                     padding: const EdgeInsets.symmetric(vertical: 16),

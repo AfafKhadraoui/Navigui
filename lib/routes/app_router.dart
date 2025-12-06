@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../logic/services/secure_storage_service.dart';
 import '../views/screens/onboarding/splash_screen.dart';
+import '../views/screens/onboarding/language_selection_splash.dart';
 import '../views/screens/auth/login.dart';
 import '../views/screens/auth/AccountType.dart';
 import '../views/screens/auth/step1Student.dart';
@@ -15,6 +16,13 @@ import '../views/screens/auth/step2Employer.dart';
 import '../views/screens/auth/step3Employer.dart';
 import '../views/screens/auth/step4Employer.dart';
 import '../views/screens/onboarding/onboarding_screen.dart';
+import '../views/screens/homescreen/home_screen.dart';
+import '../views/screens/jobs/jobs_page.dart';
+import '../views/screens/tasks/my_tasks_screen.dart';
+import '../views/screens/education/education_list_screen.dart';
+import '../views/screens/education/all_student_articles_screen.dart';
+import '../views/screens/education/all_employer_articles_screen.dart';
+import '../views/screens/profile/my_profile_screen.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
 import '../data/models/job_post.dart';
@@ -31,10 +39,12 @@ import '../views/screens/employer/job_post_detail_screen.dart';
 import '../views/screens/employer/student_requests_screen.dart';
 import '../views/screens/employer/job_applications_screen.dart';
 import '../views/screens/employer/student_request_detail_screen.dart';
+
 import '../views/screens/admin/admin_users_screen.dart';
 import '../views/screens/admin/admin_jobs_screen.dart';
 import '../views/screens/admin/admin_reports_screen.dart';
 import '../views/screens/admin/admin_settings_screen.dart';
+import '../views/screens/profile/settings_screen.dart';
 
 /// App Router Configuration
 ///
@@ -55,6 +65,7 @@ import '../views/screens/admin/admin_settings_screen.dart';
 class AppRouter {
   // Route names as constants
   static const String splash = '/splash';
+  static const String languageSelection = '/language-selection';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String accountType = '/account-type';
@@ -82,6 +93,7 @@ class AppRouter {
 
   // Additional routes
   static const String notifications = '/notifications';
+  static const String settings = '/settings';
 
   // Profile routes
   static const String editStudentProfile = '/profile/edit-student';
@@ -161,6 +173,12 @@ class AppRouter {
       ),
 
       GoRoute(
+        path: languageSelection,
+        name: 'language-selection',
+        builder: (context, state) => const LanguageSelectionPage(),
+      ),
+
+      GoRoute(
         path: onboarding,
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
@@ -234,10 +252,11 @@ class AppRouter {
         builder: (context, state) => const Step4EmployerScreen(),
       ),
 
+      // Settings Screen (outside ShellRoute so no bottom navbar)
       GoRoute(
-        path: notifications,
-        name: 'notifications',
-        builder: (context, state) => const NotificationsScreen(),
+        path: settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // Profile management routes (outside bottom nav)
@@ -374,6 +393,20 @@ class AppRouter {
                   return EducationArticleScreen(articleId: articleId);
                 },
               ),
+              GoRoute(
+                path: 'all-student-articles',
+                name: 'all-student-articles',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: const AllStudentArticlesScreen(),
+                ),
+              ),
+              GoRoute(
+                path: 'all-employer-articles',
+                name: 'all-employer-articles',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: const AllEmployerArticlesScreen(),
+                ),
+              ),
             ],
           ),
 
@@ -382,6 +415,15 @@ class AppRouter {
             name: 'profile',
             pageBuilder: (context, state) => NoTransitionPage(
               child: RoleBasedNavigation.getProfileScreen(),
+            ),
+          ),
+
+          // Notifications route (accessible from anywhere in the app)
+          GoRoute(
+            path: notifications,
+            name: 'notifications',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: NotificationsScreen(),
             ),
           ),
 

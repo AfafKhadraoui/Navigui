@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../commons/themes/style_simple/colors.dart';
-import '../../../logic/services/auth_service.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
 import '../../../routes/app_router.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
@@ -218,12 +218,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
             child: Text('Cancel', style: GoogleFonts.acme(color: AppColors.grey6)),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
               // Logout logic
-              final authService = context.read<AuthService>();
-              authService.logout();
-              context.go(AppRouter.login);
+              final authCubit = context.read<AuthCubit>();
+              await authCubit.logout();
+              if (context.mounted) {
+                context.go(AppRouter.login);
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.orange2, foregroundColor: AppColors.black),
             child: Text('Log Out', style: GoogleFonts.acme(fontWeight: FontWeight.bold)),

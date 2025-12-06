@@ -279,6 +279,42 @@ abstract class S {
   /// **'Information'**
   String get commonInfo;
 
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome TO\nNavigui'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingFindWorkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Work That Fits\nYour Schedule'**
+  String get onboardingFindWorkTitle;
+
+  /// No description provided for @onboardingAccessStudentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ambitious\nStudents'**
+  String get onboardingAccessStudentsTitle;
+
+  /// No description provided for @onboardingReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready To Start\nEarning And Hiring?'**
+  String get onboardingReadyTitle;
+
+  /// No description provided for @onboardingSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get onboardingSignIn;
+
+  /// No description provided for @onboardingSignUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get onboardingSignUp;
+
   /// No description provided for @commonNoData.
   ///
   /// In en, this message translates to:
@@ -374,6 +410,168 @@ abstract class S {
   /// In en, this message translates to:
   /// **'N/A'**
   String get commonNotAvailable;
+
+  /// No description provided for @learnPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn & Grow'**
+  String get learnPageTitle;
+
+  /// No description provided for @learnNewToJobHunting.
+  ///
+  /// In en, this message translates to:
+  /// **'New to Job Hunting'**
+  String get learnNewToJobHunting;
+
+  /// No description provided for @learnForStudents.
+  ///
+  /// In en, this message translates to:
+  /// **'For Students'**
+  String get learnForStudents;
+
+  /// No description provided for @learnForEmployers.
+  ///
+  /// In en, this message translates to:
+  /// **'For Employers'**
+  String get learnForEmployers;
+
+  /// No description provided for @learnViewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'view all'**
+  String get learnViewAll;
+
+  /// No description provided for @learnCompleteGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'complete guide'**
+  String get learnCompleteGuide;
+
+  /// No description provided for @learnReadNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Read Now'**
+  String get learnReadNow;
+
+  /// No description provided for @learnMinRead.
+  ///
+  /// In en, this message translates to:
+  /// **'min read'**
+  String get learnMinRead;
+
+  /// No description provided for @learnErrorLoadingArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading articles'**
+  String get learnErrorLoadingArticles;
+
+  /// No description provided for @learnFailedToLoadArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load articles'**
+  String get learnFailedToLoadArticles;
+
+  /// No description provided for @learnNoStudentArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'No student articles available'**
+  String get learnNoStudentArticles;
+
+  /// No description provided for @learnNoEmployerArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'No employer articles available'**
+  String get learnNoEmployerArticles;
+
+  /// No description provided for @learnAllStudentArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'All Student Articles'**
+  String get learnAllStudentArticles;
+
+  /// No description provided for @learnAllEmployerArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'All Employer Articles'**
+  String get learnAllEmployerArticles;
+
+  /// No description provided for @learnFirstTimeJobSeekers.
+  ///
+  /// In en, this message translates to:
+  /// **'First-Time Job Seekers'**
+  String get learnFirstTimeJobSeekers;
+
+  /// No description provided for @learnFirstTimeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything you need to write winning  applications and ace your interviews'**
+  String get learnFirstTimeDescription;
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get navBrowse;
+
+  /// No description provided for @navMyTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tasks'**
+  String get navMyTasks;
+
+  /// No description provided for @navLearn.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get navLearn;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
+  /// No description provided for @navMyJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'My Jobs'**
+  String get navMyJobs;
+
+  /// No description provided for @navApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get navApplications;
+
+  /// No description provided for @navDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get navDashboard;
+
+  /// No description provided for @navUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get navUsers;
+
+  /// No description provided for @navJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get navJobs;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get navSettings;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

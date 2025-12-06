@@ -1,198 +1,236 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
-// import 'package:provider/provider.dart';
-// import '../../../logic/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../logic/cubits/notification/notification_cubit.dart';
+import '../../../logic/cubits/notification/notification_state.dart';
+import '../../../core/dependency_injection.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+  final String? userId;
+
+  const NotificationsScreen({super.key, this.userId});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  List<Map<String, dynamic>> _getNotifications(bool isEmployer) {
-    if (isEmployer) {
-      // Employer notifications
-      return [
-        {
-          'title': 'New application received!',
-          'subtitle': 'Ahmed Benali applied for your Waiter Needed position.',
-          'highlightColor': Color(0xFFD2FF1F), // Electric lime highlight
-          'isRead': false,
-        },
-        {
-          'title':
-              'Your job post "Delivery Driver" expires in 2 days. Renew now to keep it active!',
-          'subtitle': '',
-          'highlightColor': null,
-          'isRead': false,
-        },
-        {
-          'title':
-              'Fatima Kader completed the job. Rate their performance to help other employers.',
-          'subtitle': '',
-          'highlightColor': null,
-          'isRead': false,
-        },
-      ];
-    } else {
-      // Student notifications
-      return [
-        {
-          'title': 'Your application was accepted!',
-          'subtitle':
-              'Café Littéraire accepted your application for Weekend Waiter.',
-          'highlightColor': Color(0xFFD2FF1F),
-          'isRead': false,
-        },
-        {
-          'title':
-              'The Social Media Manager position you saved expires in 2 days. Apply now!',
-          'subtitle': '',
-          'highlightColor': null,
-          'isRead': false,
-        },
-        {
-          'title':
-              'You completed a job with QuickBox Delivery. Rate your experience to help other students.',
-          'subtitle': '',
-          'highlightColor': null,
-          'isRead': false,
-        },
-      ];
-    }
-  }
-
-  late List<Map<String, dynamic>> _notifications;
-  late bool _isEmployer;
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
-    // Initialize in initState to avoid resetting on rebuild
+    _loadUserId();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // TODO: Get role from AuthService once implemented
-    // For now, default to student role
-    _isEmployer = false; // Change to true to test employer notifications
-    if (!_notificationsInitialized) {
-      _notifications = _getNotifications(_isEmployer);
-      _notificationsInitialized = true;
-    }
-  }
-
-  bool _notificationsInitialized = false;
-
-  void _removeNotification(int index) {
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
     setState(() {
-      _notifications.removeAt(index);
-    });
-  }
-
-  void _clearAllNotifications() {
-    setState(() {
-      _notifications.clear();
+      _currentUserId = widget.userId ?? userId ?? 'user123';
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background, // #1A1A1A
-      appBar: AppBar(
+    if (_currentUserId == null) {
+      return Scaffold(
         backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors.white, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.accent),
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Text(
-            'Notifications',
-            style: TextStyle(
-              color: AppColors.white,
-              fontSize: 28,
-              fontFamily: 'Aclonica',
-              fontWeight: FontWeight.w400,
-              letterSpacing: -0.5,
+      );
+    }
+
+    final currentUserId = _currentUserId!;
+
+    return BlocProvider(
+      create: (context) =>
+          getIt<NotificationCubit>(param1: currentUserId)..loadNotifications(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: AppColors.white, size: 20),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Notifications',
+              style: TextStyle(
+                color: AppColors.white,
+                fontSize: 28,
+                fontFamily: 'Aclonica',
+                fontWeight: FontWeight.w400,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
-        ),
-        centerTitle: true,
-        actions: [
-          if (_notifications.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(right: 16, top: 8),
-              child: GestureDetector(
-                onTap: _clearAllNotifications,
-                child: Icon(
-                  Icons.delete_outline,
-                  color: AppColors.electricLime,
-                  size: 28,
-                ),
-              ),
-            ),
-        ],
-      ),
-      body: _notifications.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // "No more" text
-                  Text(
-                    'You are all \ncaught up!',
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 34,
-                      fontFamily: 'Aclonica',
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: -0.5,
+          centerTitle: true,
+          actions: [
+            BlocBuilder<NotificationCubit, NotificationState>(
+              builder: (context, state) {
+                if (state is NotificationsLoaded &&
+                    state.notifications.isNotEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16, top: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        context
+                            .read<NotificationCubit>()
+                            .deleteAllNotifications();
+                      },
+                      child: Icon(
+                        Icons.delete_outline,
+                        color: AppColors.electricLime,
+                        size: 28,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  // Illustration
-                  Image.asset(
-                    'assets/images/illustrations/notif.png',
-                    height: 300,
-                    width: 300,
-                    fit: BoxFit.contain,
-                  ),
-                ],
-              ),
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              itemCount: _notifications.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final notification = _notifications[index];
-                return _buildNotificationCard(
-                  title: notification['title'],
-                  subtitle: notification['subtitle'],
-                  highlightColor: notification['highlightColor'],
-                  onDismiss: () => _removeNotification(index),
-                );
+                  );
+                }
+                return const SizedBox.shrink();
               },
             ),
+          ],
+        ),
+        body: BlocBuilder<NotificationCubit, NotificationState>(
+          builder: (context, state) {
+            if (state is NotificationLoading) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.electricLime,
+                ),
+              );
+            }
+
+            if (state is NotificationError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error loading notifications',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        state.message,
+                        style: TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context
+                            .read<NotificationCubit>()
+                            .refreshNotifications();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.electricLime,
+                        foregroundColor: AppColors.background,
+                      ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (state is NotificationsLoaded) {
+              final notifications = state.notifications;
+
+              if (notifications.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'You are all \ncaught up!',
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: 34,
+                          fontFamily: 'Aclonica',
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: -0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 40),
+                      Icon(
+                        Icons.notifications_off_outlined,
+                        color: Colors.white38,
+                        size: 120,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await context
+                      .read<NotificationCubit>()
+                      .refreshNotifications();
+                },
+                color: AppColors.electricLime,
+                backgroundColor: AppColors.background,
+                child: ListView.separated(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  itemCount: notifications.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    final notification = notifications[index];
+                    return _buildNotificationCard(
+                      context: context,
+                      notification: notification,
+                    );
+                  },
+                ),
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
     );
   }
 
   Widget _buildNotificationCard({
-    required String title,
-    required String subtitle,
-    Color? highlightColor,
-    required VoidCallback onDismiss,
+    required BuildContext context,
+    required notification,
   }) {
+    // Determine highlight color (electric lime for important notifications)
+    final hasHighlight = notification.priority == 'high' ||
+        notification.priority == 'urgent' ||
+        notification.type == 'application';
+    final highlightColor = hasHighlight ? AppColors.electricLime : null;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Color(0xFF2F2F2F), // Dark grey background
+        color: Color(0xFF2F2F2F),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -204,67 +242,47 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Title with optional highlight
-                if (highlightColor != null)
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: title,
-                          style: TextStyle(
-                            color: highlightColor, // Yellow for highlighted
-                            fontSize: 16,
-                            fontFamily: 'Acme', // ⭐ Changed to Acme
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: -0.5,
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 16,
-                      fontFamily: 'Acme', // ⭐ Changed to Acme
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: -0.5,
-                      height: 1.3,
-                    ),
-                    maxLines: 2, // ⭐ Limit to 2 lines
-                    overflow:
-                        TextOverflow.ellipsis, // ⭐ Add ellipsis if too long
+                Text(
+                  notification.title,
+                  style: TextStyle(
+                    color: highlightColor ?? AppColors.white,
+                    fontSize: 16,
+                    fontFamily: 'Acme',
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: -0.5,
+                    height: 1.3,
                   ),
-
-                // Subtitle (if exists)
-                if (subtitle.isNotEmpty) ...[
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                // Subtitle/message (if exists)
+                if (notification.message.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
-                    subtitle,
+                    notification.message,
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 14,
-                      fontFamily: 'Acme', // ⭐ Changed to Acme
+                      fontFamily: 'Acme',
                       fontWeight: FontWeight.w400,
                       letterSpacing: -0.5,
                       height: 1.3,
                     ),
-                    maxLines: 2, // ⭐ Limit to 2 lines
-                    overflow:
-                        TextOverflow.ellipsis, // ⭐ Add ellipsis if too long
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ],
             ),
           ),
-
           const SizedBox(width: 12),
-
           // Close button (X)
           GestureDetector(
-            onTap: onDismiss,
+            onTap: () {
+              context
+                  .read<NotificationCubit>()
+                  .deleteNotification(notification.id);
+            },
             child: Container(
               width: 24,
               height: 24,
@@ -278,5 +296,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ],
       ),
     );
+  }
+
+  String _formatTimestamp(DateTime dateTime) {
+    try {
+      final now = DateTime.now();
+      final difference = now.difference(dateTime);
+
+      if (difference.inMinutes < 1) {
+        return 'Just now';
+      } else if (difference.inHours < 1) {
+        return '${difference.inMinutes}m ago';
+      } else if (difference.inDays < 1) {
+        return '${difference.inHours}h ago';
+      } else if (difference.inDays < 7) {
+        return '${difference.inDays}d ago';
+      } else {
+        return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+      }
+    } catch (e) {
+      return '';
+    }
   }
 }

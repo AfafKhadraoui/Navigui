@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../commons/themes/style_simple/colors.dart';
+import '../../../logic/cubits/employer_profile/employer_profile_cubit.dart';
+import '../../../logic/cubits/employer_profile/employer_profile_state.dart';
+import '../../../core/dependency_injection.dart';
+import '../../../data/models/employer_model.dart';
 
 /// Public Employer Profile Screen (View Any Employer)
 /// Shows: Logo, business name, industry, description, location,
 /// rating, reviews, active jobs, company size
-class PublicEmployerProfileScreen extends StatefulWidget {
+class PublicEmployerProfileScreen extends StatelessWidget {
   final String employerId;
   final String? companyName;
 
@@ -16,39 +21,34 @@ class PublicEmployerProfileScreen extends StatefulWidget {
   });
 
   @override
-  State<PublicEmployerProfileScreen> createState() => _PublicEmployerProfileScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) {
+        final cubit = getIt<EmployerProfileCubit>();
+        cubit.loadProfile(employerId);
+        return cubit;
+      },
+      child: _PublicEmployerProfileView(companyName: companyName),
+    );
+  }
 }
 
-class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  bool _isLoading = true;
+class _PublicEmployerProfileView extends StatefulWidget {
+  final String? companyName;
 
-  // Mock data - replace with API call
-  final Map<String, dynamic> _companyData = {
-    'name': 'Tech Solutions Inc.',
-    'industry': 'Technology & Software Development',
-    'location': 'Algiers, Algeria',
-    'description': 'Tech Solutions Inc. is a leading technology company specializing in custom software development, mobile applications, and digital transformation services. We work with businesses of all sizes to bring their digital ideas to life.',
-    'companySize': '51-200 employees',
-    'founded': '2018',
-    'rating': 4.5,
-    'reviewCount': 28,
-    'activeJobs': 12,
-    'totalHires': 150,
-    'logo': null,
-  };
+  const _PublicEmployerProfileView({this.companyName});
+
+  @override
+  State<_PublicEmployerProfileView> createState() => _PublicEmployerProfileViewState();
+}
+
+class _PublicEmployerProfileViewState extends State<_PublicEmployerProfileView> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadCompanyData();
-  }
-
-  Future<void> _loadCompanyData() async {
-    // TODO: Load from API using widget.employerId
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   @override
@@ -94,9 +94,37 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.electricLime))
-          : SafeArea(
+      body: BlocBuilder<EmployerProfileCubit, EmployerProfileState>(
+        builder: (context, state) {
+          if (state is EmployerProfileLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.electricLime),
+            );
+          }
+
+          if (state is EmployerProfileError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: AppColors.red1, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.message,
+                    style: GoogleFonts.inter(color: AppColors.white),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state is! EmployerProfileLoaded) {
+            return const SizedBox.shrink();
+          }
+
+          final profile = state.profile;
+
+          return SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -128,7 +156,7 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
-                        _companyData['name'],
+                        widget.companyName ?? profile.businessName,
                         style: GoogleFonts.aclonica(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -144,7 +172,7 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
-                        _companyData['industry'],
+                        profile.industry,
                         style: GoogleFonts.aclonica(
                           fontSize: 16,
                           color: AppColors.electricLime,
@@ -162,7 +190,7 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                         const Icon(Icons.location_on, color: AppColors.grey6, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          _companyData['location'],
+                          profile.location ?? 'Location not specified',
                           style: GoogleFonts.aclonica(
                             fontSize: 14,
                             color: AppColors.grey6,
@@ -179,14 +207,14 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                       children: [
                         ...List.generate(5, (index) {
                           return Icon(
-                            index < (_companyData['rating'] as double).floor() ? Icons.star : Icons.star_border,
+                            index < profile.rating.floor() ? Icons.star : Icons.star_border,
                             color: AppColors.yellow5,
                             size: 20,
                           );
                         }),
                         const SizedBox(width: 8),
                         Text(
-                          '${_companyData['rating']} (${_companyData['reviewCount']} reviews)',
+                          '${profile.rating.toStringAsFixed(1)} (${profile.reviewCount} reviews)',
                           style: GoogleFonts.aclonica(
                             fontSize: 14,
                             color: AppColors.grey6,
@@ -202,11 +230,11 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Row(
                         children: [
-                          Expanded(child: _buildStatCard('${_companyData['activeJobs']}', 'Active Jobs')),
+                          Expanded(child: _buildStatCard('${profile.activeJobs}', 'Active Jobs')),
                           const SizedBox(width: 8),
-                          Expanded(child: _buildStatCard('${_companyData['totalHires']}+', 'Hires Made')),
+                          Expanded(child: _buildStatCard('${profile.totalHires}+', 'Hires Made')),
                           const SizedBox(width: 8),
-                          Expanded(child: _buildStatCard('${_companyData['rating']}', 'Rating')),
+                          Expanded(child: _buildStatCard('${profile.rating.toStringAsFixed(1)}', 'Rating')),
                         ],
                       ),
                     ),
@@ -225,7 +253,7 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Viewing all jobs from ${_companyData['name']}',
+                                  'Viewing all jobs from ${widget.companyName ?? profile.businessName}',
                                   style: GoogleFonts.aclonica(),
                                 ),
                                 backgroundColor: AppColors.electricLime,
@@ -293,7 +321,7 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          _buildAboutTab(),
+                          _buildAboutTab(profile),
                           _buildBenefitsTab(),
                           _buildReviewsTab(),
                         ],
@@ -302,11 +330,13 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
                   ],
                 ),
               ),
-            ),
+            );
+        },
+      ),
     );
   }
 
-  Widget _buildAboutTab() {
+  Widget _buildAboutTab(EmployerModel profile) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -314,19 +344,19 @@ class _PublicEmployerProfileScreenState extends State<PublicEmployerProfileScree
         children: [
           _buildSectionTitle('Company Description'),
           const SizedBox(height: 12),
-          _buildInfoCard(_companyData['description']),
+          _buildInfoCard(profile.description ?? 'No description provided'),
           
           const SizedBox(height: 24),
           
           _buildSectionTitle('Company Size'),
           const SizedBox(height: 12),
-          _buildInfoCard(_companyData['companySize']),
+          _buildInfoCard('Not specified'),
           
           const SizedBox(height: 24),
           
           _buildSectionTitle('Founded'),
           const SizedBox(height: 12),
-          _buildInfoCard(_companyData['founded']),
+          _buildInfoCard('Not specified'),
           
           const SizedBox(height: 24),
           

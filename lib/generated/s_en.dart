@@ -100,6 +100,24 @@ class SEn extends S {
   String get commonInfo => 'Information';
 
   @override
+  String get onboardingWelcomeTitle => 'Welcome TO\nNavigui';
+
+  @override
+  String get onboardingFindWorkTitle => 'Find Work That Fits\nYour Schedule';
+
+  @override
+  String get onboardingAccessStudentsTitle => 'Access ambitious\nStudents';
+
+  @override
+  String get onboardingReadyTitle => 'Ready To Start\nEarning And Hiring?';
+
+  @override
+  String get onboardingSignIn => 'Sign in';
+
+  @override
+  String get onboardingSignUp => 'Sign up';
+
+  @override
   String get commonNoData => 'No data available';
 
   @override
@@ -146,4 +164,86 @@ class SEn extends S {
 
   @override
   String get commonNotAvailable => 'N/A';
+
+  @override
+  String get learnPageTitle => 'Learn & Grow';
+
+  @override
+  String get learnNewToJobHunting => 'New to Job Hunting';
+
+  @override
+  String get learnForStudents => 'For Students';
+
+  @override
+  String get learnForEmployers => 'For Employers';
+
+  @override
+  String get learnViewAll => 'view all';
+
+  @override
+  String get learnCompleteGuide => 'complete guide';
+
+  @override
+  String get learnReadNow => 'Read Now';
+
+  @override
+  String get learnMinRead => 'min read';
+
+  @override
+  String get learnErrorLoadingArticles => 'Error loading articles';
+
+  @override
+  String get learnFailedToLoadArticles => 'Failed to load articles';
+
+  @override
+  String get learnNoStudentArticles => 'No student articles available';
+
+  @override
+  String get learnNoEmployerArticles => 'No employer articles available';
+
+  @override
+  String get learnAllStudentArticles => 'All Student Articles';
+
+  @override
+  String get learnAllEmployerArticles => 'All Employer Articles';
+
+  @override
+  String get learnFirstTimeJobSeekers => 'First-Time Job Seekers';
+
+  @override
+  String get learnFirstTimeDescription =>
+      'Everything you need to write winning  applications and ace your interviews';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navBrowse => 'Browse';
+
+  @override
+  String get navMyTasks => 'My Tasks';
+
+  @override
+  String get navLearn => 'Learn';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get navMyJobs => 'My Jobs';
+
+  @override
+  String get navApplications => 'Applications';
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navUsers => 'Users';
+
+  @override
+  String get navJobs => 'Jobs';
+
+  @override
+  String get navSettings => 'Settings';
 }

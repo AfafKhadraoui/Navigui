@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 import 'package:navigui/views/widgets/cards/education_card.dart';
+import 'package:navigui/generated/s.dart';
+import '../../../logic/cubits/education/education_cubit.dart';
+import '../../../logic/cubits/education/education_state.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/auth/auth_state.dart';
+
+import '../../../core/dependency_injection.dart';
+import '../../../data/models/education_article_model.dart';
 
 /// Education List Screen - Learn & Grow page
 /// Articles, tips, guides
@@ -9,118 +19,202 @@ import 'package:navigui/views/widgets/cards/education_card.dart';
 class EducationListScreen extends StatelessWidget {
   const EducationListScreen({super.key});
 
+  TextStyle _getUITextStyle(
+    BuildContext context, {
+    required double fontSize,
+    Color color = Colors.white,
+    FontWeight? fontWeight,
+  }) {
+    final locale = Localizations.localeOf(context).languageCode;
+    if (locale == 'ar') {
+      return GoogleFonts.cairo(
+        fontSize: fontSize,
+        color: color,
+        fontWeight: fontWeight ?? FontWeight.w700,
+      );
+    }
+    return TextStyle(
+      fontSize: fontSize,
+      color: color,
+      fontFamily: 'Aclonica',
+      fontWeight: fontWeight ?? FontWeight.w400,
+      letterSpacing: -0.5,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(context),
+    return BlocProvider(
+      create: (context) => getIt<EducationCubit>()..loadArticles(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              _buildHeader(context),
 
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
+              // Scrollable content
+              Expanded(
+                child: BlocBuilder<EducationCubit, EducationState>(
+                  builder: (context, state) {
+                    if (state is EducationLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.electricLime,
+                        ),
+                      );
+                    }
 
-                    // Title above featured card
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
+                    if (state is EducationError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              S.of(context)!.learnErrorLoadingArticles,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              state.message,
+                              style: TextStyle(
+                                color: Colors.white60,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    // Get articles from backend or show static content
+                    List<EducationArticleModel> articles = [];
+                    if (state is EducationArticlesLoaded) {
+                      articles = state.articles;
+                    }
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'New to Job Hunting',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Aclonica',
-                              letterSpacing: -0.5,
+                          const SizedBox(height: 20),
+
+                          // Title above featured card
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Row(
+                              children: [
+                                Text(
+                                  S.of(context)!.learnNewToJobHunting,
+                                  style: _getUITextStyle(context,
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.3),
+
+                          const SizedBox(height: 15),
+
+                          // Featured card - show from backend if available, else static
+                          _buildFeaturedCard(context, articles),
+
+                          const SizedBox(height: 25),
+
+                          // For Students Section
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  S.of(context)!.learnForStudents,
+                                  style: _getUITextStyle(context,
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    context.go('/learn/all-student-articles');
+                                  },
+                                  child: Text(
+                                    S.of(context)!.learnViewAll,
+                                    style: TextStyle(
+                                      color: AppColors.electricLime,
+                                      fontSize: 14,
+                                      fontFamily: 'Acme',
+                                      letterSpacing: -0.5,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: AppColors.electricLime,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(height: 15),
+                          _buildStudentCardsColumn(context, articles),
+
+                          const SizedBox(height: 25),
+
+                          // For Employers Section
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  S.of(context)!.learnForEmployers,
+                                  style: _getUITextStyle(context,
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    context.go('/learn/all-employer-articles');
+                                  },
+                                  child: Text(
+                                    S.of(context)!.learnViewAll,
+                                    style: TextStyle(
+                                      color: AppColors.electricLime,
+                                      fontSize: 14,
+                                      fontFamily: 'Acme',
+                                      letterSpacing: -0.5,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: AppColors.electricLime,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          _buildEmployerCardsColumn(context, articles),
+
+                          const SizedBox(height: 100),
                         ],
                       ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // Featured card
-                    _buildFeaturedCard(context),
-
-                    const SizedBox(height: 25),
-
-                    // For Students Section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'For Students',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Aclonica',
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    _buildStudentCardsGrid(context),
-
-                    const SizedBox(height: 25),
-
-                    // For Employers Section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'For Employers',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontFamily: 'Aclonica',
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    _buildEmployerCardsGrid(context),
-
-                    const SizedBox(height: 100),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -146,13 +240,9 @@ class EducationListScreen extends StatelessWidget {
           // Title
           Expanded(
             child: Text(
-              'Learn & Grow',
-              style: TextStyle(
-                color: AppColors.white,
-                fontSize: 24,
-                fontFamily: 'Aclonica',
-                letterSpacing: -0.5,
-              ),
+              S.of(context)!.learnPageTitle,
+              style: _getUITextStyle(context,
+                  fontSize: 24, color: AppColors.white),
             ),
           ),
         ],
@@ -160,12 +250,39 @@ class EducationListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturedCard(BuildContext context) {
+  Widget _buildFeaturedCard(
+      BuildContext context, List<EducationArticleModel> articles) {
+    // Get current user type from auth state
+    String userType = 'student'; // Default fallback
+
+    try {
+      final authState = context.read<AuthCubit>().state;
+      if (authState is AuthAuthenticated) {
+        userType = authState.user.accountType;
+      }
+    } catch (e) {
+      // AuthCubit not available, use default
+    }
+
+    // Filter articles by user type and get the most recent one (sorted by publishedAt)
+    final userArticles = articles
+        .where((a) => a.targetAudience == userType)
+        .toList()
+      ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
+
+    final featuredArticle = userArticles.isNotEmpty ? userArticles.first : null;
+    final title =
+        featuredArticle?.title ?? S.of(context)!.learnFirstTimeJobSeekers;
+    final description =
+        featuredArticle?.content ?? S.of(context)!.learnFirstTimeDescription;
+    final readTime = featuredArticle?.readTime ?? 15;
+    final articleId = featuredArticle?.id ?? 'first-time-job-seekers';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: GestureDetector(
         onTap: () {
-          context.go('/learn/article/first-time-job-seekers');
+          context.go('/learn/article/$articleId');
         },
         child: Container(
           width: double.infinity,
@@ -203,7 +320,7 @@ class EducationListScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        'First-Time Job Seekers',
+                        title,
                         style: TextStyle(
                           color: AppColors.black,
                           fontSize: 15,
@@ -212,6 +329,8 @@ class EducationListScreen extends StatelessWidget {
                           letterSpacing: -0.3,
                           height: 1.2,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
@@ -227,7 +346,7 @@ class EducationListScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'complete guide',
+                      S.of(context)!.learnCompleteGuide,
                       style: TextStyle(
                         color: AppColors.black,
                         fontSize: 9,
@@ -244,7 +363,9 @@ class EducationListScreen extends StatelessWidget {
 
               // Description
               Text(
-                'Everything you need to write winning  applications and ace your interviews',
+                description.length > 100
+                    ? '${description.substring(0, 100)}...'
+                    : description,
                 style: TextStyle(
                   color: AppColors.black,
                   fontSize: 10,
@@ -253,6 +374,7 @@ class EducationListScreen extends StatelessWidget {
                   height: 1.3,
                 ),
                 maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
 
               const SizedBox(height: 12),
@@ -271,7 +393,7 @@ class EducationListScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      'Read Now',
+                      S.of(context)!.learnReadNow,
                       style: TextStyle(
                         color: AppColors.black,
                         fontSize: 12,
@@ -295,7 +417,7 @@ class EducationListScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18),
                     ),
                     child: Text(
-                      '15 min',
+                      '$readTime min',
                       style: TextStyle(
                         color: AppColors.black,
                         fontSize: 11,
@@ -348,76 +470,168 @@ class EducationListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStudentCardsGrid(BuildContext context) {
+  Widget _buildStudentCardsColumn(
+      BuildContext context, List<EducationArticleModel> articles) {
+    // Filter articles for students or use static content
+    final studentArticles =
+        articles.where((a) => a.targetAudience == 'student').toList();
+
+    // Static fallback content
+    final staticCards = [
+      {
+        'title': 'Application Tips',
+        'badge1': '10min',
+        'badge2': 'Popular',
+        'badge3': 'beginner',
+        'color': AppColors.electricLime,
+        'image': 'assets/images/education/course3.png',
+        'id': 'application-tips',
+      },
+      {
+        'title': 'Build Your Profile',
+        'badge1': '8min',
+        'badge2': 'Trending',
+        'badge3': '',
+        'color': AppColors.orange1,
+        'image': 'assets/images/education/course4.png',
+        'id': 'build-profile',
+      },
+    ];
+
     return SizedBox(
       height: 158,
-      child: ListView(
+      child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         scrollDirection: Axis.horizontal,
-        children: [
-          EducationCard(
-            title: 'Application Tips',
-            badge1: '10min',
-            badge2: 'Popular',
-            badge3: 'beginner',
-            backgroundColor: AppColors.electricLime,
-            imagePath: 'assets/images/education/course3.png',
-            isLiked: false,
-            onTap: () {
-              context.go('/learn/article/application-tips');
-            },
-          ),
-          const SizedBox(width: 10),
-          EducationCard(
-            title: 'Build Your Profile',
-            badge1: '8min',
-            badge2: 'Trending',
-            badge3: '',
-            backgroundColor: AppColors.orange1,
-            imagePath: 'assets/images/education/course4.png',
-            isLiked: false,
-            onTap: () {
-              context.go('/learn/article/build-profile');
-            },
-          ),
-        ],
+        itemCount: studentArticles.isNotEmpty
+            ? studentArticles.length
+            : staticCards.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          if (studentArticles.isNotEmpty) {
+            final article = studentArticles[index];
+            final colors = [
+              AppColors.electricLime,
+              AppColors.orange1,
+              AppColors.yellow2
+            ];
+            // Use course images for card illustrations
+            final courseImages = [
+              'assets/images/education/course3.png',
+              'assets/images/education/course4.png',
+              'assets/images/education/course1.png',
+            ];
+            return EducationCard(
+              title: article.title,
+              badge1: '${article.readTime}min',
+              badge2: article.viewsCount > 100 ? 'Popular' : 'New',
+              badge3: '',
+              backgroundColor: colors[index % colors.length],
+              imagePath: courseImages[index % courseImages.length],
+              isLiked: false,
+              onTap: () {
+                context.go('/learn/article/${article.id}');
+              },
+            );
+          } else {
+            final card = staticCards[index];
+            return EducationCard(
+              title: card['title'] as String,
+              badge1: card['badge1'] as String,
+              badge2: card['badge2'] as String,
+              badge3: card['badge3'] as String,
+              backgroundColor: card['color'] as Color,
+              imagePath: card['image'] as String,
+              isLiked: false,
+              onTap: () {
+                context.go('/learn/article/${card['id']}');
+              },
+            );
+          }
+        },
       ),
     );
   }
 
-  Widget _buildEmployerCardsGrid(BuildContext context) {
+  Widget _buildEmployerCardsColumn(
+      BuildContext context, List<EducationArticleModel> articles) {
+    // Filter articles for employers or use static content
+    final employerArticles =
+        articles.where((a) => a.targetAudience == 'employer').toList();
+
+    // Static fallback content
+    final staticCards = [
+      {
+        'title': 'Hiring Best Practices',
+        'badge1': '10min',
+        'badge2': 'New',
+        'badge3': 'Must-read',
+        'color': AppColors.yellow2,
+        'image': 'assets/images/education/course1.png',
+        'id': 'hiring-practices',
+      },
+      {
+        'title': 'Writing Job Posts',
+        'badge1': '5min',
+        'badge2': 'Popular',
+        'badge3': '',
+        'color': AppColors.orange2,
+        'image': 'assets/images/education/course2.png',
+        'id': 'writing-job-posts',
+      },
+    ];
+
     return SizedBox(
       height: 158,
-      child: ListView(
+      child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         scrollDirection: Axis.horizontal,
-        children: [
-          EducationCard(
-            title: 'Hiring Best Practices',
-            badge1: '10min',
-            badge2: 'New',
-            badge3: 'Must-read',
-            backgroundColor: AppColors.yellow2,
-            imagePath: 'assets/images/education/course1.png',
-            isLiked: false,
-            onTap: () {
-              context.go('/learn/article/hiring-practices');
-            },
-          ),
-          const SizedBox(width: 10),
-          EducationCard(
-            title: 'Writing Job Posts',
-            badge1: '5min',
-            badge2: 'Popular',
-            badge3: '',
-            backgroundColor: AppColors.orange2,
-            imagePath: 'assets/images/education/course2.png',
-            isLiked: false,
-            onTap: () {
-              context.go('/learn/article/writing-job-posts');
-            },
-          ),
-        ],
+        itemCount: employerArticles.isNotEmpty
+            ? employerArticles.length
+            : staticCards.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          if (employerArticles.isNotEmpty) {
+            final article = employerArticles[index];
+            final colors = [
+              AppColors.yellow2,
+              AppColors.orange2,
+              AppColors.purple2
+            ];
+            // Use course images for card illustrations
+            final courseImages = [
+              'assets/images/education/course1.png',
+              'assets/images/education/course2.png',
+              'assets/images/education/course3.png',
+            ];
+            return EducationCard(
+              title: article.title,
+              badge1: '${article.readTime}min',
+              badge2: article.viewsCount > 100 ? 'Popular' : 'New',
+              badge3: 'Must-read',
+              backgroundColor: colors[index % colors.length],
+              imagePath: courseImages[index % courseImages.length],
+              isLiked: false,
+              onTap: () {
+                context.go('/learn/article/${article.id}');
+              },
+            );
+          } else {
+            final card = staticCards[index];
+            return EducationCard(
+              title: card['title'] as String,
+              badge1: card['badge1'] as String,
+              badge2: card['badge2'] as String,
+              badge3: card['badge3'] as String,
+              backgroundColor: card['color'] as Color,
+              imagePath: card['image'] as String,
+              isLiked: false,
+              onTap: () {
+                context.go('/learn/article/${card['id']}');
+              },
+            );
+          }
+        },
       ),
     );
   }

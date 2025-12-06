@@ -284,21 +284,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildChartBar(double height, String label) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Container(
-          width: 32,
-          height: height,
-          decoration: BoxDecoration(
-            color: AppColors.orange2,
-            borderRadius: BorderRadius.circular(8),
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Flexible(
+            child: Container(
+              width: 32,
+              height: height,
+              decoration: BoxDecoration(
+                color: AppColors.orange2,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(label,
-            style: GoogleFonts.acme(fontSize: 11, color: AppColors.grey6)),
-      ],
+          const SizedBox(height: 8),
+          Text(label,
+              style: GoogleFonts.acme(fontSize: 11, color: AppColors.grey6)),
+        ],
+      ),
     );
   }
 

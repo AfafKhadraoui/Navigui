@@ -9,7 +9,6 @@ import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
 import 'public_student_profile_screen.dart';
 import 'public_employer_profile_screen.dart';
-import 'settings_screen.dart';
 import '../jobs/saved_jobs_screen.dart';
 import '../jobs/my_applications_screen.dart';
 
@@ -55,7 +54,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     // Load full profile from database for students (cached by cubit, very fast)
     if (_accountType == 'student' && _userId != null) {
       // Non-blocking: load in background, cubit caches result
-      context.read<StudentProfileCubit>().loadProfile(_userId!);
+      try {
+        context.read<StudentProfileCubit>().loadProfile(_userId!);
+      } catch (e) {
+        // Cubit not available in context, skip profile preload
+        print('⚠️ StudentProfileCubit not available, skipping profile preload');
+      }
     }
   }
 
@@ -91,12 +95,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
-              );
+              context.go('/settings');
             },
           ),
         ],
@@ -253,9 +252,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           fullscreenDialog: true,
-                          builder: (context) => const PublicStudentProfileScreen(
-                            studentId: 'current_user', // TODO: Use actual user ID
-                            studentName: 'Student Name',
+                          builder: (context) => PublicStudentProfileScreen(
+                            studentId: _userId ?? '',
+                            studentName: _userName,
                           ),
                         ),
                       );
@@ -263,9 +262,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           fullscreenDialog: true,
-                          builder: (context) => const PublicEmployerProfileScreen(
-                            employerId: 'current_user', // TODO: Use actual user ID
-                            companyName: 'Company Name',
+                          builder: (context) => PublicEmployerProfileScreen(
+                            employerId: _userId ?? '',
+                            companyName: _userName,
                           ),
                         ),
                       );

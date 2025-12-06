@@ -13,6 +13,9 @@ class RepositoryResult<T> {
     this.message,
   });
 
+  bool get isSuccess => success;
+  bool get isFailure => !success;
+
   factory RepositoryResult.success(T data, {String? message}) {
     return RepositoryResult(
       success: true,
