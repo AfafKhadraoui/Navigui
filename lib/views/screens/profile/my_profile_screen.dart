@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../logic/services/secure_storage_service.dart';
+import '../../../logic/cubits/auth/auth_cubit.dart';
+import '../../../logic/cubits/student_profile/student_profile_cubit.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../routes/app_router.dart';
 import 'public_student_profile_screen.dart';
 import 'public_employer_profile_screen.dart';
+import 'settings_screen.dart';
 import '../jobs/saved_jobs_screen.dart';
 import '../jobs/my_applications_screen.dart';
 
@@ -25,6 +29,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   String _userPhone = '';
   String _userLocation = '';
   String _accountType = 'student';
+  String? _userId;
   bool _isLoading = true;
 
   @override
@@ -43,8 +48,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       _userPhone = session['phone'] ?? '';
       _userLocation = session['location'] ?? '';
       _accountType = session['userType'] ?? 'student';
+      _userId = session['userId'];
       _isLoading = false;
     });
+
+    // Load full profile from database for students (cached by cubit, very fast)
+    if (_accountType == 'student' && _userId != null) {
+      // Non-blocking: load in background, cubit caches result
+      context.read<StudentProfileCubit>().loadProfile(_userId!);
+    }
   }
 
   @override
@@ -79,7 +91,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           IconButton(
             icon: const Icon(Icons.settings, color: AppColors.white),
             onPressed: () {
-              // TODO: Navigate to settings
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
             },
           ),
         ],
@@ -673,9 +690,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
                               Navigator.pop(context);
-                              context.go(AppRouter.login);
+                              // Properly logout using AuthCubit
+                              await context.read<AuthCubit>().logout();
+                              // Navigation handled by AuthCubit state change
                             },
                             child: Text(
                               'Logout',

@@ -1,7 +1,6 @@
 // lib/routes/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../logic/services/secure_storage_service.dart';
 import '../views/screens/onboarding/splash_screen.dart';
 import '../views/screens/auth/login.dart';
@@ -21,9 +20,9 @@ import '../views/widgets/navigation/bottom_nav_bar.dart';
 import '../data/models/job_post.dart';
 import '../data/models/application.dart';
 import '../logic/services/role_based_navigation.dart';
-import '../views/screens/profile/edit_student_profile_screen2.dart';
+import '../views/screens/profile/edit_student_profile_screen.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
-import '../views/screens/employer/edit_employer_profile_screen2.dart';
+import '../views/screens/profile/edit_employer_profile_screen.dart';
 import '../views/screens/jobs/job_detail_screen.dart';
 import '../views/screens/education/article_detail_screen.dart';
 import '../views/screens/employer/my_job_posts_screen.dart';
@@ -257,7 +256,7 @@ class AppRouter {
       GoRoute(
         path: editEmployerProfile,
         name: 'edit-employer-profile',
-        builder: (context, state) => const EditEmployerProfileScreen2(),
+        builder: (context, state) => const EditEmployerProfileScreen(),
       ),
 
       // PROTECTED ROUTES (With Bottom Bar)
@@ -451,10 +450,11 @@ class _RootScaffoldState extends State<RootScaffold> {
   }
 
   Future<void> _loadEmail() async {
-    final prefs = await SharedPreferences.getInstance();
+    final secureStorage = SecureStorageService();
+    final email = await secureStorage.getUserEmail();
     if (mounted) {
       setState(() {
-        _cachedEmail = prefs.getString('user_email');
+        _cachedEmail = email;
       });
     }
   }

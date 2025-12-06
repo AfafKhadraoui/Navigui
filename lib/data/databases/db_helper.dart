@@ -20,7 +20,7 @@ import 'table_schemas/reports_schema.dart';
 class DBHelper {
   static Database? _database;
   static const String _databaseName = 'navigui.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 2;  // Incremented to recreate tables with timestamp columns
 
   // Singleton pattern
   DBHelper._();
@@ -65,18 +65,25 @@ class DBHelper {
     print('Database initialized with 12 tables');
   }
 
-  // Handle database upgrades (version-specific migrations)
+  // Upgrade database when version changes
   static Future<void> _onUpgrade(
       Database db, int oldVersion, int newVersion) async {
     print('Database upgrade from v$oldVersion to v$newVersion');
 
-    // Example migration structure:
-    // if (oldVersion < 2) {
-    //   await JobsSchema.migrateToV2(db);
-    // }
-    // if (oldVersion < 3) {
-    //   await UsersSchema.migrateToV3(db);
-    // }
+    // Upgrade from v1 to v2: Add timestamp columns to profile tables
+    if (oldVersion < 2) {
+      print('Upgrading to v2: Recreating profile tables with timestamps...');
+      
+      // Drop old profile tables
+      await db.execute('DROP TABLE IF EXISTS student_profiles');
+      await db.execute('DROP TABLE IF EXISTS employer_profiles');
+      
+      // Recreate with new schema (includes created_at and updated_at)
+      await StudentProfilesSchema.create(db);
+      await EmployerProfilesSchema.create(db);
+      
+      print('✅ Profile tables recreated with timestamp columns');
+    }
   }
 
   // Close database

@@ -25,6 +25,8 @@ class EmployerProfilesSchema {
         review_count INTEGER DEFAULT 0,
         active_jobs INTEGER DEFAULT 0,
         total_jobs_posted INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     ''');

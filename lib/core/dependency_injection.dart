@@ -6,6 +6,7 @@ import '../data/repositories/auth/database_auth_repo.dart';  // Database impleme
 import '../data/repositories/user/user_repo_abstract.dart';
 // import '../data/repositories/user/user_repo_impl.dart';  // Real API implementation
 import '../data/repositories/user/mock_user_repo.dart';  // Mock implementation
+import '../data/repositories/user/database_user_repo.dart';  // Database implementation
 import '../data/repositories/admin/admin_repo_abstract.dart';
 import '../data/repositories/admin/admin_repo_impl.dart';
 import '../logic/cubits/auth/auth_cubit.dart';
@@ -26,6 +27,7 @@ import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
 // import '../logic/cubits/review/review_cubit.dart';
 import '../logic/cubits/education/education_cubit.dart';
 import '../logic/cubits/admin/admin_cubit.dart';
+import '../logic/cubits/language/language_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -50,9 +52,9 @@ Future<void> setupDependencies() async {
   // );
 
   // User Repository (for profile management)
-  // OPTION 1: Use Mock Repository (for testing without backend)
+  // Using Database Repository for local SQLite storage
   getIt.registerLazySingleton<UserRepository>(
-    () => MockUserRepository(),
+    () => DatabaseUserRepository(),
   );
 
   // Admin Repository (for admin operations)
@@ -150,6 +152,11 @@ Future<void> setupDependencies() async {
 
   getIt.registerFactory<AdminCubit>(
     () => AdminCubit(getIt<AdminRepository>()),
+  );
+
+  // Language Cubit (Singleton - maintains language state globally)
+  getIt.registerLazySingleton<LanguageCubit>(
+    () => LanguageCubit(),
   );
 }
 

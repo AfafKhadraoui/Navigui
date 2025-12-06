@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'commons/themes/style_simple/theme.dart';
 import 'routes/app_router.dart';
 import 'core/dependency_injection.dart';
 import 'logic/cubits/auth/auth_cubit.dart';
+import 'logic/cubits/language/language_cubit.dart';
 import 'logic/services/session_manager.dart';
 import 'data/databases/seed_data.dart';
 // TODO: Update to new repository structure
@@ -74,15 +76,34 @@ class _NaviguiAppState extends State<NaviguiApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _authCubit,
-      child: MaterialApp.router(
-        title: 'Navigui',
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        routerConfig: AppRouter.router,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _authCubit),
+        BlocProvider(create: (_) => getIt<LanguageCubit>()),
+      ],
+      child: BlocBuilder<LanguageCubit, Locale>(
+        builder: (context, locale) {
+          return MaterialApp.router(
+            title: 'Navigui',
+            theme: AppTheme.lightTheme,
+            debugShowCheckedModeBanner: false,
+            routerConfig: AppRouter.router,
+            locale: locale,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('ar'),
+              Locale('fr'),
+            ],
+          );
+        },
       ),
     );
+  }
     // TODO: Re-enable MultiBlocProvider when implementing other cubits
     // return MultiBlocProvider(
     //   providers: [
@@ -111,4 +132,3 @@ class _NaviguiAppState extends State<NaviguiApp> {
     //   ),
     // );
   }
-}

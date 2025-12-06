@@ -24,6 +24,8 @@ class StudentProfilesSchema {
         rating REAL DEFAULT 0.0,
         review_count INTEGER DEFAULT 0,
         jobs_completed INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     ''');

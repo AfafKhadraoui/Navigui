@@ -9,7 +9,7 @@ import 'admin_repo_abstract.dart';
 /// Implementation of Admin Repository
 /// Handles all admin operations with SQLite database
 class AdminRepositoryImpl implements AdminRepository {
-  Future<Database> get _db async => await DatabaseHelper.getDatabase();
+  Future<Database> get _db async => await DBHelper.getDatabase();
 
   @override
   Future<Map<String, dynamic>> getDashboardStatistics() async {
