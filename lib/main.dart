@@ -18,8 +18,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Uncomment to reset database (delete and recreate with fresh seed data)
-  await DBHelper.deleteDB();
-  print('Database deleted, will be recreated on next access');
+  // await DBHelper.deleteDB();
+  // print('Database deleted, will be recreated on next access');
 
   // Initialize dependency injection
   await setupDependencies();
