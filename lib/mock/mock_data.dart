@@ -1,5 +1,5 @@
 import '../data/models/job_post.dart';
-import '../data/models/application.dart';
+import '../data/models/applications_model.dart';
 
 /// Mock data storage and CRUD operations
 class MockData {
@@ -197,6 +197,8 @@ class MockData {
       Application(
         id: '1',
         jobId: '1',
+        userId: 's1', // Added userId
+        employerId: 'e1', // Added employerId
         studentName: 'Sarah Johnson',
         jobTitle: 'UX Designer',
         appliedDate: DateTime(2025, 10, 28),
@@ -214,6 +216,8 @@ class MockData {
       Application(
         id: '2',
         jobId: '1',
+        userId: 's2', // Added userId
+        employerId: 'e1', // Added employerId
         studentName: 'Ahmed Benali',
         jobTitle: 'UX Designer',
         appliedDate: DateTime(2025, 10, 27),
@@ -231,6 +235,8 @@ class MockData {
       Application(
         id: '3',
         jobId: '3',
+        userId: 's3', // Added userId
+        employerId: 'e1', // Added employerId
         studentName: 'Leila Meziane',
         jobTitle: 'Event Photography',
         appliedDate: DateTime(2025, 10, 26),
@@ -248,6 +254,8 @@ class MockData {
       Application(
         id: '4',
         jobId: '2',
+        userId: 's4', // Added userId
+        employerId: 'e1', // Added employerId
         studentName: 'Karim Boudiaf',
         jobTitle: 'Translation Project',
         appliedDate: DateTime(2025, 10, 25),
@@ -265,6 +273,8 @@ class MockData {
       Application(
         id: '5',
         jobId: '1',
+        userId: 's5', // Added userId
+        employerId: 'e1', // Added employerId
         studentName: 'Amina Cherif',
         jobTitle: 'UX Designer',
         appliedDate: DateTime(2025, 10, 24),

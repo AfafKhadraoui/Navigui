@@ -1,9 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
+import '../../../logic/cubits/job/job_cubit.dart';
+import '../../../logic/cubits/job/job_state.dart';
+import '../../../data/models/job_post.dart';
+import '../../../core/dependency_injection.dart';
+import '../../../logic/cubits/saved_jobs/saved_jobs_cubit.dart';
+import '../../../logic/cubits/saved_jobs/saved_jobs_state.dart';
+import '../../../logic/services/secure_storage_service.dart';
 import 'saved_jobs_screen.dart';
-import 'job_detail_screen.dart';
 import 'apply_job_screen.dart';
 
 class JobsPage extends StatefulWidget {
@@ -14,326 +21,111 @@ class JobsPage extends StatefulWidget {
 }
 
 class _JobsPageState extends State<JobsPage> {
-  String selectedFilter = 'All';
-  String sortBy = 'Most Recent';
+  String searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  Timer? _debounce;
+  String? _userId; // Store user ID for saved jobs
   
-  // Track favorited jobs
-  Set<String> favoritedJobIds = {};
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+  
+  Future<void> _loadUserId() async {
+    // Get user ID from secure storage
+    final secureStorage = getIt<SecureStorageService>();
+    final userId = await secureStorage.getUserId();
+    setState(() {
+      _userId = userId;
+    });
+    // Load saved jobs if user is logged in
+    if (userId != null && mounted) {
+      context.read<SavedJobsCubit>().loadSavedJobs(userId);
+    }
+  }
 
-  // Sample job data
-  final List<Map<String, dynamic>> jobs = [
-    {
-      'id': '1',
-      'title': 'Graphic Design Task',
-      'company': 'Creative Studio',
-      'description':
-          'Design promotional materials for upcoming event. Quick turnaround needed.',
-      'location': 'Oran, Algeria',
-      'phone': '+213 555 678 901',
-      'postedTime': 'Just now',
-      'deadline': '2 days left',
-      'salary': '8000 DA',
-      'type': 'Task',
-      'isUrgent': true,
-      'rating': 4.5,
-      'positions': 1,
-      'email': 'jobs@creativestudio.dz',
-      'requirements': {
-        'skills': ['Graphic Design', 'Adobe Photoshop', 'Illustration'],
-        'experience': '1-2 years in graphic design',
-        'languages': ['English', 'French'],
-        'timeCommitment': '10 hours per week',
-        'availability': ['Weekdays', 'Flexible'],
-      },
-      'fullDescription':
-          'We\'re looking for a talented graphic designer to create promotional materials for our upcoming event. You\'ll be responsible for designing posters, social media graphics, and digital banners that capture attention and drive engagement.',
-    },
-    {
-      'id': '2',
-      'title': 'Content Writer',
-      'company': 'Lan Hayiti',
-      'description':
-          'We are looking for a talented Content Writer experienced in crafting compelling content...',
-      'location': 'Algiers, Algeria',
-      'phone': '+213 555 456 789',
-      'postedTime': '1 day ago',
-      'deadline': '3 days left',
-      'salary': '5000 DA',
-      'type': 'Task',
-      'isUrgent': true,
-      'rating': 4.2,
-      'positions': 2,
-      'email': 'contact@lanhayiti.dz',
-      'requirements': {
-        'skills': ['Content Writing', 'SEO', 'Research'],
-        'experience': '2-3 years in content writing',
-        'languages': ['English', 'Arabic', 'French'],
-        'timeCommitment': '15 hours per week',
-        'availability': ['Weekdays', 'Weekends'],
-      },
-      'fullDescription':
-          'We\'re seeking a creative content writer to join our team. You\'ll create engaging blog posts, articles, and web content that resonates with our audience and drives traffic to our platforms.',
-    },
-    {
-      'id': '3',
-      'title': 'Social Media Manager',
-      'company': 'TechStart',
-      'description':
-          'Manage social media accounts, create engaging content, and grow our online presence...',
-      'location': 'Algiers, Algeria',
-      'phone': '+213 555 567 890',
-      'postedTime': '5 days ago',
-      'deadline': '2 weeks left',
-      'salary': '40000 DA/mo',
-      'type': 'Part-Time',
-      'isUrgent': false,
-      'rating': 4.7,
-      'positions': 1,
-      'email': 'jobs@techstart.dz',
-      'requirements': {
-        'skills': [
-          'Social Media Marketing',
-          'Content Creation',
-          'Analytics',
-          'Canva'
-        ],
-        'experience': '2-3 years in social media management',
-        'languages': ['English', 'French', 'Arabic'],
-        'timeCommitment': '20 hours per week',
-        'availability': ['Weekdays', 'Weekends', 'Flexible'],
-      },
-      'fullDescription':
-          'We\'re looking for a creative and strategic Social Media Manager to join our marketing team. You\'ll be responsible for managing our social media presence across multiple platforms, creating engaging content, and analyzing performance metrics.\n\nThis role requires someone who understands the Algerian market and can create content that resonates with our local audience while maintaining our global brand identity.',
-    },
-    {
-      'id': '4',
-      'title': 'Mobile App Tester',
-      'company': 'AppDev Solutions',
-      'description':
-          'Test mobile applications and report bugs. No coding required.',
-      'location': 'Setif, Algeria',
-      'phone': '+213 555 890 123',
-      'postedTime': '6 days ago',
-      'deadline': '3 weeks left',
-      'salary': '4500 DA',
-      'type': 'Task',
-      'isUrgent': false,
-      'rating': 4.0,
-      'positions': 3,
-      'email': 'testing@appdev.dz',
-      'requirements': {
-        'skills': ['Manual Testing', 'Bug Reporting', 'Attention to Detail'],
-        'experience': 'No experience required',
-        'languages': ['English'],
-        'timeCommitment': '5 hours per week',
-        'availability': ['Weekdays', 'Flexible'],
-      },
-      'fullDescription':
-          'Join our testing team to help ensure our mobile applications are bug-free and user-friendly. You\'ll test various features, identify issues, and provide detailed feedback to our development team.',
-    },
-  ];
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
 
-  List<Map<String, dynamic>> get filteredJobs {
+  // Helper method to extract numeric salary from JobPost
+  int _extractSalary(JobPost job) {
+    return job.pay.toInt();
+  }
+
+  // Helper method to extract deadline days from JobPost
+  int _extractDeadlineDays(JobPost job) {
+    if (job.applicationDeadline == null) return 999;
+    final daysUntilDeadline = job.applicationDeadline!.difference(DateTime.now()).inDays;
+    return daysUntilDeadline > 0 ? daysUntilDeadline : 999;
+  }
+
+  // Apply client-side filtering and sorting
+  List<JobPost> _applyFiltersAndSort(List<JobPost> jobs, JobLoaded state) {
     var filtered = jobs;
 
-    if (selectedFilter == 'Part Time') {
-      filtered = filtered.where((job) => job['type'] == 'Part-Time').toList();
-    } else if (selectedFilter == 'Tasks') {
-      filtered = filtered.where((job) => job['type'] == 'Task').toList();
+    // Apply search filter using LOCAL state, not cubit state
+    if (searchQuery.isNotEmpty) {
+      filtered = filtered.where((job) {
+        final title = job.title.toLowerCase();
+        final description = job.description.toLowerCase();
+        final query = searchQuery.toLowerCase();
+        
+        // Split into words and check if any word starts with the query
+        final titleWords = title.split(' ');
+        final descWords = description.split(' ');
+        
+        // Match if any word in title or description starts with the search query
+        return titleWords.any((word) => word.startsWith(query)) || 
+               descWords.any((word) => word.startsWith(query));
+      }).toList();
     }
 
-    if (sortBy == 'Most Recent') {
-      // Already in order
+    // Apply category filter
+    if (state.categoryFilter != null && state.categoryFilter != 'All') {
+      if (state.categoryFilter == 'Part Time') {
+        filtered = filtered.where((job) => job.jobType == JobType.partTime).toList();
+      } else if (state.categoryFilter == 'Tasks') {
+        filtered = filtered.where((job) => job.jobType == JobType.quickTask).toList();
+      }
     }
+
+    // Apply sorting
+    if (state.sortBy == 'Highest Pay') {
+      filtered.sort((a, b) {
+        final aSalary = _extractSalary(a);
+        final bSalary = _extractSalary(b);
+        return bSalary.compareTo(aSalary);
+      });
+    } else if (state.sortBy == 'Closest Deadline') {
+      filtered.sort((a, b) {
+        final aDays = _extractDeadlineDays(a);
+        final bDays = _extractDeadlineDays(b);
+        return aDays.compareTo(bDays);
+      });
+    }
+    // 'Most Recent' is default order from database
 
     return filtered;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Career',
-          style: TextStyle(
-            fontFamily: 'Aclonica',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: AppColors.white,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            favoritedJobIds.isEmpty ? Icons.favorite_border : Icons.favorite,
-            color: favoritedJobIds.isEmpty ? AppColors.white : AppColors.urgentRed,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SavedJobsScreen(),
-              ),
-            );
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: AppColors.white),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Filters and Sort
-          Padding(
-            padding: const EdgeInsets.all(AppStyles.spacingMD),
-            child: Row(
-              children: [
-                // Filter Button
-                Expanded(
-                  child: Container(
-                    height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.grey4,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: AppColors.grey5),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.filter_list, color: AppColors.white, size: 18),
-                        SizedBox(width: 8),
-                        Text(
-                          'Filters',
-                          style: TextStyle(
-                            fontFamily: 'Aclonica',
-                            color: AppColors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(width: 16),
-                
-                // Sort Dropdown
-                Expanded(
-                  child: Container(
-                    height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.grey4,
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(color: AppColors.grey5),
-                    ),
-                    child: DropdownButton<String>(
-                      value: sortBy,
-                      dropdownColor: AppColors.grey4,
-                      underline: const SizedBox(),
-                      isExpanded: true,
-                      isDense: true,
-                      style: const TextStyle(
-                        fontFamily: 'Aclonica',
-                        color: AppColors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      icon: const Icon(
-                        Icons.keyboard_arrow_down,
-                        color: AppColors.white,
-                        size: 20,
-                      ),
-                      items: ['Most Recent', 'Highest Pay', 'Closest Deadline']
-                          .map((value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(value),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          sortBy = value!;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Filter Tabs
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
-            child: Row(
-              children: [
-                _buildFilterChip('All'),
-                const SizedBox(width: 8),
-                _buildFilterChip('Part Time'),
-                const SizedBox(width: 8),
-                _buildFilterChip('Tasks'),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Job Count
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '${filteredJobs.length} jobs found',
-                style: const TextStyle(
-                  fontFamily: 'Acme',
-                  color: AppColors.grey6,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Jobs List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
-              itemCount: filteredJobs.length,
-              itemBuilder: (context, index) {
-                final job = filteredJobs[index];
-                return _buildJobCard(context, job);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String label) {
-    final isSelected = selectedFilter == label;
+  // Build filter chip widget
+  Widget _buildFilterChip(String label, JobCubit cubit, JobLoaded state) {
+    final isSelected = (state.categoryFilter ?? 'All') == label;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedFilter = label;
-        });
+        cubit.filterByCategory(label);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.lavenderPurple : Colors.transparent,
+          color: isSelected ? AppColors.lavenderPurple : AppColors.grey4,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? AppColors.lavenderPurple : AppColors.grey5,
@@ -343,42 +135,352 @@ class _JobsPageState extends State<JobsPage> {
           label,
           style: TextStyle(
             fontFamily: 'Acme',
-            color: isSelected ? AppColors.black : AppColors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+            color: isSelected ? AppColors.white : AppColors.grey6,
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildJobCard(BuildContext context, Map<String, dynamic> job) {
-    final isFavorited = favoritedJobIds.contains(job['id']);
-    
-    return GestureDetector(
-      onTap: () {
-        // Navigate to Job Details when card is tapped
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => JobDetailsScreen(job: job),
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<JobCubit>()..loadJobs()),
+        // SavedJobsCubit is provided globally in main.dart, so we don't provider it here
+        // to ensure we share the same state instance.
+      ],
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          title: const Text(
+            'Career',
+            style: TextStyle(
+              fontFamily: 'Aclonica',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.white,
+            ),
           ),
-        );
+          leading: BlocBuilder<SavedJobsCubit, SavedJobsState>(
+            builder: (context, state) {
+              final bool hasSavedJobs = state is SavedJobsLoaded && state.savedJobs.isNotEmpty;
+              return IconButton(
+                icon: Icon(
+                  hasSavedJobs ? Icons.favorite : Icons.favorite_border,
+                  color: hasSavedJobs ? AppColors.urgentRed : AppColors.white,
+                ),
+                onPressed: () {
+                  if (_userId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SavedJobsScreen(userId: _userId!),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please login to view saved jobs'),
+                        backgroundColor: AppColors.urgentRed,
+                      ),
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        ),
+        body: BlocBuilder<JobCubit, JobState>(
+          builder: (context, state) {
+            if (state is JobLoading) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.lavenderPurple,
+                ),
+              );
+            }
+
+            if (state is JobError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.urgentRed,
+                      size: 64,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error loading jobs',
+                      style: const TextStyle(
+                        fontFamily: 'Aclonica',
+                        color: AppColors.white,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontFamily: 'Acme',
+                        color: AppColors.grey6,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<JobCubit>().refreshJobs();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.lavenderPurple,
+                      ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (state is! JobLoaded) {
+              return const SizedBox();
+            }
+
+            final cubit = context.read<JobCubit>();
+            final filteredJobs = _applyFiltersAndSort(state.jobs, state);
+
+            return Column(
+              children: [
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(AppStyles.spacingMD, AppStyles.spacingMD, AppStyles.spacingMD, 8),
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    onChanged: (value) {
+                      // Cancel previous timer
+                      if (_debounce?.isActive ?? false) _debounce!.cancel();
+                      
+                      // Set new timer - only update state after user stops typing
+                      _debounce = Timer(const Duration(milliseconds: 300), () {
+                        setState(() {
+                          searchQuery = value;
+                        });
+                      });
+                    },
+                    style: const TextStyle(
+                      fontFamily: 'Acme',
+                      color: AppColors.white,
+                      fontSize: 14,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search jobs, companies...',
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Acme',
+                        color: AppColors.grey6,
+                        fontSize: 14,
+                      ),
+                      prefixIcon: const Icon(Icons.search, color: AppColors.grey6, size: 20),
+                      suffixIcon: searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, color: AppColors.grey6, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: AppColors.grey4,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(color: AppColors.grey5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(color: AppColors.grey5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(color: AppColors.lavenderPurple, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                  ),
+                ),
+
+                // Filters and Sort
+                Padding(
+                  padding: const EdgeInsets.all(AppStyles.spacingMD),
+                  child: Row(
+                    children: [
+                      // Sort Dropdown
+                      Expanded(
+                        child: Container(
+                          height: 48,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.grey4,
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(color: AppColors.grey5),
+                          ),
+                          child: DropdownButton<String>(
+                            value: state.sortBy ?? 'Most Recent',
+                            dropdownColor: AppColors.grey4,
+                            underline: const SizedBox(),
+                            isExpanded: true,
+                            isDense: true,
+                            style: const TextStyle(
+                              fontFamily: 'Aclonica',
+                              color: AppColors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColors.white,
+                              size: 20,
+                            ),
+                            items: ['Most Recent', 'Highest Pay', 'Closest Deadline']
+                                .map((value) => DropdownMenuItem(
+                                      value: value,
+                                      child: Text(value),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                cubit.sortJobs(value);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Filter Tabs
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
+                  child: Row(
+                    children: [
+                      _buildFilterChip('All', cubit, state),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('Part Time', cubit, state),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('Tasks', cubit, state),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Job Count
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${filteredJobs.length} jobs found',
+                      style: const TextStyle(
+                        fontFamily: 'Acme',
+                        color: AppColors.grey6,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Jobs List
+                Expanded(
+                  child: filteredJobs.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.work_outline,
+                                size: 64,
+                                color: AppColors.grey6,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No jobs found',
+                                style: TextStyle(
+                                  fontFamily: 'Aclonica',
+                                  color: AppColors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Try adjusting your filters',
+                                style: TextStyle(
+                                  fontFamily: 'Acme',
+                                  color: AppColors.grey6,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : RefreshIndicator(
+                          onRefresh: () async {
+                            await cubit.refreshJobs();
+                          },
+                          color: AppColors.lavenderPurple,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: AppStyles.spacingMD),
+                            itemCount: filteredJobs.length,
+                            itemBuilder: (context, index) {
+                              return _buildJobCard(filteredJobs[index]);
+                            },
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildJobCard(JobPost job) {
+    return BlocBuilder<SavedJobsCubit, SavedJobsState>(
+      builder: (context, savedState) {
+        final isSaved = savedState is SavedJobsLoaded && savedState.isJobSaved(job.id);
+        
+        return GestureDetector(
+      onTap: () {
+        // Navigate to job details
+        // Navigator.push(context, MaterialPageRoute(builder: (_) => JobDetailScreen(job: job)));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: job['isUrgent'] ? const Color(0xFF2D1B3D) : AppColors.grey4,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: job['isUrgent'] ? const Color(0xFF4A2D5C) : AppColors.grey5,
-          ),
+          color: AppColors.grey4,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.grey5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Header Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -387,7 +489,7 @@ class _JobsPageState extends State<JobsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        job['title'],
+                        job.title,
                         style: const TextStyle(
                           fontFamily: 'Aclonica',
                           color: AppColors.white,
@@ -397,7 +499,7 @@ class _JobsPageState extends State<JobsPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        job['company'],
+                        job.category,
                         style: const TextStyle(
                           fontFamily: 'Acme',
                           color: AppColors.grey6,
@@ -407,7 +509,7 @@ class _JobsPageState extends State<JobsPage> {
                     ],
                   ),
                 ),
-                if (job['isUrgent'])
+                if (job.isUrgent)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     decoration: BoxDecoration(
@@ -416,8 +518,7 @@ class _JobsPageState extends State<JobsPage> {
                     ),
                     child: const Row(
                       children: [
-                        Icon(Icons.warning_rounded,
-                            color: AppColors.white, size: 14),
+                        Icon(Icons.warning_rounded, color: AppColors.white, size: 14),
                         SizedBox(width: 4),
                         Text(
                           'Urgent',
@@ -438,7 +539,7 @@ class _JobsPageState extends State<JobsPage> {
 
             // Description
             Text(
-              job['description'],
+              job.briefDescription ?? job.description,
               style: const TextStyle(
                 fontFamily: 'Acme',
                 color: AppColors.grey7,
@@ -454,11 +555,10 @@ class _JobsPageState extends State<JobsPage> {
             // Location and Time
             Row(
               children: [
-                const Icon(Icons.location_on_outlined,
-                    color: AppColors.grey6, size: 16),
+                const Icon(Icons.location_on_outlined, color: AppColors.grey6, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  job['location'],
+                  job.location ?? 'Remote',
                   style: const TextStyle(
                     fontFamily: 'Acme',
                     color: AppColors.grey6,
@@ -469,7 +569,7 @@ class _JobsPageState extends State<JobsPage> {
                 const Icon(Icons.access_time, color: AppColors.grey6, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  job['postedTime'],
+                  job.postedTime,
                   style: const TextStyle(
                     fontFamily: 'Acme',
                     color: AppColors.grey6,
@@ -480,26 +580,14 @@ class _JobsPageState extends State<JobsPage> {
             ),
 
             const SizedBox(height: 8),
-            // Phone and Deadline
+
+            // Deadline
             Row(
               children: [
-                const Icon(Icons.phone_outlined,
-                    color: AppColors.grey6, size: 16),
+                const Icon(Icons.calendar_today_outlined, color: AppColors.grey6, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  job['phone'],
-                  style: const TextStyle(
-                    fontFamily: 'Acme',
-                    color: AppColors.grey6,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                const Icon(Icons.calendar_today_outlined,
-                    color: AppColors.grey6, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  job['deadline'],
+                  job.deadlineText,
                   style: const TextStyle(
                     fontFamily: 'Acme',
                     color: AppColors.grey6,
@@ -511,27 +599,29 @@ class _JobsPageState extends State<JobsPage> {
 
             const SizedBox(height: 16),
 
-            // Salary and Type
+            // Footer Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Salary
                 Text(
-                  job['salary'],
+                  job.salaryText,
                   style: const TextStyle(
                     fontFamily: 'Aclonica',
-                    color: AppColors.white,
-                    fontSize: 20,
+                    color: AppColors.lavenderPurple,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                // Job Type Badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.lavenderPurple,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    job['type'],
+                    job.jobType.displayName,
                     style: const TextStyle(
                       fontFamily: 'Acme',
                       color: AppColors.white,
@@ -558,32 +648,24 @@ class _JobsPageState extends State<JobsPage> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      setState(() {
-                        if (isFavorited) {
-                          favoritedJobIds.remove(job['id']);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Job removed from saved',style: TextStyle(fontFamily: 'Aclonica'),),
-                              backgroundColor:  AppColors.lavenderPurple,
-                              duration: Duration(seconds: 1),
+                      if (_userId != null) {
+                        context.read<SavedJobsCubit>().toggleSaveJob(job.id, _userId!);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isSaved ? 'Job removed from saved' : 'Job saved successfully',
+                              style: const TextStyle(fontFamily: 'Aclonica'),
                             ),
-                          );
-                        } else {
-                          favoritedJobIds.add(job['id']);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Job saved successfully',style: TextStyle(fontFamily: 'Aclonica'),),
-                              backgroundColor:  AppColors.lavenderPurple,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        }
-                      });
+                            backgroundColor: AppColors.lavenderPurple,
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      }
                     },
                     icon: Icon(
-                      isFavorited ? Icons.favorite : Icons.favorite_border,
+                      isSaved ? Icons.favorite : Icons.favorite_border,
                     ),
-                    color: isFavorited ? AppColors.urgentRed : AppColors.white,
+                    color: isSaved ? AppColors.urgentRed : AppColors.white,
                     iconSize: 24,
                   ),
                 ),
@@ -592,10 +674,20 @@ class _JobsPageState extends State<JobsPage> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
+                      // Convert JobPost to Map for ApplyJobScreen compatibility
+                      final jobMap = {
+                        'id': job.id,
+                        'title': job.title,
+                        'company': job.category,
+                        'description': job.description,
+                        'location': job.location ?? 'Remote',
+                        'salary': job.salaryText,
+                        'type': job.jobType.displayName,
+                      };
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ApplyJobScreen(job: job),
+                          builder: (context) => ApplyJobScreen(job: jobMap),
                         ),
                       );
                     },
@@ -624,6 +716,8 @@ class _JobsPageState extends State<JobsPage> {
           ],
         ),
       ),
+        );
+      },
     );
   }
 }

@@ -66,7 +66,7 @@ class DBHelper {
     print('Database initialized with 12 tables');
 
     // Seed with dummy data
-    await DatabaseSeeder.seedDatabase();
+    await DatabaseSeeder.seedDatabase(db);
   }
 
   // Upgrade database when version changes
