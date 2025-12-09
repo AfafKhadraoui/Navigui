@@ -630,12 +630,18 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 icon: Icons.favorite,
                 title: 'Saved Items',
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SavedJobsScreen(),
-                    ),
-                  );
+                  if (_userId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SavedJobsScreen(userId: _userId!),
+                      ),
+                    );
+                  } else {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please wait for profile to load')),
+                    );
+                  }
                 },
               ),
               
