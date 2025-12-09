@@ -101,7 +101,7 @@ class JobPost {
       'payment_type': paymentType?.dbValue, // Convert enum to DB string
       'time_commitment': timeCommitment,
       'duration': duration,
-      'start_date': startDate?.millisecondsSinceEpoch,
+      'start_date': startDate?.toIso8601String(),
       'location': location,
       'contact_preference': contactPreference?.dbValue,
       'is_recurring': isRecurring ? 1 : 0, // SQLite boolean as INTEGER
@@ -113,10 +113,10 @@ class JobPost {
       'views_count': viewsCount,
       'saves_count': savesCount,
       'status': status.dbValue,
-      'deadline': applicationDeadline?.millisecondsSinceEpoch,
-      'created_at': createdDate.millisecondsSinceEpoch,
-      'updated_at': updatedAt?.millisecondsSinceEpoch,
-      'deleted_at': deletedAt?.millisecondsSinceEpoch,
+      'deadline': applicationDeadline?.toIso8601String(),
+      'created_at': createdDate.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+      'deleted_at': deletedAt?.toIso8601String(),
       // Note: photos and languages are NOT included - they go to separate tables
     };
   }
@@ -140,7 +140,7 @@ class JobPost {
       timeCommitment: map['time_commitment'] as String?,
       duration: map['duration'] as String?,
       startDate: map['start_date'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['start_date'] as int)
+          ? DateTime.parse(map['start_date'] as String)
           : null,
       location: map['location'] as String?,
       contactPreference: map['contact_preference'] != null
@@ -156,15 +156,14 @@ class JobPost {
       savesCount: map['saves_count'] as int,
       status: JobStatus.fromDb(map['status'] as String),
       applicationDeadline: map['deadline'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['deadline'] as int)
+          ? DateTime.parse(map['deadline'] as String)
           : null,
-      createdDate:
-          DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+      createdDate: DateTime.parse(map['created_at'] as String),
       updatedAt: map['updated_at'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['updated_at'] as int)
+          ? DateTime.parse(map['updated_at'] as String)
           : null,
       deletedAt: map['deleted_at'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['deleted_at'] as int)
+          ? DateTime.parse(map['deleted_at'] as String)
           : null,
       // Note: photos and languages must be loaded separately via JOIN
       photos: const [],

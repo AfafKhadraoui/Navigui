@@ -23,6 +23,10 @@ void main() async {
   // Seed database with test users
   await DatabaseSeeder.seedDatabase();
 
+  // Uncomment to reset database (delete and recreate with fresh seed data)
+  // await DBHelper.deleteDB();
+  // print('Database deleted, will be recreated on next access');
+
   // Initialize dependency injection
   await setupDependencies();
 

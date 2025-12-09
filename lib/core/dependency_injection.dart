@@ -19,8 +19,9 @@ import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
 // import '../data/repositories/review_repo.dart';
 // import '../logic/cubits/job/job_cubit.dart';
 // import '../logic/cubits/application/application_cubit.dart';
-// import '../logic/cubits/employer_job/employer_job_cubit.dart';
-// import '../logic/cubits/employer_application/employer_application_cubit.dart';
+import '../logic/cubits/employer_job/employer_job_cubit.dart';
+import '../logic/cubits/employer_application/employer_application_cubit.dart';
+import '../logic/cubits/employer_profile/employer_profile_cubit.dart';
 // import '../logic/cubits/saved_jobs/saved_jobs_cubit.dart';
 // import '../logic/cubits/review/review_cubit.dart';
 import '../data/repositories/education/education_repo_abstract.dart';
@@ -136,13 +137,22 @@ Future<void> setupDependencies() async {
   //   () => ApplicationCubit(getIt<ApplicationRepository>()),
   // );
 
-  // getIt.registerFactory<EmployerJobCubit>(
-  //   () => EmployerJobCubit(getIt<JobRepository>()),
-  // );
+  // Student Profile Cubit
+  getIt.registerFactory<StudentProfileCubit>(
+    () => StudentProfileCubit(getIt<UserRepository>()),
+  );
 
-  // getIt.registerFactory<EmployerApplicationCubit>(
-  //   () => EmployerApplicationCubit(getIt<ApplicationRepository>()),
-  // );
+  getIt.registerFactory<EmployerProfileCubit>(
+    () => EmployerProfileCubit(),
+  );
+
+  getIt.registerFactory<EmployerJobCubit>(
+    () => EmployerJobCubit(),
+  );
+
+  getIt.registerFactory<EmployerApplicationCubit>(
+    () => EmployerApplicationCubit(),
+  );
 
   // getIt.registerFactory<SavedJobsCubit>(
   //   () => SavedJobsCubit(getIt<JobRepository>()),
