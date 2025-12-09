@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/models/job_post.dart';
 import '../../../mock/mock_data.dart';
-import '../../../logic/cubits/employer_job/employer_job_cubit.dart';
-import '../../../logic/cubits/employer_job/employer_job_state.dart';
-import '../../../core/dependency_injection.dart';
 
 class JobPostFormScreen extends StatefulWidget {
   final JobPost? job; // If provided, we're editing
@@ -62,8 +58,7 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
     );
 
     _selectedJobType = job?.jobType ?? JobType.partTime;
-    // Convert database category format to display format for dropdown
-    _selectedCategory = _convertCategoryFromDb(job?.category ?? 'Other');
+    _selectedCategory = job?.category ?? 'Other';
     _selectedLanguages = job?.languages ?? [];
     _cvRequired = job?.requiresCv ?? false;
     _selectedPaymentType = job?.paymentType ?? PaymentType.monthly;
@@ -86,128 +81,42 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
     super.dispose();
   }
 
-  /// Convert category from database format to display format
-  /// Example: "customer_service" -> "Customer Service"
-  String _convertCategoryFromDb(String dbCategory) {
-    // Map of database format to display format
-    const categoryMap = {
-      'photography': 'Photography',
-      'translation': 'Translation',
-      'graphic_design': 'Graphic Design',
-      'video_editing': 'Video Editing',
-      'writing': 'Content Writing',
-      'social_media': 'Social Media',
-      'web_development': 'IT Support',
-      'tutoring': 'Tutoring',
-      'event_planning': 'Event Staff',
-      'delivery': 'Delivery',
-      'customer_service': 'Customer Service',
-      'data_entry': 'Data Entry',
-      'marketing': 'Marketing',
-      'sales': 'Sales',
-      'other': 'Other',
-    };
-    
-    return categoryMap[dbCategory.toLowerCase()] ?? 'Other';
-  }
-
   void _saveJobPost() {
     if (_formKey.currentState!.validate()) {
-      // Get the cubit from service locator
-      final cubit = getIt<EmployerJobCubit>();
-      
-      // TODO: Get actual employer ID from auth state
-      const employerId = '1';
-      cubit.setEmployerId(employerId);
-      
-      // Convert category to database format (lowercase with underscores)
-      final categoryDb = _selectedCategory
-          .toLowerCase()
-          .replaceAll(' ', '_')
-          .replaceAll('-', '_');
-      
-      print('DEBUG _saveJobPost: Original category: $_selectedCategory -> DB format: $categoryDb');
-      print('DEBUG _saveJobPost: JobType: ${_selectedJobType.dbValue}');
-      print('DEBUG _saveJobPost: PaymentType: ${_selectedPaymentType.dbValue}');
-      
-      // Check if we're editing an existing job or creating a new one
+      final newJob = JobPost(
+        id: widget.job?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        employerId: '1',
+        title: _titleController.text,
+        location: _locationController.text,
+        description: _descriptionController.text,
+        category: _selectedCategory,
+        pay: double.parse(_paymentAmountController.text),
+        paymentType: _selectedPaymentType,
+        applicantsCount: widget.job?.applicantsCount ?? 0,
+        jobType: _selectedJobType,
+        requirements: _selectedLanguages.isNotEmpty
+            ? 'Languages: ${_selectedLanguages.join(", ")}${_cvRequired ? ", CV Required" : ""}'
+            : (_cvRequired ? 'CV Required' : null),
+        requiresCv: _cvRequired,
+        timeCommitment: _hoursPerWeekController.text.isNotEmpty
+            ? '${_hoursPerWeekController.text} hours/week'
+            : null,
+        startDate: _specificDate,
+        languages: _selectedLanguages,
+        isRecurring: _isRecurring,
+        isUrgent: _isUrgent,
+        numberOfPositions: int.parse(_numberOfPositionsController.text),
+        status: _selectedStatus,
+        createdDate: widget.job?.createdDate ?? DateTime.now(),
+      );
+
       if (widget.job != null) {
-        // UPDATE EXISTING JOB
-        print('DEBUG _saveJobPost: Updating job ${widget.job!.id}');
-        cubit.updateJob(
-          jobId: widget.job!.id,
-          title: _titleController.text,
-          description: _descriptionController.text,
-          category: categoryDb,
-          location: _locationController.text,
-          jobType: _selectedJobType,
-          pay: double.parse(_paymentAmountController.text),
-          paymentType: _selectedPaymentType,
-          timeCommitment: _hoursPerWeekController.text.isNotEmpty
-              ? '${_hoursPerWeekController.text} hours/week'
-              : null,
-          numberOfPositions: int.parse(_numberOfPositionsController.text),
-          requiresCv: _cvRequired,
-          isUrgent: _isUrgent,
-          isRecurring: _isRecurring,
-          languages: _selectedLanguages,
-        ).then((_) {
-          // Show success and navigate back
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Job updated successfully!'),
-              backgroundColor: Color(0xFFABD600),
-            ),
-          );
-          Navigator.pop(context, true);
-        }).catchError((error) {
-          // Show error
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error updating job: $error'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        });
+        _mockData.updateJob(newJob);
       } else {
-        // CREATE NEW JOB
-        print('DEBUG _saveJobPost: Creating new job');
-        cubit.createJob(
-          title: _titleController.text,
-          description: _descriptionController.text,
-          category: categoryDb, // Use converted category
-          location: _locationController.text,
-          jobType: _selectedJobType, // Pass the enum itself
-          pay: double.parse(_paymentAmountController.text),
-          paymentType: _selectedPaymentType, // Pass the enum itself
-          timeCommitment: _hoursPerWeekController.text.isNotEmpty
-              ? '${_hoursPerWeekController.text} hours/week'
-              : null,
-          numberOfPositions: int.parse(_numberOfPositionsController.text),
-          requiresCv: _cvRequired,
-          isUrgent: _isUrgent,
-          isRecurring: _isRecurring,
-          startDate: _specificDate,
-          languages: _selectedLanguages,
-        ).then((_) {
-          // Show success and navigate back
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Job posted successfully!'),
-              backgroundColor: Color(0xFFABD600),
-            ),
-          );
-          Navigator.pop(context, true);
-        }).catchError((error) {
-          // Show error
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error posting job: $error'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        });
+        _mockData.addJob(newJob);
       }
+
+      Navigator.pop(context, true);
     }
   }
 
@@ -567,15 +476,15 @@ class _JobPostFormScreenState extends State<JobPostFormScreen> {
       'Graphic Design',
       'Video Editing',
       'Content Writing',
-      'Social Media',
-      'IT Support',
       'Tutoring',
       'Event Staff',
-      'Delivery',
-      'Customer Service',
       'Data Entry',
-      'Marketing',
+      'Social Media',
+      'Customer Service',
       'Sales',
+      'Marketing',
+      'IT Support',
+      'Design',
       'Other'
     ];
     return DropdownButtonFormField<String>(
