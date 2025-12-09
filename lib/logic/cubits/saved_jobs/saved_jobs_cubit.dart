@@ -1,72 +1,86 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import '../../../data/repositories/job_repo.dart'; // TODO: Update to new repo structure
+import '../../../data/repositories/jobs/jobs_repo_abstract.dart';
 import 'saved_jobs_state.dart';
 
 class SavedJobsCubit extends Cubit<SavedJobsState> {
-  // TODO: Update to new repo structure
-  // final JobRepository _jobRepository;
+  final JobRepositoryBase _jobRepository;
 
-  SavedJobsCubit() : super(SavedJobsInitial());
+  SavedJobsCubit(this._jobRepository) : super(SavedJobsInitial());
 
-  // TODO: Implement with new repository structure
-  // Future<void> loadSavedJobs() async {
-  //   try {
-  //     emit(SavedJobsLoading());
-  //     final savedJobs = await _jobRepository.getSavedJobs();
-  //     final savedJobIds = savedJobs.map((job) => job.id).toList();
-  //     emit(SavedJobsLoaded(
-  //       savedJobs: savedJobs,
-  //       savedJobIds: savedJobIds,
-  //     ));
-  //   } catch (e) {
-  //     emit(SavedJobsError(e.toString()));
-  //   }
-  // }
+  Future<void> loadSavedJobs(String studentId) async {
+    try {
+      emit(SavedJobsLoading());
+      final result = await _jobRepository.getSavedJobs(studentId);
+      
+      if (result.isSuccess && result.data != null) {
+        final savedJobs = result.data!;
+        final savedJobIds = savedJobs.map((job) => job.id).toList();
+        emit(SavedJobsLoaded(
+          savedJobs: savedJobs,
+          savedJobIds: savedJobIds,
+        ));
+      } else {
+        emit(SavedJobsError(result.error ?? 'Failed to load saved jobs'));
+      }
+    } catch (e) {
+      emit(SavedJobsError(e.toString()));
+    }
+  }
 
-  // Future<void> saveJob(int jobId) async {
-  //   try {
-  //     await _jobRepository.saveJob(jobId);
-  //     emit(JobSaved(jobId));
-  //     // Reload saved jobs
-  //     await loadSavedJobs();
-  //   } catch (e) {
-  //     emit(SavedJobsError(e.toString()));
-  //   }
-  // }
+  Future<void> saveJob(String jobId) async {
+    try {
+      final result = await _jobRepository.saveJob(jobId);
+      
+      if (result.isSuccess) {
+        emit(JobSaved(jobId));
+      } else {
+        emit(SavedJobsError(result.error ?? 'Failed to save job'));
+      }
+    } catch (e) {
+      emit(SavedJobsError(e.toString()));
+    }
+  }
 
-  // Future<void> unsaveJob(int jobId) async {
-  //   try {
-  //     await _jobRepository.unsaveJob(jobId);
-  //     emit(JobUnsaved(jobId));
-  //     // Reload saved jobs
-  //     await loadSavedJobs();
-  //   } catch (e) {
-  //     emit(SavedJobsError(e.toString()));
-  //   }
-  // }
+  Future<void> unsaveJob(String jobId) async {
+    try {
+      final result = await _jobRepository.unsaveJob(jobId);
+      
+      if (result.isSuccess) {
+        emit(JobUnsaved(jobId));
+      } else {
+        emit(SavedJobsError(result.error ?? 'Failed to unsave job'));
+      }
+    } catch (e) {
+      emit(SavedJobsError(e.toString()));
+    }
+  }
 
-  // Future<void> toggleSaveJob(int jobId) async {
-  //   final currentState = state;
-  //   if (currentState is SavedJobsLoaded) {
-  //     if (currentState.isJobSaved(jobId)) {
-  //       await unsaveJob(jobId);
-  //     } else {
-  //       await saveJob(jobId);
-  //     }
-  //   } else {
-  //     await saveJob(jobId);
-  //   }
-  // }
+  Future<void> toggleSaveJob(String jobId, String studentId) async {
+    final currentState = state;
+    if (currentState is SavedJobsLoaded) {
+      if (currentState.isJobSaved(jobId)) {
+        await unsaveJob(jobId);
+        // Reload to update the list
+        await loadSavedJobs(studentId);
+      } else {
+        await saveJob(jobId);
+        // Reload to update the list
+        await loadSavedJobs(studentId);
+      }
+    } else {
+      await saveJob(jobId);
+    }
+  }
 
-  // bool isJobSaved(int jobId) {
-  //   final currentState = state;
-  //   if (currentState is SavedJobsLoaded) {
-  //     return currentState.isJobSaved(jobId);
-  //   }
-  //   return false;
-  // }
+  bool isJobSaved(String jobId) {
+    final currentState = state;
+    if (currentState is SavedJobsLoaded) {
+      return currentState.isJobSaved(jobId);
+    }
+    return false;
+  }
 
-  // Future<void> refreshSavedJobs() async {
-  //   await loadSavedJobs();
-  // }
+  Future<void> refreshSavedJobs(String studentId) async {
+    await loadSavedJobs(studentId);
+  }
 }

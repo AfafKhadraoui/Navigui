@@ -20,7 +20,7 @@ import 'seed_data.dart';
 
 class DBHelper {
   static Database? _database;
-  static const String _databaseName = 'navigui.db';
+  static const String _databaseName = 'navigui_v3.db'; // Force new DB
   static const int _databaseVersion = 2;  // Incremented to recreate tables with timestamp columns
 
   // Singleton pattern
@@ -66,7 +66,7 @@ class DBHelper {
     print('Database initialized with 12 tables');
 
     // Seed with dummy data
-    await DatabaseSeeder.seedDatabase();
+    await DatabaseSeeder.seedDatabase(db);
   }
 
   // Upgrade database when version changes

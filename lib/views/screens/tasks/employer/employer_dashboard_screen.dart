@@ -1,8 +1,12 @@
 // lib/views/screens/tasks/employer/my_job_posts_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../commons/themes/style_simple/colors.dart';
 import '../../../../data/models/job_post.dart';
+import '../../../../logic/cubits/employer_job/employer_job_cubit.dart';
+import '../../../../logic/cubits/employer_job/employer_job_state.dart';
+import '../../../../core/dependency_injection.dart';
 import '../../../../routes/app_router.dart';
 
 class EmployerDashboardScreen extends StatefulWidget {
@@ -14,101 +18,148 @@ class EmployerDashboardScreen extends StatefulWidget {
 }
 
 class _EmployerDashboardScreenState extends State<EmployerDashboardScreen> {
-  List<JobPost> _jobs = [];
+  late EmployerJobCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _loadJobs();
-  }
-
-  void _loadJobs() {
-    // TODO: Load jobs from your backend/database
-    // For now, using empty list
-    setState(() {
-      _jobs = [];
-    });
+    _cubit = getIt<EmployerJobCubit>();
+    // TODO: Get actual employer ID from auth state
+    _cubit.setEmployerId('1');
+    _cubit.loadMyJobs();
   }
 
   Future<void> _navigateToAddJob() async {
     await context.push(AppRouter.jobPostForm);
-    _loadJobs();
+    // Reload jobs after returning
+    if (mounted) {
+      _cubit.loadMyJobs();
+    }
   }
 
   Future<void> _navigateToJobDetail(JobPost job) async {
     await context.push('${AppRouter.jobPostDetail}/${job.id}', extra: job);
-    _loadJobs();
+    // Reload jobs after returning
+    if (mounted) {
+      _cubit.loadMyJobs();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back,
-                        color: AppColors.textPrimary),
-                    onPressed: () => context.pop(),
-                  ),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'My Job Posts',
-                      style: TextStyle(
-                        fontFamily: 'Aclonica',
-                        fontSize: 24,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  FloatingActionButton(
-                    onPressed: _navigateToAddJob,
-                    backgroundColor: AppColors.primary,
-                    elevation: 0,
-                    child: const Icon(
-                      Icons.add,
-                      color: AppColors.textOnPrimary,
-                      size: 32,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      body: BlocBuilder<EmployerJobCubit, EmployerJobState>(
+        bloc: _cubit,
+        builder: (context, state) {
+          List<JobPost> jobs = [];
+          bool isLoading = false;
+          String? errorMessage;
 
-            // Jobs List
-            Expanded(
-              child: _jobs.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No job posts yet. Create your first one!',
-                        style: TextStyle(
-                          fontFamily: 'Acme',
-                          fontSize: 16,
-                          color: AppColors.textDisabled,
+          if (state is EmployerJobLoading) {
+            isLoading = true;
+          } else if (state is EmployerJobsLoaded) {
+            jobs = state.jobs;
+          } else if (state is EmployerJobError) {
+            errorMessage = state.message;
+          }
+
+          return SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back,
+                            color: AppColors.textPrimary),
+                        onPressed: () => context.pop(),
+                      ),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'My Job Posts',
+                          style: TextStyle(
+                            fontFamily: 'Aclonica',
+                            fontSize: 24,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
-                      itemCount: _jobs.length,
-                      itemBuilder: (context, index) {
-                        final job = _jobs[index];
-                        return _JobPostCard(
-                          job: job,
-                          onTap: () => _navigateToJobDetail(job),
-                        );
-                      },
-                    ),
+                      FloatingActionButton(
+                        onPressed: _navigateToAddJob,
+                        backgroundColor: AppColors.primary,
+                        elevation: 0,
+                        child: const Icon(
+                          Icons.add,
+                          color: AppColors.textOnPrimary,
+                          size: 32,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Jobs List or Loading/Error
+                Expanded(
+                  child: isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        )
+                      : errorMessage != null
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                    size: 48,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Error: $errorMessage',
+                                    style: const TextStyle(
+                                      fontFamily: 'Acme',
+                                      fontSize: 14,
+                                      color: Colors.red,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : jobs.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No job posts yet. Create your first one!',
+                                    style: TextStyle(
+                                      fontFamily: 'Acme',
+                                      fontSize: 16,
+                                      color: AppColors.textDisabled,
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+                                  itemCount: jobs.length,
+                                  itemBuilder: (context, index) {
+                                    final job = jobs[index];
+                                    return _JobPostCard(
+                                      job: job,
+                                      onTap: () => _navigateToJobDetail(job),
+                                    );
+                                  },
+                                ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

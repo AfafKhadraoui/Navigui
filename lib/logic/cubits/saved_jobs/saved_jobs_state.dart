@@ -24,11 +24,11 @@ class SavedJobsLoaded extends SavedJobsState {
   @override
   List<Object?> get props => [savedJobs, savedJobIds];
 
-  bool isJobSaved(int jobId) => savedJobIds.contains(jobId);
+  bool isJobSaved(String jobId) => savedJobIds.contains(jobId);
 }
 
 class JobSaved extends SavedJobsState {
-  final int jobId;
+  final String jobId;
 
   const JobSaved(this.jobId);
 
@@ -37,7 +37,7 @@ class JobSaved extends SavedJobsState {
 }
 
 class JobUnsaved extends SavedJobsState {
-  final int jobId;
+  final String jobId;
 
   const JobUnsaved(this.jobId);
 
@@ -53,3 +53,4 @@ class SavedJobsError extends SavedJobsState {
   @override
   List<Object?> get props => [message];
 }
+

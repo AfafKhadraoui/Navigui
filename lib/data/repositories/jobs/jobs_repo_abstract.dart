@@ -1,24 +1,18 @@
+import '../../models/result.dart';
+import '../../models/job_post.dart';
 
-// import '../result_model.dart';
-// import '../../models/job_model.dart';
-
-// abstract class JobRepositoryBase {
-//   Future<RepositoryResult<List<JobModel>>> getActiveJobs();
-//   Future<RepositoryResult<List<JobModel>>> getUrgentJobs();
-//   Future<RepositoryResult<List<JobModel>>> getJobsByCategory(String category);
-//   Future<RepositoryResult<List<JobModel>>> getJobsByLocation(String location);
-//   Future<RepositoryResult<List<JobModel>>> getEmployerJobs(String employerId);
-//   Future<RepositoryResult<JobModel>> getJobById(String jobId);
-//   Future<RepositoryResult<void>> createJob(JobModel job);
-//   Future<RepositoryResult<void>> updateJob(JobModel job);
-//   Future<RepositoryResult<void>> deleteJob(String jobId);
-//   Future<RepositoryResult<void>> saveJob(String jobId, String studentId);
-//   Future<RepositoryResult<List<JobModel>>> getSavedJobs(String studentId);
-
-//   static JobRepositoryBase? _instance;
-
-//   static JobRepositoryBase getInstance() {
-//     _instance ??= JobRepositoryImpl();
-//     return _instance!;
-//   }
-// }
+abstract class JobRepositoryBase {
+  Future<RepositoryResult<List<JobPost>>> getActiveJobs();
+  Future<RepositoryResult<List<JobPost>>> getUrgentJobs();
+  Future<RepositoryResult<List<JobPost>>> getJobsByCategory(String category);
+  Future<RepositoryResult<List<JobPost>>> getJobsByLocation(String location);
+  Future<RepositoryResult<List<JobPost>>> getEmployerJobs(String employerId);
+  Future<RepositoryResult<JobPost>> getJobById(String jobId);
+  Future<RepositoryResult<void>> createJob(JobPost job);
+  Future<RepositoryResult<void>> updateJob(JobPost job);
+  Future<RepositoryResult<void>> deleteJob(String jobId);
+  Future<RepositoryResult<List<JobPost>>> getSavedJobs(String studentId);
+  Future<bool> isJobSaved(String jobId);
+  Future<RepositoryResult<void>> saveJob(String jobId);
+  Future<RepositoryResult<void>> unsaveJob(String jobId);
+}

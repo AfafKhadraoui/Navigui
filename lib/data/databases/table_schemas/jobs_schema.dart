@@ -16,7 +16,7 @@ class JobsSchema {
         brief_description TEXT,
         category TEXT NOT NULL CHECK(category IN (
           'photography', 'translation', 'graphic_design', 'video_editing',
-          'writing', 'social_media', 'web_development', 'tutoring',
+          'writing', 'social_media', 'web_development', 'mobile_development', 'tutoring',
           'event_planning', 'delivery', 'customer_service', 'data_entry',
           'marketing', 'sales', 'other'
         )),

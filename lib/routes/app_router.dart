@@ -26,7 +26,7 @@ import '../views/screens/profile/my_profile_screen.dart';
 import '../views/screens/notifications/notifications_screen.dart';
 import '../views/widgets/navigation/bottom_nav_bar.dart';
 import '../data/models/job_post.dart';
-import '../data/models/application.dart';
+import '../data/models/applications_model.dart';
 import '../logic/services/role_based_navigation.dart';
 import '../views/screens/profile/edit_student_profile_screen.dart';
 import '../views/screens/employer/create_employer_profile_screen.dart';
@@ -304,7 +304,7 @@ class AppRouter {
                 path: 'details/:id',
                 name: 'jobDetails',
                 builder: (context, state) {
-                  final job = state.extra as Map<String, dynamic>;
+                  final job = state.extra as JobPost;
                   return JobDetailsScreen(job: job);
                 },
               ),

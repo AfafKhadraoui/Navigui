@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../data/models/job_post.dart';
-import '../../../mock/mock_data.dart';
+import '../../../logic/cubits/employer_job/employer_job_cubit.dart';
+import '../../../logic/cubits/employer_job/employer_job_state.dart';
+import '../../../core/dependency_injection.dart';
 import '../../../routes/app_router.dart';
 
 class MyJobPostsScreen extends StatefulWidget {
@@ -14,16 +17,21 @@ class MyJobPostsScreen extends StatefulWidget {
 }
 
 class _MyJobPostsScreenState extends State<MyJobPostsScreen> {
-  final MockData _mockData = MockData();
-  List<JobPost> _jobs = [];
+  late EmployerJobCubit _cubit;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _mockData.initializeSampleData();
-    _loadJobs();
+    print('DEBUG MyJobPostsScreen: initState called');
+    _cubit = getIt<EmployerJobCubit>();
+    print('DEBUG MyJobPostsScreen: Got cubit instance');
+    // TODO: Get actual employer ID from auth state
+    _cubit.setEmployerId('1');
+    print('DEBUG MyJobPostsScreen: Set employer ID to 1');
+    _cubit.loadMyJobs();
+    print('DEBUG MyJobPostsScreen: Called loadMyJobs');
   }
 
   @override
@@ -32,32 +40,34 @@ class _MyJobPostsScreenState extends State<MyJobPostsScreen> {
     super.dispose();
   }
 
-  void _loadJobs() {
-    setState(() {
-      final allJobs = _mockData.getAllJobs();
-
-      if (_searchQuery.isEmpty) {
-        _jobs = allJobs;
-      } else {
-        _jobs = allJobs.where((job) {
-          final query = _searchQuery.toLowerCase();
-          return job.title.toLowerCase().contains(query) ||
-              (job.location?.toLowerCase().contains(query) ?? false) ||
-              job.description.toLowerCase().contains(query) ||
-              job.category.toLowerCase().contains(query);
-        }).toList();
-      }
-    });
+  List<JobPost> _filterJobs(List<JobPost> jobs) {
+    if (_searchQuery.isEmpty) {
+      return jobs;
+    }
+    
+    final query = _searchQuery.toLowerCase();
+    return jobs.where((job) {
+      return job.title.toLowerCase().contains(query) ||
+          (job.location?.toLowerCase().contains(query) ?? false) ||
+          job.description.toLowerCase().contains(query) ||
+          job.category.toLowerCase().contains(query);
+    }).toList();
   }
 
   Future<void> _navigateToAddJob() async {
     await context.push(AppRouter.jobPostForm);
-    _loadJobs();
+    // Reload jobs after returning
+    if (mounted) {
+      _cubit.loadMyJobs();
+    }
   }
 
   Future<void> _navigateToJobDetail(JobPost job) async {
     await context.push('${AppRouter.jobPostDetail}/${job.id}', extra: job);
-    _loadJobs();
+    // Reload jobs after returning
+    if (mounted) {
+      _cubit.loadMyJobs();
+    }
   }
 
   @override
@@ -75,120 +85,166 @@ class _MyJobPostsScreenState extends State<MyJobPostsScreen> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2F2F2F),
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        style: const TextStyle(
-                          fontFamily: 'Acme',
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Search jobs...',
-                          hintStyle: const TextStyle(
-                            fontFamily: 'Acme',
-                            color: Color(0xFF6C6C6C),
-                            fontSize: 15,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: Color(0xFF6C6C6C),
-                          ),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(
-                                    Icons.clear,
-                                    color: Color(0xFF6C6C6C),
-                                  ),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    setState(() {
-                                      _searchQuery = '';
-                                    });
-                                  },
-                                )
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      body: BlocBuilder<EmployerJobCubit, EmployerJobState>(
+        bloc: _cubit,
+        builder: (context, state) {
+          List<JobPost> displayedJobs = [];
+          bool isLoading = false;
+          String? errorMessage;
 
-            const SizedBox(height: 16),
+          if (state is EmployerJobLoading) {
+            isLoading = true;
+          } else if (state is EmployerJobsLoaded) {
+            displayedJobs = _filterJobs(state.jobs);
+          } else if (state is EmployerJobError) {
+            errorMessage = state.message;
+          }
 
-            // Jobs Count
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '${_jobs.length} jobs found',
-                  style: const TextStyle(
-                    fontFamily: 'Acme',
-                    fontSize: 14,
-                    color: Color(0xFF6C6C6C),
+          return SafeArea(
+            child: Column(
+              children: [
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2F2F2F),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            style: const TextStyle(
+                              fontFamily: 'Acme',
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Search jobs...',
+                              hintStyle: const TextStyle(
+                                fontFamily: 'Acme',
+                                color: Color(0xFF6C6C6C),
+                                fontSize: 15,
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: Color(0xFF6C6C6C),
+                              ),
+                              suffixIcon: _searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        color: Color(0xFF6C6C6C),
+                                      ),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() {
+                                          _searchQuery = '';
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
-            // Jobs List
-            Expanded(
-              child: _jobs.isEmpty
-                  ? Center(
-                      child: Text(
-                        _searchQuery.isNotEmpty
-                            ? 'No jobs found matching "$_searchQuery"'
-                            : 'No job posts yet. Create your first one!',
-                        style: const TextStyle(
-                          fontFamily: 'Acme',
-                          fontSize: 16,
-                          color: AppColors.textDisabled,
-                        ),
+                // Jobs Count
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${displayedJobs.length} jobs found',
+                      style: const TextStyle(
+                        fontFamily: 'Acme',
+                        fontSize: 14,
+                        color: Color(0xFF6C6C6C),
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-                      itemCount: _jobs.length,
-                      itemBuilder: (context, index) {
-                        final job = _jobs[index];
-                        return _JobPostCard(
-                          job: job,
-                          onTap: () => _navigateToJobDetail(job),
-                        );
-                      },
                     ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Jobs List or Loading/Error
+                Expanded(
+                  child: isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFFABD600),
+                          ),
+                        )
+                      : errorMessage != null
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                    size: 48,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Error: $errorMessage',
+                                    style: const TextStyle(
+                                      fontFamily: 'Acme',
+                                      fontSize: 14,
+                                      color: Colors.red,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : displayedJobs.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    _searchQuery.isNotEmpty
+                                        ? 'No jobs found matching "$_searchQuery"'
+                                        : 'No job posts yet. Create your first one!',
+                                    style: const TextStyle(
+                                      fontFamily: 'Acme',
+                                      fontSize: 16,
+                                      color: AppColors.textDisabled,
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                                  itemCount: displayedJobs.length,
+                                  itemBuilder: (context, index) {
+                                    final job = displayedJobs[index];
+                                    return _JobPostCard(
+                                      job: job,
+                                      onTap: () => _navigateToJobDetail(job),
+                                    );
+                                  },
+                                ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddJob,

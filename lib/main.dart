@@ -8,20 +8,26 @@ import 'core/dependency_injection.dart';
 import 'logic/cubits/auth/auth_cubit.dart';
 import 'logic/cubits/language/language_cubit.dart';
 import 'logic/services/session_manager.dart';
-import 'data/databases/seed_data.dart';
+import 'data/databases/db_helper.dart';
 import 'commons/language_provider.dart';
 import 'generated/s.dart';
-// TODO: Update to new repository structure
-// import 'logic/cubits/job/job_cubit.dart';
-// import 'logic/cubits/application/application_cubit.dart';
-// import 'logic/cubits/notification/notification_cubit.dart';
-// import 'logic/cubits/saved_jobs/saved_jobs_cubit.dart';
+import 'logic/cubits/job/job_cubit.dart';
+import 'logic/cubits/application/application_cubit.dart';
+import 'logic/cubits/notification/notification_cubit.dart';
+import 'logic/cubits/saved_jobs/saved_jobs_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Seed database with test users
-  await DatabaseSeeder.seedDatabase();
+  // Initialize database (will seed if created)
+  
+  // Database reset (uncomment to delete and reseed)
+  await DBHelper.deleteDB();
+  print('🗑️ Database deleted, will be recreated with jobs on next access');
+  
+  await DBHelper.getDatabase();
+  print('✅ Database initialized with jobs');
 
   // Initialize dependency injection
   await setupDependencies();
@@ -89,6 +95,11 @@ class _NaviguiAppState extends State<NaviguiApp> {
       providers: [
         BlocProvider.value(value: _authCubit),
         BlocProvider(create: (_) => getIt<LanguageCubit>()),
+        BlocProvider(create: (_) => getIt<JobCubit>()),
+        BlocProvider(create: (_) => getIt<SavedJobsCubit>()),
+        BlocProvider(create: (_) => getIt<NotificationCubit>()),
+        // ApplicationCubit requires more setup or mock for now, adding if available
+        // BlocProvider(create: (_) => getIt<ApplicationCubit>()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {

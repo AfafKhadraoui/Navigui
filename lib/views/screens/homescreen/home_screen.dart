@@ -8,6 +8,7 @@ import 'package:navigui/views/widgets/home/educational_content_section.dart';
 import 'package:navigui/routes/app_router.dart';
 import '../../../logic/services/secure_storage_service.dart';
 import '../../../logic/cubits/language/language_cubit.dart';
+import '../../../logic/cubits/job/job_cubit.dart';
 import '../../../generated/s.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUserName();
+    // Load jobs when home screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<JobCubit>().loadJobs();
+    });
   }
 
   Future<void> _loadUserName() async {
