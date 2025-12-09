@@ -19,6 +19,9 @@ class JobCubit extends Cubit<JobState> {
       
       if (result.isSuccess && result.data != null) {
         print('✅ JobCubit: Loaded ${result.data!.length} jobs successfully');
+        for (var job in result.data!) {
+          print('   - Job: ${job.title} | Type: ${job.jobType} | Category: ${job.category} | Urgent: ${job.isUrgent}');
+        }
         emit(JobLoaded(
           jobs: result.data!,
           searchQuery: searchQuery,

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
+import '../../../data/models/job_post.dart';
 import 'apply_job_screen.dart';
 import 'saved_jobs_screen.dart';
 
 class JobDetailsScreen extends StatefulWidget {
-  final Map<String, dynamic> job;
+  final JobPost job;
 
   const JobDetailsScreen({
     super.key,
@@ -73,7 +74,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 children: [
                   // Title and Company
                   Text(
-                    widget.job['title'],
+                    widget.job.title,
                     style: const TextStyle(
                       fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
@@ -85,29 +86,38 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Row(
                     children: [
                       Text(
-                        widget.job['company'],
+                        // TODO: Add company name to JobPost or fetch from Employer
+                        widget.job.category.toUpperCase().replaceAll('_', ' '),
                         style: const TextStyle(
                           fontFamily: 'Acme', // Text font
                           color: AppColors.grey6,
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.star,
-                          color: AppColors.yellow1, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.job['rating'].toString(),
-                        style: const TextStyle(
-                          fontFamily: 'Acme', // Text font
-                          color: AppColors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      const Spacer(),
+                      if (widget.job.isUrgent)
+                         Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.urgentRed.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.urgentRed),
+                          ),
+                          child: const Text(
+                           'URGENT',
+                            style: TextStyle(
+                              fontFamily: 'Acme',
+                              color: AppColors.urgentRed,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                         ),
                     ],
                   ),
+                  
                   const SizedBox(height: 16),
+                  
                   // Info Chips
                   Wrap(
                     spacing: 8,
@@ -115,19 +125,19 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                     children: [
                       _buildInfoChip(
                         Icons.location_on_outlined,
-                        widget.job['location'],
+                        widget.job.location ?? 'Remote',
                       ),
                       _buildInfoChip(
                         Icons.work_outline,
-                        widget.job['type'],
+                        widget.job.jobType.displayName,
                       ),
                       _buildInfoChip(
                         Icons.access_time,
-                        widget.job['postedTime'],
+                        widget.job.postedTime,
                       ),
                       _buildInfoChip(
                         Icons.people_outline,
-                        '${widget.job['positions']} position',
+                        '${widget.job.numberOfPositions} position(s)',
                       ),
                     ],
                   ),
@@ -141,7 +151,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           color: AppColors.lavenderPurple, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        widget.job['salary'],
+                        widget.job.salaryText,
                         style: const TextStyle(
                           fontFamily: 'Aclonica', // Title font for emphasis
                           color: AppColors.white,
@@ -155,90 +165,77 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   const SizedBox(height: 16),
 
                   // Deadline Banner
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.urgentRed.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: AppColors.urgentRed.withOpacity(0.3)),
+                  if (widget.job.deadlineText != 'No Deadline')
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.urgentRed.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: AppColors.urgentRed.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.event,
+                              color: AppColors.urgentRed, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Deadline: ${widget.job.deadlineText}',
+                            style: const TextStyle(
+                              fontFamily: 'Acme', // Text font
+                              color: AppColors.urgentRed,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
+                ],
+              ),
+            ),
+            
+            // Contact Information
+            if (widget.job.contactPreference != null)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2D1B3D),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF4A2D5C)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Contact Information',
+                      style: TextStyle(
+                        fontFamily: 'Aclonica', // Title font
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
                       children: [
-                        const Icon(Icons.event,
-                            color: AppColors.urgentRed, size: 20),
-                        const SizedBox(width: 8),
+                        const Icon(Icons.contact_mail_outlined,
+                            color: AppColors.lavenderPurple, size: 20),
+                        const SizedBox(width: 12),
                         Text(
-                          'Deadline: ${widget.job['deadline']}',
+                          'Preference: ${widget.job.contactPreference!.name.toUpperCase()}',
                           style: const TextStyle(
                             fontFamily: 'Acme', // Text font
-                            color: AppColors.urgentRed,
+                            color: AppColors.white,
                             fontSize: 14,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            // Contact Information
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2D1B3D),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF4A2D5C)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Contact Information',
-                    style: TextStyle(
-                      fontFamily: 'Aclonica', // Title font
-                      color: AppColors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Icon(Icons.phone_outlined,
-                          color: AppColors.lavenderPurple, size: 20),
-                      const SizedBox(width: 12),
-                      Text(
-                        widget.job['phone'],
-                        style: const TextStyle(
-                          fontFamily: 'Acme', // Text font
-                          color: AppColors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const Icon(Icons.email_outlined,
-                          color: AppColors.lavenderPurple, size: 20),
-                      const SizedBox(width: 12),
-                      Text(
-                        widget.job['email'],
-                        style: const TextStyle(
-                          fontFamily: 'Acme', // Text font
-                          color: AppColors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
 
             const SizedBox(height: 16),
 
@@ -259,7 +256,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    widget.job['fullDescription'],
+                    widget.job.description,
                     style: const TextStyle(
                       fontFamily: 'Acme', // Text font
                       color: AppColors.grey7,
@@ -274,7 +271,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
             const SizedBox(height: 24),
 
             // Requirements Section
-            Padding(
+            if (widget.job.requirements != null)
+             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,84 +286,29 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // Skills Required
-                  const Text(
-                    'Skills Required',
-                    style: TextStyle(
-                      fontFamily: 'Acme', // Text font
-                      color: AppColors.grey6,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children:
-                        (widget.job['requirements']['skills'] as List<String>)
-                            .map((skill) => _buildSkillChip(skill))
-                            .toList(),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Experience
-                  const Text(
-                    'Experience',
-                    style: TextStyle(
-                      fontFamily: 'Acme', // Text font
-                      color: AppColors.grey6,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
-                    widget.job['requirements']['experience'],
+                    widget.job.requirements!,
                     style: const TextStyle(
                       fontFamily: 'Acme', // Text font
-                      color: AppColors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Languages
-                  const Text(
-                    'Languages',
-                    style: TextStyle(
-                      fontFamily: 'Acme', // Text font
                       color: AppColors.grey6,
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: (widget.job['requirements']['languages']
-                            as List<String>)
-                        .map((lang) => _buildLanguageChip(lang))
-                        .toList(),
                   ),
                 ],
               ),
             ),
-
+            
             const SizedBox(height: 24),
-
-            // Time Commitment Section
-            Padding(
+            
+            // Time & Duration Section
+             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Time Commitment',
+                    'Details',
                     style: TextStyle(
                       fontFamily: 'Aclonica', // Title font
                       color: AppColors.white,
@@ -373,109 +316,52 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time_outlined,
-                          color: AppColors.lavenderPurple, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        widget.job['requirements']['timeCommitment'],
-                        style: const TextStyle(
-                          fontFamily: 'Acme', // Text font
-                          color: AppColors.white,
-                          fontSize: 14,
-                        ),
+                  const SizedBox(height: 16),
+                  
+                  if (widget.job.timeCommitment != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.access_time_outlined, color: AppColors.lavenderPurple, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Commitment: ${widget.job.timeCommitment}',
+                            style: const TextStyle(
+                              fontFamily: 'Acme',
+                              color: AppColors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: (widget.job['requirements']['availability']
-                            as List<String>)
-                        .map((day) => _buildAvailabilityChip(day))
-                        .toList(),
-                  ),
+                    ),
+                    
+                  if (widget.job.duration != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.timer_outlined, color: AppColors.lavenderPurple, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Duration: ${widget.job.duration}',
+                            style: const TextStyle(
+                              fontFamily: 'Acme',
+                              color: AppColors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
 
+
             const SizedBox(height: 24),
-            // Action Buttons
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  // Share Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Share functionality
-                      },
-                      icon: const Icon(Icons.share_outlined, size: 20),
-                      label: const Text(
-                        'Share',
-                        style: TextStyle(fontFamily: 'Acme'), // Text font
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.white,
-                        side: const BorderSide(color: AppColors.grey5),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Contact Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Contact functionality
-                      },
-                      icon: const Icon(Icons.message_outlined, size: 20),
-                      label: const Text(
-                        'Contact',
-                        style: TextStyle(fontFamily: 'Acme'), // Text font
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.white,
-                        side: const BorderSide(color: AppColors.grey5),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Report Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Report functionality
-                      },
-                      icon: const Icon(Icons.flag_outlined, size: 20),
-                      label: const Text(
-                        'Report',
-                        style: TextStyle(fontFamily: 'Acme'), // Text font
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.white,
-                        side: const BorderSide(color: AppColors.grey5),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            
             // Apply Now Button
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
@@ -483,10 +369,21 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    // Create a compatible map for ApplyJobScreen for now
+                    final jobMap = {
+                      'id': widget.job.id,
+                      'title': widget.job.title,
+                      'company': widget.job.category,
+                      'description': widget.job.description,
+                      'location': widget.job.location ?? 'Remote',
+                      'salary': widget.job.salaryText,
+                      'type': widget.job.jobType.displayName,
+                    };
+                    
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ApplyJobScreen(job: widget.job),
+                        builder: (context) => ApplyJobScreen(job: jobMap),
                       ),
                     );
                   },
@@ -536,64 +433,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSkillChip(String skill) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.lavenderPurple.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.lavenderPurple.withOpacity(0.5)),
-      ),
-      child: Text(
-        skill,
-        style: const TextStyle(
-          fontFamily: 'Acme', // Text font
-          color: AppColors.lavenderPurple,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLanguageChip(String language) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.grey5,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        language,
-        style: const TextStyle(
-          fontFamily: 'Acme', // Text font
-          color: AppColors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAvailabilityChip(String day) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.grey5,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        day,
-        style: const TextStyle(
-          fontFamily: 'Acme', // Text font
-          color: AppColors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
       ),
     );
   }

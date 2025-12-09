@@ -304,7 +304,7 @@ class AppRouter {
                 path: 'details/:id',
                 name: 'jobDetails',
                 builder: (context, state) {
-                  final job = state.extra as Map<String, dynamic>;
+                  final job = state.extra as JobPost;
                   return JobDetailsScreen(job: job);
                 },
               ),

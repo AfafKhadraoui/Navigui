@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:navigui/commons/themes/style_simple/colors.dart';
 
-class JobCard extends StatefulWidget {
+class JobCard extends StatelessWidget {
   final String title;
   final String location;
   final String salary;
@@ -9,6 +9,7 @@ class JobCard extends StatefulWidget {
   final String? imagePath;
   final bool isLiked;
   final VoidCallback? onTap;
+  final VoidCallback? onLike;
 
   const JobCard({
     super.key,
@@ -19,41 +20,29 @@ class JobCard extends StatefulWidget {
     this.imagePath,
     this.isLiked = false,
     this.onTap,
+    this.onLike,
   });
-
-  @override
-  State<JobCard> createState() => _JobCardState();
-}
-
-class _JobCardState extends State<JobCard> {
-  late bool _isLiked;
-
-  @override
-  void initState() {
-    super.initState();
-    _isLiked = widget.isLiked;
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         width: 224,
         height: 158,
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(15),
         ),
         child: Stack(
           children: [
             // Image
-            if (widget.imagePath != null)
+            if (imagePath != null)
               Positioned(
                 right: 10,
                 top: 10,
                 child: Image.asset(
-                  widget.imagePath!,
+                  imagePath!,
                   width: 121,
                   height: 120,
                   fit: BoxFit.contain,
@@ -61,8 +50,8 @@ class _JobCardState extends State<JobCard> {
                     return Container(
                       width: 121,
                       height: 120,
-                      color: Colors.grey.withOpacity(0.2),
-                      child: Icon(Icons.image, size: 40, color: Colors.grey),
+                      color: Colors.white.withOpacity(0.2),
+                      child: const Icon(Icons.work_outline, size: 40, color: Colors.white54),
                     );
                   },
                 ),
@@ -77,8 +66,8 @@ class _JobCardState extends State<JobCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.title,
-                    style: TextStyle(
+                    title,
+                    style: const TextStyle(
                       color: AppColors.black,
                       fontSize: 16,
                       fontFamily: 'Aclonica',
@@ -90,8 +79,8 @@ class _JobCardState extends State<JobCard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.location,
-                    style: TextStyle(
+                    location,
+                    style: const TextStyle(
                       color: AppColors.black,
                       fontSize: 11,
                       fontFamily: 'Acme',
@@ -100,8 +89,8 @@ class _JobCardState extends State<JobCard> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    widget.salary,
-                    style: TextStyle(
+                    salary,
+                    style: const TextStyle(
                       color: AppColors.black,
                       fontSize: 11,
                       fontFamily: 'Acme',
@@ -117,11 +106,7 @@ class _JobCardState extends State<JobCard> {
               right: 9,
               top: 7,
               child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isLiked = !_isLiked;
-                  });
-                },
+                onTap: onLike,
                 child: Container(
                   width: 28,
                   height: 28,
@@ -130,8 +115,8 @@ class _JobCardState extends State<JobCard> {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: _isLiked ? AppColors.red1 : AppColors.white,
+                    isLiked ? Icons.favorite : Icons.favorite_border,
+                    color: isLiked ? AppColors.red1 : AppColors.white,
                     size: 16,
                   ),
                 ),
@@ -145,9 +130,9 @@ class _JobCardState extends State<JobCard> {
               bottom: 14,
               child: Row(
                 children: [
-                  _buildButton('Read more', widget.backgroundColor),
+                  _buildButton('Read more', backgroundColor),
                   const SizedBox(width: 3),
-                  _buildButton('Apply Now', widget.backgroundColor),
+                  _buildButton('Apply Now', backgroundColor),
                 ],
               ),
             ),

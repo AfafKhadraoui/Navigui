@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../commons/themes/style_simple/styles.dart';
@@ -467,7 +468,7 @@ class _JobsPageState extends State<JobsPage> {
         return GestureDetector(
       onTap: () {
         // Navigate to job details
-        // Navigator.push(context, MaterialPageRoute(builder: (_) => JobDetailScreen(job: job)));
+        context.pushNamed('jobDetails', extra: job, pathParameters: {'id': job.id});
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),

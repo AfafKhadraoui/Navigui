@@ -31,30 +31,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     } 
   }
 
-  Map<String, dynamic> _jobToDisplayMap(JobPost job) {
-    return {
-      'id': job.id,
-      'title': job.title,
-      'company': job.category,
-      'location': job.location ?? 'Remote',
-      'postedTime': job.postedTime,
-      'deadline': job.deadlineText,
-      'salary': job.salaryText,
-      'type': job.jobType.displayName,
-      'fullDescription': job.description,
-      'phone': 'Contact Employer', // Placeholder as not in JobPost main table
-      'email': 'Contact Employer', // Placeholder
-      'rating': 4.5, // Placeholder
-      'positions': job.numberOfPositions,
-      'requirements': {
-        'skills': ['See Description'], // Placeholder
-        'experience': job.requirements ?? 'Not specified',
-        'languages': job.languages,
-        'timeCommitment': job.timeCommitment ?? 'Not specified',
-        'availability': ['Flexible'], // Placeholder
-      }
-    };
-  }
+
 
   void _showDeleteDialog(BuildContext context, JobPost job) {
     showDialog(
@@ -364,7 +341,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => JobDetailsScreen(job: _jobToDisplayMap(job)),
+                          builder: (context) => JobDetailsScreen(job: job),
                         ),
                       );
                     },
