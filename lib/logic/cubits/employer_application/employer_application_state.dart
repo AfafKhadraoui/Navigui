@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../data/models/application_model.dart';
+import '../../../data/models/applications_model.dart';
 
 abstract class EmployerApplicationState extends Equatable {
   const EmployerApplicationState();
@@ -13,7 +13,7 @@ class EmployerApplicationInitial extends EmployerApplicationState {}
 class EmployerApplicationLoading extends EmployerApplicationState {}
 
 class EmployerApplicationsLoaded extends EmployerApplicationState {
-  final List<ApplicationModel> applications;
+  final List<Application> applications;
   final int? jobId;
   final String? statusFilter;
 
@@ -28,7 +28,7 @@ class EmployerApplicationsLoaded extends EmployerApplicationState {
 }
 
 class EmployerApplicationUpdated extends EmployerApplicationState {
-  final ApplicationModel application;
+  final Application application;
 
   const EmployerApplicationUpdated(this.application);
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../data/models/application.dart';
+import '../../../data/models/applications_model.dart';
 import '../../../mock/mock_data.dart';
 import 'student_request_detail_screen.dart';
 
@@ -559,6 +559,10 @@ class _ApplicationCard extends StatelessWidget {
         statusBgColor = const Color(0xFFC63F47);
         statusTextColor = Colors.white;
         break;
+      case ApplicationStatus.withdrawn:
+        statusBgColor = const Color(0xFF6C6C6C);
+        statusTextColor = Colors.white;
+        break;
     }
 
     return GestureDetector(
@@ -579,7 +583,7 @@ class _ApplicationCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: _getAvatarColor(application.avatar),
+                    color: _getAvatarColor(application.avatar ?? '#cebcff'),
                     shape: BoxShape.circle,
                   ),
                   child: Center(

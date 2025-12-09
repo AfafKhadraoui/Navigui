@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../data/models/application.dart';
+import '../../../data/models/applications_model.dart';
 import '../../../mock/mock_data.dart';
 
 class StudentRequestDetailScreen extends StatefulWidget {
@@ -96,6 +96,8 @@ class _StudentRequestDetailScreenState
         return const Color(0xFFD2FF1F); // Green
       case ApplicationStatus.rejected:
         return const Color(0xFFC63F47); // Red
+      case ApplicationStatus.withdrawn:
+        return const Color(0xFF6C6C6C); // Grey
       case ApplicationStatus.pending:
       default:
         return const Color(0xFFAB93E0); // Purple (default)
@@ -146,7 +148,7 @@ class _StudentRequestDetailScreenState
                     width: 70,
                     height: 70,
                     decoration: BoxDecoration(
-                      color: _getAvatarColor(_application.avatar),
+                      color: _getAvatarColor(_application.avatar ?? '#cebcff'),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -177,7 +179,7 @@ class _StudentRequestDetailScreenState
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _application.university,
+                          _application.university ?? '',
                           style: const TextStyle(
                             fontFamily: 'Acme',
                             fontSize: 13,
@@ -186,7 +188,7 @@ class _StudentRequestDetailScreenState
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _application.major,
+                          _application.major ?? '',
                           style: const TextStyle(
                             fontFamily: 'Acme',
                             fontSize: 13,
@@ -210,7 +212,7 @@ class _StudentRequestDetailScreenState
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _application.skills.map((skill) {
+              children: (_application.skills ?? []).map((skill) {
                 return Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
@@ -269,13 +271,13 @@ class _StudentRequestDetailScreenState
                   _buildContactRow(
                     Icons.email_outlined,
                     'Email',
-                    _application.email,
+                    _application.email ?? 'Not Available',
                   ),
                   const SizedBox(height: 16),
                   _buildContactRow(
                     Icons.phone_outlined,
                     'Phone',
-                    _application.phone,
+                    _application.phone ?? 'Not Available',
                   ),
                   const SizedBox(height: 16),
                 _buildContactRow(
@@ -283,7 +285,7 @@ class _StudentRequestDetailScreenState
   'CV Attached',
   'Download CV',
   isDownload: true,
-  downloadUrl: _application.cvUrl,
+  downloadUrl: _application.resumeUrl,
 )
 
                 ],
@@ -440,6 +442,10 @@ class _StudentRequestDetailScreenState
       case ApplicationStatus.rejected:
         backgroundColor = const Color(0xFFC63F47);
         textColor = Colors.black;
+        break;
+      case ApplicationStatus.withdrawn:
+        backgroundColor = const Color(0xFF6C6C6C);
+        textColor = Colors.white;
         break;
     }
 
