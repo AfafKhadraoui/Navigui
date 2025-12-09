@@ -164,13 +164,13 @@ Future<void> setupDependencies() async {
 
 
 
-  getIt.registerFactory<EmployerJobCubit>(
-    () => EmployerJobCubit(),
-  );
+  // getIt.registerFactory<EmployerJobCubit>(
+  //   () => EmployerJobCubit(getIt<JobRepository>()),
+  // );
 
-  getIt.registerFactory<EmployerApplicationCubit>(
-    () => EmployerApplicationCubit(),
-  );
+  // getIt.registerFactory<EmployerApplicationCubit>(
+  //   () => EmployerApplicationCubit(getIt<ApplicationRepository>()),
+  // );
 
   // getIt.registerFactory<SavedJobsCubit>(
   //   () => SavedJobsCubit(getIt<JobRepository>()),

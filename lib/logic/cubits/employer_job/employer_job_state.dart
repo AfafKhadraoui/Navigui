@@ -35,16 +35,16 @@ class EmployerJobCreated extends EmployerJobState {
 }
 
 class EmployerJobUpdated extends EmployerJobState {
-  final String jobId;
+  final JobPost job;
 
-  const EmployerJobUpdated({required this.jobId});
+  const EmployerJobUpdated(this.job);
 
   @override
-  List<Object?> get props => [jobId];
+  List<Object?> get props => [job];
 }
 
 class EmployerJobDeleted extends EmployerJobState {
-  final String jobId;
+  final int jobId;
 
   const EmployerJobDeleted(this.jobId);
 
