@@ -358,14 +358,11 @@ enum JobType {
   }
 }
 
-/// Job Status - ENUM('draft', 'active', 'filled', 'closed', 'expired') in database
-/// FIXED: Added 'expired' status that was missing
+/// Job Status - ENUM('active', 'closed') in database
+/// Draft posts are managed via the isDraft boolean field
 enum JobStatus {
-  draft('Draft', 'draft'),
   active('Active', 'active'),
-  filled('Filled', 'filled'),
-  closed('Closed', 'closed'),
-  expired('Expired', 'expired'); // ADDED: Was missing from original
+  closed('Closed', 'closed');
 
   final String label;
   final String dbValue;
@@ -379,6 +376,7 @@ enum JobStatus {
     );
   }
 }
+
 
 /// Payment Type - ENUM in database
 enum PaymentType {

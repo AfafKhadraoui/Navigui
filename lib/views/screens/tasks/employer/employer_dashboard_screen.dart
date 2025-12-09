@@ -415,21 +415,9 @@ class _StatusBadge extends StatelessWidget {
         backgroundColor = AppColors.primaryDark.withOpacity(0.2);
         textColor = AppColors.primaryDark;
         break;
-      case JobStatus.filled:
-        backgroundColor = AppColors.grey2;
-        textColor = AppColors.textPrimary;
-        break;
       case JobStatus.closed:
         backgroundColor = AppColors.error.withOpacity(0.2);
         textColor = AppColors.error;
-        break;
-      case JobStatus.draft:
-        backgroundColor = AppColors.grey2.withOpacity(0.5);
-        textColor = AppColors.textTertiary;
-        break;
-      case JobStatus.expired:
-        backgroundColor = AppColors.grey2.withOpacity(0.3);
-        textColor = AppColors.textSecondary;
         break;
     }
 

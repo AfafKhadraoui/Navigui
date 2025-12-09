@@ -35,7 +35,8 @@ class JobsSchema {
         is_urgent INTEGER DEFAULT 0,
         requires_cv INTEGER DEFAULT 0,
         is_draft INTEGER DEFAULT 0,
-        status TEXT DEFAULT 'draft' CHECK(status IN ('draft', 'active', 'filled', 'closed', 'expired')),
+        status TEXT NOT NULL DEFAULT 'active'
+    CHECK(status IN ('active', 'closed')),
         applicants_count INTEGER DEFAULT 0,
         views_count INTEGER DEFAULT 0,
         saves_count INTEGER DEFAULT 0,

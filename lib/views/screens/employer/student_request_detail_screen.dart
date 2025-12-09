@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../data/models/application.dart';
-import '../../../mock/mock_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/models/applications_model.dart';
+import '../../../logic/cubits/employer_application_cubit.dart';
 
 class StudentRequestDetailScreen extends StatefulWidget {
   final Application application;
@@ -14,7 +15,6 @@ class StudentRequestDetailScreen extends StatefulWidget {
 
 class _StudentRequestDetailScreenState
     extends State<StudentRequestDetailScreen> {
-  final MockData _mockData = MockData();
   late Application _application;
 
   @override
@@ -83,7 +83,12 @@ class _StudentRequestDetailScreenState
     );
 
     if (confirmed == true) {
-      _mockData.updateApplicationStatus(_application.id, newStatus);
+      // Use Cubit to update application status
+      context.read<EmployerApplicationCubit>().updateApplicationStatus(
+            _application.id,
+            newStatus,
+          );
+      
       setState(() {
         _application = _application.copyWith(status: newStatus);
       });

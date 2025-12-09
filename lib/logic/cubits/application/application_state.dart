@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../data/models/application_model.dart';
+import '../../../data/models/applications_model.dart';
 
 abstract class ApplicationState extends Equatable {
   const ApplicationState();
@@ -13,7 +13,7 @@ class ApplicationInitial extends ApplicationState {}
 class ApplicationLoading extends ApplicationState {}
 
 class ApplicationsLoaded extends ApplicationState {
-  final List<ApplicationModel> applications;
+  final List<Application> applications;
   final String? statusFilter;
 
   const ApplicationsLoaded({
@@ -23,10 +23,20 @@ class ApplicationsLoaded extends ApplicationState {
 
   @override
   List<Object?> get props => [applications, statusFilter];
+  
+  /// Get count of applications by status
+  Map<String, int> getStatusCounts() {
+    final counts = <String, int>{};
+    for (final app in applications) {
+      final status = app.status.label;
+      counts[status] = (counts[status] ?? 0) + 1;
+    }
+    return counts;
+  }
 }
 
 class ApplicationSubmitted extends ApplicationState {
-  final ApplicationModel application;
+  final Application application;
 
   const ApplicationSubmitted(this.application);
 
@@ -35,7 +45,7 @@ class ApplicationSubmitted extends ApplicationState {
 }
 
 class ApplicationUpdated extends ApplicationState {
-  final ApplicationModel application;
+  final Application application;
 
   const ApplicationUpdated(this.application);
 
@@ -44,7 +54,7 @@ class ApplicationUpdated extends ApplicationState {
 }
 
 class ApplicationWithdrawn extends ApplicationState {
-  final int applicationId;
+  final String applicationId;
 
   const ApplicationWithdrawn(this.applicationId);
 

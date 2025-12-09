@@ -498,21 +498,9 @@ class _StatusBadge extends StatelessWidget {
         backgroundColor = const Color(0xFFABD600);
         textColor = const Color(0xFF1A1A1A);
         break;
-      case JobStatus.filled:
-        backgroundColor = const Color(0xFF6C6C6C);
-        textColor = Colors.white;
-        break;
       case JobStatus.closed:
         backgroundColor = const Color(0xFFC63F47).withOpacity(0.2);
         textColor = const Color(0xFFC63F47);
-        break;
-      case JobStatus.draft:
-        backgroundColor = const Color(0xFF6C6C6C).withOpacity(0.5);
-        textColor = const Color(0xFFBFBFBF);
-        break;
-      case JobStatus.expired:
-        backgroundColor = const Color(0xFF6C6C6C).withOpacity(0.3);
-        textColor = const Color(0xFF9E9E9E);
         break;
     }
 

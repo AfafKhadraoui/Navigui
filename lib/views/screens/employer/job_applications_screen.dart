@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../../../commons/themes/style_simple/colors.dart';
 import '../../../data/models/job_post.dart';
+import '../../../data/models/applications_model.dart';
+import '../../../logic/cubits/employer_application/employer_application_cubit.dart';
+import '../../../logic/cubits/employer_application/employer_application_state.dart';
+import 'applicant_profile_screen.dart';
 
-class JobApplicationsScreen extends StatelessWidget {
+class JobApplicationsScreen extends StatefulWidget {
   final JobPost jobPost;
 
   const JobApplicationsScreen({
@@ -12,40 +18,40 @@ class JobApplicationsScreen extends StatelessWidget {
   });
 
   @override
+  State<JobApplicationsScreen> createState() => _JobApplicationsScreenState();
+}
+
+class _JobApplicationsScreenState extends State<JobApplicationsScreen> {
+  String? selectedStatusFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load applications for this job
+    context.read<EmployerApplicationCubit>().loadJobApplications(
+      jobId: widget.jobPost.id,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        title: Text(
-          'Applications for ${jobPost.title}',
-          style: GoogleFonts.aclonica(
-            fontSize: 22,
-            color: AppColors.white,
-          ),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
-              Icons.assignment_ind_outlined,
-              size: 64,
-              color: AppColors.electricLime,
-            ),
-            const SizedBox(height: 16),
             Text(
-              'Applications for ${jobPost.title}',
+              'Applications',
               style: GoogleFonts.aclonica(
-                fontSize: 20,
+                fontSize: 22,
                 color: AppColors.white,
               ),
             ),
-            const SizedBox(height: 8),
             Text(
-              'List of students that applied to this job',
+              widget.jobPost.title,
               style: GoogleFonts.acme(
                 fontSize: 14,
                 color: AppColors.grey6,
@@ -54,494 +60,392 @@ class JobApplicationsScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _showCreateJobDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const CreateJobDialog(),
-    );
-  }
-}
-
-class CreateJobDialog extends StatefulWidget {
-  const CreateJobDialog({super.key});
-
-  @override
-  State<CreateJobDialog> createState() => _CreateJobDialogState();
-}
-
-class _CreateJobDialogState extends State<CreateJobDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _requirementsController = TextEditingController();
-  final _salaryController = TextEditingController();
-  final _locationController = TextEditingController();
-  
-  String _selectedCategory = 'Technology';
-  String _selectedJobType = 'Full-time';
-  bool _isUrgent = false;
-  bool _requireCV = true;
-
-  final List<String> _categories = [
-    'Technology',
-    'Marketing',
-    'Design',
-    'Sales',
-    'Customer Service',
-    'Education',
-    'Healthcare',
-    'Finance',
-    'Other',
-  ];
-
-  final List<String> _jobTypes = [
-    'Full-time',
-    'Part-time',
-    'Contract',
-    'Internship',
-    'Freelance',
-  ];
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _requirementsController.dispose();
-    _salaryController.dispose();
-    _locationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.9,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.black,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: Column(
-            children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.grey6,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      body: BlocListener<EmployerApplicationCubit, EmployerApplicationState>(
+        listener: (context, state) {
+          if (state is EmployerApplicationError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
               ),
-              
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            );
+          }
+          if (state is EmployerApplicationUpdated) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Application status updated'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<EmployerApplicationCubit, EmployerApplicationState>(
+          builder: (context, state) {
+            if (state is EmployerApplicationLoading) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.electricLime,
+                ),
+              );
+            } else if (state is EmployerApplicationsLoaded) {
+              return Column(
+                children: [
+                  // Filter chips
+                  _buildFilterSection(context, state),
+
+                  // Applications list
+                  Expanded(
+                    child: state.applications.isEmpty
+                        ? _buildEmptyState()
+                        : _buildApplicationsList(context, state),
+                  ),
+                ],
+              );
+            } else if (state is EmployerApplicationError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: AppColors.electricLime,
+                    ),
+                    const SizedBox(height: 16),
                     Text(
-                      'Post New Job',
+                      'Error loading applications',
                       style: GoogleFonts.aclonica(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                         color: AppColors.white,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close, color: AppColors.white),
-                      onPressed: () => Navigator.pop(context),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.message,
+                      style: GoogleFonts.acme(
+                        fontSize: 14,
+                        color: AppColors.grey6,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
+              );
+            }
+
+            return _buildEmptyState();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterSection(
+    BuildContext context,
+    EmployerApplicationsLoaded state,
+  ) {
+    final statusCounts = state.getStatusCounts();
+    final statuses = ['pending', 'accepted', 'rejected'];
+
+    return Container(
+      color: AppColors.grey3,
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'Filter by Status',
+              style: GoogleFonts.aclonica(
+                fontSize: 14,
+                color: AppColors.white,
               ),
-              
-              // Form Content
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Category Dropdown
-                        _buildSectionTitle('Category'),
-                        const SizedBox(height: 8),
-                        _buildDropdown(
-                          value: _selectedCategory,
-                          items: _categories,
-                          onChanged: (value) {
-                            setState(() => _selectedCategory = value!);
-                          },
-                        ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Job Title
-                        _buildSectionTitle('Job Title'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          controller: _titleController,
-                          hint: 'e.g., Mobile App Developer',
-                          icon: Icons.work_outline,
-                        ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Job Type
-                        _buildSectionTitle('Job Type'),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _jobTypes.map((type) {
-                            final isSelected = _selectedJobType == type;
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() => _selectedJobType = type);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppColors.electricLime
-                                      : AppColors.grey4,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.electricLime
-                                        : AppColors.grey5,
-                                  ),
-                                ),
-                                child: Text(
-                                  type,
-                                  style: GoogleFonts.aclonica(
-                                    fontSize: 12,
-                                    color: isSelected
-                                        ? AppColors.black
-                                        : AppColors.white,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Description
-                        _buildSectionTitle('Description'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          controller: _descriptionController,
-                          hint: 'Describe the job responsibilities...',
-                          icon: Icons.description_outlined,
-                          maxLines: 4,
-                        ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Requirements
-                        _buildSectionTitle('Requirements'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          controller: _requirementsController,
-                          hint: 'List required skills and qualifications...',
-                          icon: Icons.checklist,
-                          maxLines: 3,
-                        ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Salary Range
-                        _buildSectionTitle('Salary Range'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          controller: _salaryController,
-                          hint: 'e.g., 50,000 - 80,000 DZD/month',
-                          icon: Icons.payments_outlined,
-                          keyboardType: TextInputType.text,
-                        ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Location
-                        _buildSectionTitle('Location'),
-                        const SizedBox(height: 8),
-                        _buildTextField(
-                          controller: _locationController,
-                          hint: 'e.g., Algiers, Algeria',
-                          icon: Icons.location_on_outlined,
-                        ),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Additional Options
-                        _buildSectionTitle('Additional Options'),
-                        const SizedBox(height: 12),
-                        
-                        _buildSwitchTile(
-                          title: 'Mark as Urgent',
-                          subtitle: 'Highlight this job posting',
-                          value: _isUrgent,
-                          onChanged: (value) {
-                            setState(() => _isUrgent = value);
-                          },
-                        ),
-                        
-                        const SizedBox(height: 8),
-                        
-                        _buildSwitchTile(
-                          title: 'Require CV',
-                          subtitle: 'Applicants must attach their CV',
-                          value: _requireCV,
-                          onChanged: (value) {
-                            setState(() => _requireCV = value);
-                          },
-                        ),
-                        
-                        const SizedBox(height: 32),
-                        
-                        // Action Buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  // TODO: Save as draft
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Saved in drafts',
-                                        style: GoogleFonts.aclonica(),
-                                      ),
-                                      backgroundColor: AppColors.grey4,
-                                    ),
-                                  );
-                                },
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.electricLime,
-                                  side: const BorderSide(
-                                    color: AppColors.electricLime,
-                                    width: 2,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Save Draft',
-                                  style: GoogleFonts.aclonica(fontSize: 16),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 2,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    // TODO: Submit job posting
-                                    Navigator.pop(context);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Job posted successfully!',
-                                          style: GoogleFonts.aclonica(),
-                                        ),
-                                        backgroundColor: AppColors.electricLime,
-                                      ),
-                                    );
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.electricLime,
-                                  foregroundColor: AppColors.black,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Text(
-                                  'Post Job',
-                                  style: GoogleFonts.aclonica(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 32),
-                      ],
-                    ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                FilterChip(
+                  label: Text('All (${state.applications.length})'),
+                  selected: selectedStatusFilter == null,
+                  onSelected: (_) {
+                    setState(() => selectedStatusFilter = null);
+                    context.read<EmployerApplicationCubit>().loadJobApplications(
+                      jobId: widget.jobPost.id,
+                    );
+                  },
+                  backgroundColor: AppColors.grey4,
+                  selectedColor: AppColors.electricLime,
+                  labelStyle: GoogleFonts.acme(
+                    fontSize: 12,
+                    color: selectedStatusFilter == null
+                        ? AppColors.black
+                        : AppColors.white,
                   ),
                 ),
+                const SizedBox(width: 8),
+                ...statuses.map((status) {
+                  final count = statusCounts[status] ?? 0;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text('${status.toUpperCase()} ($count)'),
+                      selected: selectedStatusFilter == status,
+                      onSelected: (_) {
+                        setState(() => selectedStatusFilter = status);
+                        context
+                            .read<EmployerApplicationCubit>()
+                            .filterByStatus(
+                              jobId: widget.jobPost.id,
+                              status: status,
+                            );
+                      },
+                      backgroundColor: AppColors.grey4,
+                      selectedColor: AppColors.electricLime,
+                      labelStyle: GoogleFonts.acme(
+                        fontSize: 12,
+                        color: selectedStatusFilter == status
+                            ? AppColors.black
+                            : AppColors.white,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicationsList(
+    BuildContext context,
+    EmployerApplicationsLoaded state,
+  ) {
+    final applicationsToShow = selectedStatusFilter == null
+        ? state.applications
+        : state.getFilteredByStatus(selectedStatusFilter!);
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(12),
+      itemCount: applicationsToShow.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final application = applicationsToShow[index];
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ApplicantProfileScreen(
+                  application: application,
+                  onAccept: () {
+                    context
+                        .read<EmployerApplicationCubit>()
+                        .acceptApplication(application.id);
+                  },
+                  onReject: () {
+                    context
+                        .read<EmployerApplicationCubit>()
+                        .rejectApplication(application.id);
+                  },
+                ),
               ),
-            ],
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.grey3,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _getStatusColor(application.status),
+                width: 2,
+              ),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with name and status
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            application.studentName,
+                            style: GoogleFonts.aclonica(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            '${application.university} • ${application.major}',
+                            style: GoogleFonts.acme(
+                              fontSize: 12,
+                              color: AppColors.grey6,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(application.status)
+                            .withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        application.status.label,
+                        style: GoogleFonts.acme(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: _getStatusColor(application.status),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Contact info
+                Row(
+                  children: [
+                    Icon(
+                      Icons.email_outlined,
+                      size: 14,
+                      color: AppColors.grey6,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        application.email,
+                        style: GoogleFonts.acme(
+                          fontSize: 11,
+                          color: AppColors.grey6,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.phone_outlined,
+                      size: 14,
+                      color: AppColors.grey6,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      application.phone,
+                      style: GoogleFonts.acme(
+                        fontSize: 11,
+                        color: AppColors.grey6,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Applied date
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: AppColors.grey6,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Applied: ${DateFormat('MMM d, yyyy').format(application.appliedDate)}',
+                      style: GoogleFonts.acme(
+                        fontSize: 11,
+                        color: AppColors.grey6,
+                      ),
+                    ),
+                  ],
+                ),
+
+                if (application.cvAttached) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.attach_file,
+                        size: 14,
+                        color: AppColors.electricLime,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'CV Attached',
+                        style: GoogleFonts.acme(
+                          fontSize: 11,
+                          color: AppColors.electricLime,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.aclonica(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColors.electricLime,
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    int maxLines = 1,
-    TextInputType? keyboardType,
-  }) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      style: GoogleFonts.aclonica(
-        fontSize: 14,
-        color: AppColors.white,
-      ),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: GoogleFonts.aclonica(
-          fontSize: 14,
-          color: AppColors.grey6,
-        ),
-        prefixIcon: Icon(icon, color: AppColors.electricLime, size: 20),
-        filled: true,
-        fillColor: AppColors.grey4,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.grey5, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.electricLime, width: 2),
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'This field is required';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildDropdown({
-    required String value,
-    required List<String> items,
-    required void Function(String?) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.grey4,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey5, width: 1),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          icon: const Icon(Icons.arrow_drop_down, color: AppColors.electricLime),
-          dropdownColor: AppColors.grey4,
-          style: GoogleFonts.aclonica(
-            fontSize: 14,
-            color: AppColors.white,
-          ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwitchTile({
-    required String title,
-    required String subtitle,
-    required bool value,
-    required void Function(bool) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.grey4,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey5, width: 1),
-      ),
-      child: Row(
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.aclonica(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.aclonica(
-                    fontSize: 12,
-                    color: AppColors.grey6,
-                  ),
-                ),
-              ],
+          Icon(
+            Icons.assignment_ind_outlined,
+            size: 64,
+            color: AppColors.electricLime,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No Applications Yet',
+            style: GoogleFonts.aclonica(
+              fontSize: 20,
+              color: AppColors.white,
             ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: AppColors.electricLime,
-            activeTrackColor: AppColors.electricLime.withOpacity(0.5),
+          const SizedBox(height: 8),
+          Text(
+            'Students haven\'t applied to this job yet',
+            style: GoogleFonts.acme(
+              fontSize: 14,
+              color: AppColors.grey6,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Color _getStatusColor(ApplicationStatus status) {
+    switch (status) {
+      case ApplicationStatus.pending:
+        return const Color(0xFFFFA500);
+      case ApplicationStatus.accepted:
+        return const Color(0xFF4CAF50);
+      case ApplicationStatus.rejected:
+        return const Color(0xFFE53935);
+    }
   }
 }

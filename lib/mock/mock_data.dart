@@ -184,7 +184,7 @@ class MockData {
         isUrgent: false,
         isRecurring: false,
         numberOfPositions: 1,
-        status: JobStatus.filled,
+        status: JobStatus.active,
         createdDate: DateTime(2025, 10, 25),
         languages: ['Arabic', 'French'],
         requiresCv: false,

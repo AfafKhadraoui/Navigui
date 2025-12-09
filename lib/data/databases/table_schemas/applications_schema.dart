@@ -9,23 +9,27 @@ class ApplicationsSchema {
     // Create applications table
     await db.execute('''
       CREATE TABLE $tableName (
-        id TEXT PRIMARY KEY,
-        job_id TEXT NOT NULL,
-        student_id TEXT NOT NULL,
-        cover_message TEXT,
-        cv_url TEXT,
-        portfolio_url TEXT,
-        availability_confirmation INTEGER DEFAULT 1,
-        status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'accepted', 'rejected', 'withdrawn', 'interviewing', 'offered')),
-        is_withdrawn INTEGER DEFAULT 0,
-        is_latest INTEGER DEFAULT 1,
-        employer_note TEXT,
-        applied_at TEXT NOT NULL,
-        responded_at TEXT,
-        created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL,
-        FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
-        FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+    id TEXT PRIMARY KEY,
+    job_id TEXT NOT NULL,
+    student_id TEXT NOT NULL,
+    student_name TEXT NOT NULL,
+    job_title TEXT,
+    applied_date INTEGER NOT NULL,       -- store as millisecondsSinceEpoch
+    responded_date INTEGER,               -- store as millisecondsSinceEpoch
+    status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'accepted', 'rejected')),
+    email TEXT,
+    phone TEXT,
+    experience TEXT,
+    cover_letter TEXT,
+    skills TEXT,                          -- store as JSON string
+    avatar TEXT,
+    university TEXT,
+    major TEXT,
+    cv_attached INTEGER DEFAULT 0,        -- 0 = false, 1 = true
+    cv_url TEXT,
+    is_withdrawn INTEGER DEFAULT 0,       -- 0 = false, 1 = true
+    FOREIGN KEY (job_id) REFERENCES job_posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
       )
     ''');
 

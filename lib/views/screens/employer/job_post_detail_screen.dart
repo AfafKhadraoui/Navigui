@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/job_post.dart';
 import '../../../mock/mock_data.dart';
+import '../../../logic/cubits/employer_job/employer_job_cubit.dart';
+import '../../../core/dependency_injection.dart';
 import 'job_post_form_screen.dart';
 
 class JobPostDetailScreen extends StatefulWidget {
@@ -85,8 +87,22 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
     );
 
     if (confirmed == true) {
-      _mockData.deleteJob(_job.id);
+      // Get the cubit from service locator
+      final cubit = getIt<EmployerJobCubit>();
+      
+      // Set employer ID from the job object
+      cubit.setEmployerId(_job.employerId);
+      
+      // Delete the job via cubit
+      await cubit.deleteJob(_job.id);
+      
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Job deleted successfully'),
+            backgroundColor: Color(0xFFABD600),
+          ),
+        );
         Navigator.pop(context, true);
       }
     }
@@ -99,20 +115,21 @@ class _JobPostDetailScreenState extends State<JobPostDetailScreen> {
     });
   }
 
-  String _getStatusDescription() {
-    switch (_job.status) {
-      case JobStatus.active:
-        return 'Job is visible and accepting applications';
-      case JobStatus.filled:
-        return 'Position has been filled. Job is still visible but marked as filled';
-      case JobStatus.closed:
-        return 'Job is no longer accepting applications';
-      case JobStatus.draft:
-        return 'Job is saved as draft and not visible to students';
-      case JobStatus.expired:
-        return 'Job posting has expired and is no longer visible';
-    }
+String _getStatusDescription() {
+  // Draft posts are never visible to students
+  if (_job.isDraft == true) {
+    return 'Job is saved as draft and not visible to students';
   }
+
+  switch (_job.status) {
+    case JobStatus.active:
+      return 'Job is visible and accepting applications';
+
+    case JobStatus.closed:
+      return 'Job is closed and no longer accepting applications';
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

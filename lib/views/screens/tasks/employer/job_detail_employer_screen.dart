@@ -305,29 +305,11 @@ class _JobDetailEmployerScreenState extends State<JobDetailEmployerScreen> {
                     ? const Color(0xFF1A1A1A)
                     : const Color(0xFFABD600);
                 break;
-              case JobStatus.filled:
-                backgroundColor = isSelected
-                    ? const Color(0xFF6C6C6C)
-                    : const Color(0xFF6C6C6C).withOpacity(0.2);
-                textColor = Colors.white;
-                break;
               case JobStatus.closed:
                 backgroundColor = isSelected
                     ? const Color(0xFFC63F47)
                     : const Color(0xFFC63F47).withOpacity(0.2);
                 textColor = isSelected ? Colors.white : const Color(0xFFC63F47);
-                break;
-              case JobStatus.draft:
-                backgroundColor = isSelected
-                    ? const Color(0xFF6C6C6C)
-                    : const Color(0xFF6C6C6C).withOpacity(0.2);
-                textColor = const Color(0xFFBFBFBF);
-                break;
-              case JobStatus.expired:
-                backgroundColor = isSelected
-                    ? const Color(0xFF6C6C6C)
-                    : const Color(0xFF6C6C6C).withOpacity(0.2);
-                textColor = const Color(0xFF6C6C6C);
                 break;
             }
 

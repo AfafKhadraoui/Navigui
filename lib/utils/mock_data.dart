@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../data/models/job_model.dart';
+import '../data/models/job_post.dart';
 import '../data/models/student_model.dart';
 import '../data/models/employer_model.dart';
 import '../data/models/service_model.dart';
@@ -16,7 +16,7 @@ import '../data/models/notification_model.dart';
 /// Example: Load jobs from lib/utils/mock_data/jobs.json
 class MockData {
   // Cached data to avoid reloading
-  static List<JobModel>? _jobs;
+  static List<JobPost>? _jobs;
   static List<StudentModel>? _students;
   static List<EmployerModel>? _employers;
   static List<ServiceModel>? _services;
@@ -26,7 +26,7 @@ class MockData {
 
   /// Load all jobs from JSON file
   /// TODO: Update path to your JSON file in lib/utils/mock_data/
-  static Future<List<JobModel>> loadJobs() async {
+  static Future<List<JobPost>> loadJobs() async {
     if (_jobs != null) return _jobs!;
 
     try {
@@ -34,7 +34,7 @@ class MockData {
       final jsonString =
           await rootBundle.loadString('lib/utils/mock_data/jobs.json');
       final jsonList = json.decode(jsonString) as List;
-      _jobs = jsonList.map((json) => JobModel.fromJson(json)).toList();
+      _jobs = jsonList.map((json) => JobPost.fromJson(json)).toList();
       return _jobs!;
     } catch (e) {
       print('Error loading jobs: $e');
@@ -168,19 +168,19 @@ class MockData {
   // Helper Methods
 
   /// Get jobs by category
-  static Future<List<JobModel>> getJobsByCategory(String category) async {
+  static Future<List<JobPost>> getJobsByCategory(String category) async {
     final jobs = await loadJobs();
     return jobs.where((job) => job.category == category).toList();
   }
 
   /// Get urgent jobs (isUrgent = true)
-  static Future<List<JobModel>> getUrgentJobs() async {
+  static Future<List<JobPost>> getUrgentJobs() async {
     final jobs = await loadJobs();
     return jobs.where((job) => job.isUrgent).toList();
   }
 
   /// Get active jobs (status = 'active')
-  static Future<List<JobModel>> getActiveJobs() async {
+  static Future<List<JobPost>> getActiveJobs() async {
     final jobs = await loadJobs();
     return jobs.where((job) => job.status == 'active').toList();
   }
